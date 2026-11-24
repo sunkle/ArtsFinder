@@ -1,0 +1,366 @@
+[
+ {
+  "id": "chiswick-auctions",
+  "name": "Chiswick Auctions",
+  "region": "London",
+  "town": "London (Chiswick)",
+  "url": "https://chiswickauctions.co.uk/"
+ },
+ {
+  "id": "forum-auctions",
+  "name": "Forum Auctions",
+  "region": "London",
+  "town": "London",
+  "url": "https://forumauctions.co.uk/"
+ },
+ {
+  "id": "lots-road-auctions",
+  "name": "Lots Road Auctions",
+  "region": "London",
+  "town": "London (Chelsea)",
+  "url": "https://lotsroad.com/"
+ },
+ {
+  "id": "olympia-auctions",
+  "name": "Olympia Auctions",
+  "region": "London",
+  "town": "London (Kensington)",
+  "url": "https://olympiaauctions.com/"
+ },
+ {
+  "id": "roseberys",
+  "name": "Roseberys",
+  "region": "London",
+  "town": "London (West Norwood)",
+  "url": "https://roseberys.co.uk/"
+ },
+ {
+  "id": "bellmans",
+  "name": "Bellmans",
+  "region": "South East",
+  "town": "Wisborough Green (W Sussex)",
+  "url": "https://bellmans.co.uk/"
+ },
+ {
+  "id": "canterbury-auction-galleries",
+  "name": "Canterbury Auction Galleries",
+  "region": "South East",
+  "town": "Canterbury",
+  "url": "https://thecanterburyauctiongalleries.com/"
+ },
+ {
+  "id": "gorringe-s",
+  "name": "Gorringe's",
+  "region": "South East",
+  "town": "Lewes",
+  "url": "https://gorringes.co.uk/"
+ },
+ {
+  "id": "mallams",
+  "name": "Mallams",
+  "region": "South East",
+  "town": "Oxford",
+  "url": "https://mallams.co.uk/"
+ },
+ {
+  "id": "toovey-s",
+  "name": "Toovey's",
+  "region": "South East",
+  "town": "Washington (W Sussex)",
+  "url": "https://tooveys.com/"
+ },
+ {
+  "id": "keys-auctions",
+  "name": "Keys Auctions",
+  "region": "East of England",
+  "town": "Aylsham (Norfolk)",
+  "url": "https://keysauctions.co.uk/"
+ },
+ {
+  "id": "lacy-scott-knight",
+  "name": "Lacy Scott & Knight",
+  "region": "East of England",
+  "town": "Bury St Edmunds",
+  "url": "https://lskauctioncentre.co.uk/"
+ },
+ {
+  "id": "lockdales",
+  "name": "Lockdales",
+  "region": "East of England",
+  "town": "Ipswich",
+  "url": "https://lockdales.com/"
+ },
+ {
+  "id": "reeman-dansie",
+  "name": "Reeman Dansie",
+  "region": "East of England",
+  "town": "Colchester",
+  "url": "https://reemandansie.com/"
+ },
+ {
+  "id": "bearnes-hampton-littlewood",
+  "name": "Bearnes Hampton & Littlewood",
+  "region": "South West",
+  "town": "Exeter",
+  "url": "https://bhandl.co.uk/"
+ },
+ {
+  "id": "chorley-s",
+  "name": "Chorley's",
+  "region": "South West",
+  "town": "Prinknash (Gloucs)",
+  "url": "https://chorleys.com/"
+ },
+ {
+  "id": "clevedon-salerooms",
+  "name": "Clevedon Salerooms",
+  "region": "South West",
+  "town": "Bristol",
+  "url": "https://clevedonsalerooms.com/"
+ },
+ {
+  "id": "cotswold-auction-company",
+  "name": "Cotswold Auction Company",
+  "region": "South West",
+  "town": "Cirencester",
+  "url": "https://cotswoldauction.co.uk/"
+ },
+ {
+  "id": "lay-s-was-david-lay",
+  "name": "Lay's (was David Lay)",
+  "region": "South West",
+  "town": "Penzance",
+  "url": "https://davidlay.co.uk/"
+ },
+ {
+  "id": "dominic-winter",
+  "name": "Dominic Winter",
+  "region": "South West",
+  "town": "Cirencester",
+  "url": "https://dominicwinter.co.uk/"
+ },
+ {
+  "id": "duke-s",
+  "name": "Duke's",
+  "region": "South West",
+  "town": "Dorchester",
+  "url": "https://dukes-auctions.com/"
+ },
+ {
+  "id": "gardiner-houlgate",
+  "name": "Gardiner Houlgate",
+  "region": "South West",
+  "town": "Corsham",
+  "url": "https://gardinerhoulgate.co.uk/"
+ },
+ {
+  "id": "greenslade-taylor-hunt",
+  "name": "Greenslade Taylor Hunt",
+  "region": "South West",
+  "town": "Taunton",
+  "url": "https://gth.net/"
+ },
+ {
+  "id": "lawrences",
+  "name": "Lawrences",
+  "region": "South West",
+  "town": "Crewkerne",
+  "url": "https://lawrences.co.uk/"
+ },
+ {
+  "id": "plymouth-auction-rooms",
+  "name": "Plymouth Auction Rooms",
+  "region": "South West",
+  "town": "Plymouth",
+  "url": "https://plymouthauctions.co.uk/"
+ },
+ {
+  "id": "w-h-lane-son",
+  "name": "W H Lane & Son",
+  "region": "South West",
+  "town": "Penzance",
+  "url": "https://whlane.co.uk/"
+ },
+ {
+  "id": "brettells",
+  "name": "Brettells",
+  "region": "Midlands",
+  "town": "Newport (Shropshire)",
+  "url": "https://brettells.com/"
+ },
+ {
+  "id": "fieldings",
+  "name": "Fieldings",
+  "region": "Midlands",
+  "town": "Stourbridge",
+  "url": "https://fieldingsauctioneers.co.uk/"
+ },
+ {
+  "id": "gildings",
+  "name": "Gildings",
+  "region": "Midlands",
+  "town": "Market Harborough",
+  "url": "https://gildings.co.uk/"
+ },
+ {
+  "id": "golding-young-mawer",
+  "name": "Golding Young & Mawer",
+  "region": "Midlands",
+  "town": "Lincoln",
+  "url": "https://goldingyoung.com/"
+ },
+ {
+  "id": "halls",
+  "name": "Halls",
+  "region": "Midlands",
+  "town": "Shrewsbury",
+  "url": "https://hallsgb.com/"
+ },
+ {
+  "id": "hansons",
+  "name": "Hansons",
+  "region": "Midlands",
+  "town": "Etwall (Derbyshire)",
+  "url": "https://hansonsauctioneers.co.uk/"
+ },
+ {
+  "id": "mellors-kirk",
+  "name": "Mellors & Kirk",
+  "region": "Midlands",
+  "town": "Nottingham",
+  "url": "https://mellorsandkirk.com/"
+ },
+ {
+  "id": "philip-serrell",
+  "name": "Philip Serrell",
+  "region": "Midlands",
+  "town": "Malvern",
+  "url": "https://serrell.com/"
+ },
+ {
+  "id": "trevanion-was-trevanion-dean",
+  "name": "Trevanion (was Trevanion & Dean)",
+  "region": "Midlands",
+  "town": "Whitchurch (Shropshire)",
+  "url": "https://trevanion.com/"
+ },
+ {
+  "id": "1818-auctioneers",
+  "name": "1818 Auctioneers",
+  "region": "North",
+  "town": "Milnthorpe (Cumbria)",
+  "url": "https://1818auctioneers.co.uk/"
+ },
+ {
+  "id": "adam-partridge",
+  "name": "Adam Partridge",
+  "region": "North",
+  "town": "Macclesfield",
+  "url": "https://adampartridge.co.uk/"
+ },
+ {
+  "id": "anderson-garland",
+  "name": "Anderson & Garland",
+  "region": "North",
+  "town": "Newcastle",
+  "url": "https://andersonandgarland.com/"
+ },
+ {
+  "id": "capes-dunn",
+  "name": "Capes Dunn",
+  "region": "North",
+  "town": "Manchester",
+  "url": "https://capesdunn.com/"
+ },
+ {
+  "id": "david-duggleby",
+  "name": "David Duggleby",
+  "region": "North",
+  "town": "Scarborough",
+  "url": "https://davidduggleby.com/"
+ },
+ {
+  "id": "hutchinson-scott",
+  "name": "Hutchinson Scott",
+  "region": "North",
+  "town": "Skipton",
+  "url": "https://hutchinsonscott.co.uk/"
+ },
+ {
+  "id": "mitchells",
+  "name": "Mitchells",
+  "region": "North",
+  "town": "Cockermouth",
+  "url": "https://mitchellsauction.co.uk/"
+ },
+ {
+  "id": "morphets",
+  "name": "Morphets",
+  "region": "North",
+  "town": "Harrogate",
+  "url": "https://morphets.co.uk/"
+ },
+ {
+  "id": "thomson-roddick",
+  "name": "Thomson Roddick",
+  "region": "North / Scotland",
+  "town": "Carlisle & Edinburgh",
+  "url": "https://thomsonroddick.com/"
+ },
+ {
+  "id": "great-western-auctions",
+  "name": "Great Western Auctions",
+  "region": "Scotland",
+  "town": "Glasgow",
+  "url": "https://greatwesternauctions.com/"
+ },
+ {
+  "id": "mctear-s",
+  "name": "McTear's",
+  "region": "Scotland",
+  "town": "Glasgow",
+  "url": "https://mctears.co.uk/"
+ },
+ {
+  "id": "anthemion-auctions",
+  "name": "Anthemion Auctions",
+  "region": "Wales",
+  "town": "Cardiff",
+  "url": "https://anthemionauction.com/"
+ },
+ {
+  "id": "morgan-evans",
+  "name": "Morgan Evans",
+  "region": "Wales",
+  "town": "Anglesey",
+  "url": "https://morganevans.com/"
+ },
+ {
+  "id": "peter-francis",
+  "name": "Peter Francis",
+  "region": "Wales",
+  "town": "Carmarthen",
+  "url": "https://peterfrancis.co.uk/"
+ },
+ {
+  "id": "rogers-jones",
+  "name": "Rogers Jones",
+  "region": "Wales",
+  "town": "Cardiff & Colwyn Bay",
+  "url": "https://rogersjones.co.uk/"
+ },
+ {
+  "id": "bloomfield-auctions",
+  "name": "Bloomfield Auctions",
+  "region": "Northern Ireland",
+  "town": "Belfast",
+  "url": "https://bloomfieldauctions.co.uk/"
+ },
+ {
+  "id": "ross-s-auctioneers",
+  "name": "Ross's Auctioneers",
+  "region": "Northern Ireland",
+  "town": "Belfast",
+  "url": "https://rosss.com/"
+ }
+]

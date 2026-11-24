@@ -1,0 +1,54 @@
+<!-- fetched from https://www.davidlay.co.uk/ -->
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<noscript>JavaScript is required to continue.</noscript>
+<div id="bpbc-fallback" style="display:none">Your browser could not complete the automatic check. Please use a modern browser over a secure (HTTPS) connection.</div>
+<script>
+(function(){
+  var nonce = "efbfb413d771fd69";
+  var challengeToken = "MTc5NTUyMTEwN3xlZmJmYjQxM2Q3NzFmZDY5fDN8NzZiYmU1ZGMwM2ZlMmIwMjFmMDE5MGIzODg5MzhkNzJlYmQ4OTdjNDZkZGM3YmE1ZTY4MjZhNDFjMmFkZjFlMA==";
+  var difficulty = 3;
+  if (!(window.crypto && window.crypto.subtle && window.TextEncoder && window.fetch && window.URL && window.URLSearchParams)){
+    document.getElementById('bpbc-fallback').style.display = '';
+    return;
+  }
+  var encoder = new TextEncoder();
+  var zeroBytes = difficulty >> 1;
+  var oddNibble = (difficulty & 1) === 1;
+  function isSolved(bytes){
+    for (var i = 0; i < zeroBytes; i++){ if (bytes[i] !== 0) return false; }
+    return !oddNibble || (bytes[zeroBytes] & 0xF0) === 0;
+  }
+  function retry(seconds){ setTimeout(function(){ window.location.reload(); }, seconds * 1000); }
+  function submit(solution){
+    try{
+      var url = new URL(window.location.href);
+      url.searchParams.set("bpbc_verify", '1');
+      var form = new URLSearchParams();
+      form.append('bp_challenge_token', challengeToken);
+      form.append('bp_challenge_response', String(solution));
+      form.append("bot_verify", '1');
+      fetch(url.toString(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form.toString()
+      }).then(function(response){
+        if (response.ok){ window.location.reload(); return; }
+        var ra = parseInt(response.headers.get('Retry-After'), 10);
+        retry(ra > 0 ? ra : 5);
+      }).catch(function(){ retry(5); });
+    } catch(e){ retry(5); }
+  }
+  var solution = 0;
+  function step(){
+    window.crypto.subtle.digest('SHA-256', encoder.encode(nonce + solution))
+      .then(function(buf){
+        if (isSolved(new Uint8Array(buf))){ submit(solution); return; }
+        solution++;
+        if (solution % 1024 === 0){ setTimeout(step, 0); } else { step(); }
+      })
+      .catch(function(){ document.getElementById('bpbc-fallback').style.display = ''; });
+  }
+  step();
+})();
+</script>
