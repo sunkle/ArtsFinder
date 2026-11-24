@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Arts Finder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2f4a46">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Arts Finder">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{--bg:#f6f3ee;--card:#fffdf9;--ink:#26262a;--mute:#6d6a63;--line:#e3ddd1;--accent:#2f4a46;--on-accent:#fff;--gold:#c58f1f;--ph:#e8e2d5;--shadow:0 1px 3px rgba(40,30,10,.08);--star-bg:rgba(255,253,249,.85)}
+@media(prefers-color-scheme:dark){:root{--bg:#161715;--card:#202220;--ink:#ece8df;--mute:#a09b90;--line:#34372f;--accent:#7fb3a8;--on-accent:#10201c;--gold:#e0b24a;--ph:#2b2d2a;--shadow:none;--star-bg:rgba(32,34,32,.85)}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+h1{font:600 1.35rem/1.2 Georgia,"Times New Roman",serif;margin:0;letter-spacing:.01em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+input,select{font-size:16px} /* 16px or more stops iOS Safari zooming the page on focus */
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bar h1{flex:1 1 100%}
+.row2{display:flex;gap:8px;align-items:center;width:100%}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;min-height:40px;white-space:nowrap}
+.btn[aria-pressed=true],.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.row2 .btn.filters{display:inline-flex}
+input[type=search],input[type=number],input[type=date],select{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.row2 input[type=search]{flex:1;border-radius:999px;padding-left:14px}
+@media(max-width:599px){.row2{flex-wrap:wrap}.row2 input[type=search]{flex:1 1 100%}.row2 .btn{flex:1}}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px 0;color:var(--mute);font-size:.9rem}
+.meta label{display:flex;align-items:center;gap:6px}
+.meta{flex-wrap:wrap}
+.meta select{width:auto;min-height:44px;padding:4px 8px}
+.ctl{display:flex;align-items:center;gap:8px;flex:1 1 100%;min-width:0}
+.ctl label{flex:1;min-width:0;justify-content:flex-end}
+.ctl select{flex:1;min-width:0;max-width:240px}
+.seg{display:inline-flex}
+.seg .btn{min-height:44px;border-radius:0;padding:8px 12px}
+.seg .btn:first-child{border-radius:999px 0 0 999px}
+.seg .btn:last-child{border-radius:0 999px 999px 0;border-left:0}
+/* compact view: one dense row per lot, the whole row opens the lot */
+#grid.compact{grid-template-columns:1fr;gap:8px}
+.compact .card{flex-direction:row;align-items:center;min-height:64px;border-radius:10px}
+.compact .img{aspect-ratio:auto;width:56px;height:56px;flex:none;margin:4px 0 4px 8px;border-radius:6px;overflow:hidden}
+.compact .img.none,.compact .sub,.compact .dims,.compact .row,.compact .past{display:none}
+.compact .body{padding:8px 56px 8px 12px;gap:1px;min-width:0}
+.compact .body{flex-direction:row;flex-wrap:wrap;align-items:baseline;column-gap:10px}
+.compact .body h2,.compact .artist{flex:1 1 100%}
+.compact .artist,.compact .est,.compact .house{font-size:.85rem}
+.compact .body h2{font-size:.98rem;padding-right:0}
+.compact .body h2 a{color:inherit;text-decoration:none}
+.compact .body h2 a::after{content:"";position:absolute;inset:0} /* stretch the link over the row */
+.compact .star{top:50%;transform:translateY(-50%);z-index:1}
+.layout{max-width:1200px;margin:0 auto}
+main{padding:10px 14px 40px}
+#grid{display:grid;grid-template-columns:1fr;gap:12px;list-style:none;margin:0;padding:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;position:relative}
+.img{aspect-ratio:4/3;background:var(--ph);display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:.8rem}
+.img.none{aspect-ratio:auto;height:48px;padding:0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} /* no image: slim band, not a tall box */
+.img img{width:100%;height:100%;object-fit:contain;display:block} /* whole artwork, never cropped */
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:3px;flex:1}
+.body h2{font:600 1.05rem/1.25 Georgia,serif;margin:0;padding-right:40px}
+.artist{font-weight:500}
+.sub,.house{color:var(--mute);font-size:.88rem}
+.est{font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:10px}
+.past{color:#b3402f;font-size:.8rem}
+.star{position:absolute;top:8px;right:8px;width:44px;height:44px;border-radius:50%;border:0;background:var(--star-bg);color:var(--mute);font-size:1.4rem;line-height:1}
+.star[aria-pressed=true]{color:var(--gold)}
+.link{background:var(--accent);color:var(--on-accent);text-decoration:none;border-radius:999px;padding:8px 16px;min-height:40px;display:inline-flex;align-items:center;font-weight:500}
+.empty{text-align:center;color:var(--mute);padding:48px 12px;grid-column:1/-1}
+.empty button{margin-top:12px}
+/* filter panel: bottom sheet on phone */
+#panel{position:fixed;left:0;right:0;bottom:0;max-height:85vh;overflow:auto;background:var(--bg);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));transform:translateY(105%);visibility:hidden;transition:transform .25s,visibility .25s;z-index:20;box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+#panel.open{transform:none;visibility:visible}
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:15;display:none}
+#scrim.on{display:block}
+.phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.phead h2{margin:0;font-size:1.1rem}
+fieldset{border:0;padding:0;margin:0 0 14px}
+legend,.lab{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);padding:0;margin-bottom:6px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;min-height:36px}
+.chip .n{opacity:.65;font-size:.85em}
+.chip[aria-pressed=true]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.range{display:flex;gap:8px;align-items:center}
+.range input{min-width:0;flex:1}
+.check{display:flex;align-items:center;gap:10px;min-height:40px}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+.pfoot{display:flex;gap:8px;position:sticky;bottom:-16px;background:var(--bg);padding-top:8px}
+.pfoot .btn{flex:1}
+@media(min-width:600px){#grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){
+ .layout{display:grid;grid-template-columns:290px 1fr;align-items:start}
+ #panel{position:sticky;top:110px;transform:none;visibility:visible;max-height:calc(100vh - 120px);border:1px solid var(--line);border-radius:14px;margin:10px 0 0 14px;box-shadow:none;z-index:1}
+ #scrim,.filters{display:none!important}
+ .bar h1{flex:0 0 auto}
+ .bar{flex-wrap:nowrap}
+ .row2{flex:1}
+}
+@media(min-width:1100px){#grid{grid-template-columns:repeat(3,1fr)}}
+@media(prefers-reduced-motion:reduce){#panel{transition:none}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+ <div class="bar">
+  <h1>Arts Finder</h1>
+  <div class="row2">
+   <input type="search" id="q" placeholder="Artist or title" aria-label="Search artist or title" autocomplete="off">
+   <button class="btn filters" id="openFilters" aria-expanded="false" aria-controls="panel">Filters<span id="fcount"></span></button>
+   <button class="btn" id="favOnly" aria-pressed="false">&#9733; Favourites</button>
+  </div>
+ </div>
+</header>
+<div class="layout">
+ <aside id="panel" role="region" aria-label="Filters">
+  <div class="phead"><h2>Filters</h2><button class="btn filters" id="closeFilters">Done</button></div>
+  <div id="filterUI"></div>
+  <div class="pfoot"><button class="btn" id="clear">Clear filters</button></div>
+ </aside>
+ <section>
+  <div class="meta"><span id="count" role="status" aria-live="polite">Loading…</span>
+   <div class="ctl"><span class="seg" role="group" aria-label="View"></span>
+   <label>Sort <select id="sort" aria-label="Sort by"></select></label></div></div>
+  <main><ul id="grid"></ul></main>
+ </section>
+</div>
+<div id="scrim"></div>
+<script type="application/json" id="embedded-data">null</script>
+<script type="application/json" id="embedded-rules">null</script>
+<script type="application/json" id="embedded-schema">null</script>
+<script>
+"use strict";
+/* ---------- Config (single source of truth for filters & sorts) ---------- */
+const embedded = id => { try { return JSON.parse(document.getElementById(id).textContent) || {}; } catch(_) { return {}; } };
+/* TYPES and MEDIUMS: defined once in shared/schema.json, embedded by build.py. */
+const { types: TYPES = [], mediums: MEDIUMS = [] } = embedded('embedded-schema');
+/* "Not an original" rule: defined once in shared/rules.json, embedded by build.py. */
+const RULES = embedded('embedded-rules');
+const wordsRx = w => (w&&w.length) ? new RegExp('\\b(' + w.join('|') + ')\\b','i') : null;
+const REPRO_TITLE = wordsRx(RULES.title_words), REPRO_DESC = wordsRx(RULES.description_words);
+const isOriginal = l => !(RULES.hidden_types||[]).includes(l.type)
+  && !(REPRO_TITLE && REPRO_TITLE.test([l.title,l.medium_detail].join(' ')))
+  && !(REPRO_DESC && REPRO_DESC.test(l.description||''))
+  && !(RULES.after_note && (l.attribution_note===RULES.after_note || (l.artist||'').toLowerCase().startsWith(RULES.after_note.toLowerCase()+' ')));
+const lastDay = l => l.sale_end_date || l.sale_date;   // a one-day sale has no end date
+const todayISO = () => { const d = new Date(); return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); };
+const estRange = l => { const lo = l.estimate_low ?? l.estimate_high, hi = l.estimate_high ?? l.estimate_low; return [lo, hi]; };
+
+// kind: multi (chips, OR within) | select | range (overlap test) | toggle | text
+const FILTERS = [
+  { id:'type',   kind:'multi',  label:'Type',   get:l=>l.type,   options:()=>TYPES },
+  { id:'medium', kind:'multi',  label:'Medium', get:l=>l.medium, options:()=>MEDIUMS },
+  { id:'search', kind:'text',   label:'Artist or title', test:(l,v)=>[l.artist,l.title,l.medium_detail].some(t=>(t||'').toLowerCase().includes(v.toLowerCase())) },
+  { id:'house',  kind:'select', label:'Auction house', get:l=>l.house_id, options:()=>DATA.houses.map(h=>[h.id,h.name]) },
+  { id:'region', kind:'select', label:'Region', get:l=>houseOf(l).region, options:()=>[...new Set(DATA.houses.map(h=>h.region).filter(Boolean))].sort().map(r=>[r,r]) },
+  { id:'date',   kind:'range',  label:'Auction date', input:'date', get:l=>[l.sale_date,lastDay(l)] },
+  { id:'year',   kind:'range',  label:'Year made', input:'number', get:l=>[l.year_made,l.year_made], ph:['From','To'] },
+  { id:'est',    kind:'range',  label:'Estimate (£)', input:'number', get:estRange, ph:['Min','Max'] },
+  { id:'orig',   kind:'toggle', label:'Original works only', def:false,
+    test:isOriginal },
+  { id:'future', kind:'toggle', label:'Hide past auctions', def:true, test:l=>!l.sale_date || lastDay(l) >= todayISO() },
+];
+const cmp = (a,b) => a==null ? (b==null?0:1) : b==null ? -1 : a<b ? -1 : a>b ? 1 : 0;   // nulls last
+const SORTS = [
+  { id:'date',   label:'Auction date (soonest)', key:l=>l.sale_date },
+  { id:'year',   label:'Year made (oldest)',     key:l=>l.year_made },
+  { id:'est',    label:'Estimate (lowest)',      key:l=>estRange(l)[0] },
+  { id:'artist', label:'Artist A–Z',             key:l=>l.artist ? l.artist.toLowerCase() : null },
+];
+
+/* ---------- State ---------- */
+let DATA = { houses:[], lots:[] };
+let houseMap = {};
+const houseOf = l => houseMap[l.house_id] || {};
+const blank = f => f.kind==='multi' ? new Set() : f.kind==='range' ? {min:'',max:''} : f.kind==='toggle' ? f.def : '';
+const VIEWS = [ { id:'compact', label:'Compact' }, { id:'cards', label:'Cards' } ];
+const state = { sort:'date', favOnly:false, view:'cards' };
+FILTERS.forEach(f => state[f.id] = blank(f));
+let favs = new Set();
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); } catch(_) { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(_) {} },
+};
+
+/* ---------- Filtering ---------- */
+const active = {
+  multi:  (f,v)=>v.size>0,
+  select: (f,v)=>v!=='',
+  text:   (f,v)=>v.trim()!=='',
+  range:  (f,v)=>v.min!==''||v.max!=='',
+  toggle: (f,v)=>v!==f.def,
+};
+const matches = {
+  multi:  (f,l,v)=>v.has(f.get(l)),
+  select: (f,l,v)=>f.get(l)===v,
+  text:   (f,l,v)=>f.test(l,v.trim()),
+  range:  (f,l,v)=>{ const [lo,hi]=f.get(l); if(lo==null) return false;
+            const num = f.input==='number', a = num&&v.min!==''?+v.min:v.min, b = num&&v.max!==''?+v.max:v.max;
+            return (v.min===''||hi>=a) && (v.max===''||lo<=b); },
+  toggle: (f,l)=>f.test(l),
+};
+const isActive = f => active[f.kind](f, state[f.id]);
+const applies = f => f.kind==='toggle' ? state[f.id] : isActive(f);
+const visible = () => DATA.lots.filter(l => (!state.favOnly || favs.has(l.id)) && FILTERS.every(f => !applies(f) || matches[f.kind](f,l,state[f.id])));
+const lotNo = l => parseInt(l.lot_number,10);
+function sorted(list){ const s = SORTS.find(x=>x.id===state.sort);
+  return list.slice().sort((a,b)=>cmp(s.key(a),s.key(b)) || cmp(a.sale_date,b.sale_date) || cmp(a.house_id,b.house_id) || cmp(lotNo(a)||null,lotNo(b)||null)); }
+
+/* ---------- DOM helpers ---------- */
+function h(tag, attrs={}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) { if (v==null||v===false) continue;
+    if (k==='class') e.className=v; else if (k.startsWith('on')) e.addEventListener(k.slice(2),v); else e.setAttribute(k, v===true?'':v); }
+  kids.flat().forEach(c => c!=null && c!==false && e.append(c.nodeType?c:document.createTextNode(c)));
+  return e;
+}
+const money = n => n==null ? null : '£' + n.toLocaleString('en-GB');
+const estText = l => { const lo=money(l.estimate_low), hi=money(l.estimate_high); return lo&&hi ? (lo===hi?lo:`${lo} – ${hi}`) : lo||hi||'Estimate not given'; };
+const fmt = (s,o) => new Date(s+'T12:00:00').toLocaleDateString('en-GB',o);
+/* "3 Dec 2026", or for a multi-day sale "26–27 Nov 2026" / "30 Nov – 2 Dec 2026" / "30 Dec 2026 – 2 Jan 2027" */
+const dateText = (s,e) => {
+  if(!s) return 'Date TBC';
+  if(!e || e<=s) return fmt(s,{day:'numeric',month:'short',year:'numeric'});
+  const sameYear = s.slice(0,4)===e.slice(0,4), sameMonth = sameYear && s.slice(5,7)===e.slice(5,7);
+  if (sameMonth) return `${+s.slice(8)}–${fmt(e,{day:'numeric',month:'short',year:'numeric'})}`;
+  if (sameYear) return `${fmt(s,{day:'numeric',month:'short'})} – ${fmt(e,{day:'numeric',month:'short',year:'numeric'})}`;
+  return `${fmt(s,{day:'numeric',month:'short',year:'numeric'})} – ${fmt(e,{day:'numeric',month:'short',year:'numeric'})}`;
+};
+
+/* ---------- Render ---------- */
+const noImgText = l => [l.type,l.medium].filter(Boolean).join(' · ') || 'No image';
+const safeUrl = u => /^https?:\/\//i.test(u) ? u : null;
+function imageBox(l){   // slim text band when there is no image or it fails to load (common where remote images are blocked)
+  const box = h('div',{class:'img'});
+  const none = () => { box.classList.add('none'); box.replaceChildren(noImgText(l)); };
+  if (l.image_url) box.append(h('img',{src:l.image_url,alt:l.title,loading:'lazy',decoding:'async',referrerpolicy:'no-referrer',onerror:none})); else none();
+  return box;
+}
+function card(l){
+  const hs = houseOf(l), fav = favs.has(l.id), past = l.sale_date && lastDay(l) < todayISO(), compact = state.view==='compact';
+  return h('li',{class:'card'},
+    imageBox(l),
+    h('button',{class:'star','aria-pressed':fav,'aria-label':(fav?'Remove favourite: ':'Add favourite: ')+l.title,onclick:()=>toggleFav(l.id)},fav?'★':'☆'),
+    h('div',{class:'body'},
+      h('h2',{},compact ? h('a',{href:safeUrl(l.lot_url),target:'_blank',rel:'noopener noreferrer'},l.title) : l.title),
+      l.artist && h('div',{class:'artist'},(l.attribution_note?l.attribution_note+' ':'')+l.artist+(l.artist_dates?` (${l.artist_dates})`:'')),
+      h('div',{class:'sub'},[l.type,l.medium].filter(Boolean).join(' · ')+(l.year_made?` · ${l.year_made}`:l.date_made_text?` · ${l.date_made_text}`:'')),
+      l.dimensions && h('div',{class:'sub dims'},l.dimensions),
+      h('div',{class:'est'},estText(l)),
+      h('div',{class:'house'},`${hs.name||l.house_id} · ${dateText(l.sale_date,l.sale_end_date)}`),
+      past && h('div',{class:'past'},'Auction has passed'),
+      h('div',{class:'row'},h('span'),h('a',{class:'link',href:safeUrl(l.lot_url),target:'_blank',rel:'noopener noreferrer'},'View lot'))));
+}
+function render(){
+  const list = sorted(visible()), nAct = FILTERS.filter(f=>isActive(f)&&f.id!=='search').length;
+  document.getElementById('count').textContent = `${list.length} ${list.length===1?'lot':'lots'}` + (DATA.lots.length!==list.length?` of ${DATA.lots.length}`:'');
+  document.getElementById('fcount').textContent = nAct ? ` (${nAct})` : '';
+  const grid = document.getElementById('grid'); grid.replaceChildren(); grid.classList.toggle('compact', state.view==='compact');
+  document.querySelectorAll('.seg .btn').forEach(b=>b.setAttribute('aria-pressed', b.dataset.v===state.view));
+  if (!list.length) grid.append(h('li',{class:'empty'},
+    DATA.lots.length ? 'No lots match these filters.' : 'No lots to show yet.',
+    DATA.lots.length ? h('div',{},h('button',{class:'btn primary',onclick:clearAll},'Clear filters')) : null));
+  else list.forEach(l => grid.append(card(l)));
+  document.getElementById('favOnly').setAttribute('aria-pressed', state.favOnly);
+}
+function toggleFav(id){ favs.has(id) ? favs.delete(id) : favs.add(id); store.set('af-favs',[...favs]); render(); }
+
+/* ---------- Filter UI (generated from FILTERS) ---------- */
+const ui = {
+  multi(f){ const box=h('div',{class:'chips'});
+    const counts = {}; DATA.lots.forEach(l=>{ const v=f.get(l); counts[v]=(counts[v]||0)+1; });   // all lots, before any filter
+    f.options().filter(o=>counts[o]).forEach(o=>{ const b=h('button',{class:'chip','data-v':o,'aria-pressed':state[f.id].has(o),onclick:()=>{state[f.id].has(o)?state[f.id].delete(o):state[f.id].add(o);b.setAttribute('aria-pressed',state[f.id].has(o));render();}},o,' ',h('span',{class:'n'},counts[o])); box.append(b); });
+    return box; },
+  select(f){ const s=h('select',{'aria-label':f.label,onchange:e=>{state[f.id]=e.target.value;render();}},h('option',{value:''},'Any'),f.options().map(([v,t])=>h('option',{value:v},t))); s.value=state[f.id]; return s; },
+  range(f){ const p=f.ph||['From','To'];
+    return h('div',{class:'range'},['min','max'].map((k,i)=>h('input',{type:f.input,inputmode:f.input==='number'?'numeric':null,placeholder:p[i],'aria-label':`${f.label} ${p[i]}`,value:state[f.id][k],oninput:e=>{state[f.id][k]=e.target.value;render();}}))); },
+  toggle(f){ return h('label',{class:'check'},h('input',{type:'checkbox',checked:state[f.id],onchange:e=>{state[f.id]=e.target.checked;render();}}),f.label); },
+};
+function buildFilterUI(){
+  const root=document.getElementById('filterUI'); root.replaceChildren();
+  FILTERS.filter(f=>f.kind!=='text').forEach(f=>{
+    const el=ui[f.kind](f);
+    root.append(f.kind==='toggle'?el:h('fieldset',{},h('legend',{},f.label),el));
+  });
+}
+function clearAll(){
+  FILTERS.forEach(f=>state[f.id]=blank(f)); state.favOnly=false;
+  document.getElementById('q').value=''; buildFilterUI(); render();
+}
+
+/* ---------- Wiring ---------- */
+const panel=document.getElementById('panel'), scrim=document.getElementById('scrim'), openBtn=document.getElementById('openFilters');
+function sheet(open){ panel.classList.toggle('open',open); scrim.classList.toggle('on',open); openBtn.setAttribute('aria-expanded',open); }
+openBtn.onclick=()=>sheet(true); document.getElementById('closeFilters').onclick=()=>sheet(false); scrim.onclick=()=>sheet(false);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') sheet(false); });
+document.getElementById('clear').onclick=clearAll;
+document.getElementById('favOnly').onclick=()=>{state.favOnly=!state.favOnly;render();};
+document.getElementById('q').addEventListener('input',e=>{state.search=e.target.value;render();});
+const sortSel=document.getElementById('sort');
+SORTS.forEach(s=>sortSel.append(h('option',{value:s.id},s.label)));
+sortSel.onchange=e=>{state.sort=e.target.value;render();};
+document.querySelector('.seg').append(...VIEWS.map(v=>h('button',{class:'btn','data-v':v.id,onclick:()=>{state.view=v.id;store.set('af-view',v.id);render();}},v.label)));
+
+/* ---------- Data loading ---------- */
+function readEmbedded(){ try { return JSON.parse(document.getElementById('embedded-data').textContent); } catch(_) { return null; } }
+async function load(){
+  let data=null;
+  if (location.protocol!=='file:') { try { const r=await fetch('lots.json',{cache:'no-cache'}); if(r.ok) data=await r.json(); } catch(_) {} }
+  return data || readEmbedded() || { houses:[], lots:[] };
+}
+(async function init(){
+  favs=new Set(store.get('af-favs',[]));
+  const v=store.get('af-view','cards'); if (VIEWS.some(x=>x.id===v)) state.view=v;
+  DATA=await load(); DATA.houses=DATA.houses||[]; DATA.lots=DATA.lots||[];
+  houseMap=Object.fromEntries(DATA.houses.map(x=>[x.id,x]));
+  buildFilterUI(); render();
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>

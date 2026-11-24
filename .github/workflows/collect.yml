@@ -1,0 +1,94 @@
+name: Collect lots and publish
+
+on:
+  schedule:
+    # 01:17 and 02:17 UTC; the gate job lets only the one that is 02:17 in the UK through.
+    - cron: "17 1 * * *"
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+    inputs:
+      diagnose:
+        description: "Diagnose run: save sample pages of each house (downloadable as an artifact) and collect no data. Untick for a real collection."
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      go: ${{ steps.check.outputs.go }}
+    steps:
+      - id: check
+        run: |
+          hour=$(TZ=Europe/London date +%H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$hour" = "02" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  collect:
+    needs: gate
+    if: needs.gate.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      ARTS_FINDER_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run tests
+        run: python3 -m unittest discover collector/tests
+      - name: Collect lots
+        if: github.event_name != 'workflow_dispatch' || !inputs.diagnose
+        run: python3 -m collector.run
+      - name: Diagnose (manual runs only)
+        if: github.event_name == 'workflow_dispatch' && inputs.diagnose
+        run: python3 -m collector.run --diagnose
+      - name: Upload diagnose pages (manual runs only)
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnose
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnose
+          path: diagnose/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Build the app
+        run: python3 app/build.py
+      - name: Save data/lots.json if it changed
+        run: |
+          git config user.name "arts-finder-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/lots.json
+          if git diff --cached --quiet; then
+            echo "No change in lots.json"
+          else
+            git commit -m "Update lots.json"
+            git pull --rebase
+            git push
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/dist
+
+  deploy:
+    needs: collect
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,13 @@
+{
+  "_note": "ONE definition of the SPEC.md lists. Read by collector/schema.py and embedded into the app by app/build.py. Change it here only.",
+  "types": ["Painting", "Work on paper", "Print", "Sculpture", "Photograph", "Other"],
+  "mediums": [
+    "Oil", "Acrylic", "Watercolour", "Gouache", "Pastel", "Pencil/Charcoal/Ink",
+    "Mixed media", "Tempera", "Etching/Engraving", "Lithograph", "Screenprint",
+    "Woodcut/Linocut", "Bronze", "Stone/Marble", "Wood", "Ceramic", "Other metal", "Other"
+  ],
+  "attribution_notes": [
+    "Attributed to", "Ascribed to", "Circle of", "After", "Manner of", "Follower of",
+    "Studio of", "School of", "Style of", "Workshop of", "Imitator of"
+  ]
+}

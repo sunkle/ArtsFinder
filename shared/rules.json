@@ -1,0 +1,11 @@
+{
+  "_note": "ONE definition of the 'not an original work' rule and the 'not art' rule. Read by collector/tagger.py; the app embeds the same file via app/build.py.",
+  "after_note": "After",
+  "hidden_types": ["Print"],
+  "title_words": ["reproduction", "poster", "print", "prints", "printed", "giclee", "giclée", "after"],
+  "description_words": ["reproduction", "poster"],
+  "non_art_words": ["ring", "jewellery", "jewelry", "watch", "wristwatch", "brooch", "pendant", "necklace", "bracelet", "bangle",
+                    "earring", "cufflink", "pottery", "studio pottery", "vase", "bowl", "ceramic bowl", "ceramic vase", "jug",
+                    "teapot", "charger", "mug", "tankard", "goblet", "candlestick", "cutlery", "coin", "medal", "stamp", "banknote"],
+  "sculpture_words": ["sculpture", "maquette", "sculpted"]
+}
