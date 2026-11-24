@@ -54,10 +54,16 @@ def collect_house(house, fetcher, today, now, diagnose_dir=None, previous=()):
     adapter.diagnose_dir = diagnose_dir
     adapter.previous_lots = [l for l in previous if l.get("house_id") == house["id"]]
     lots, rejected = [], 0
-    for sale in adapter.list_sales(house):
+    sales = list(adapter.list_sales(house))
+    log.info("%s: found %d sale links", house["id"], len(sales))
+    lot_links = 0
+    for sale in sales:
         if not diagnose_dir and (not sale.get("date") or (sale.get("end_date") or sale["date"]) < today):
             continue  # past (or undated) sale: do not even fetch its lots
-        for raw in adapter.list_lots(house, sale):
+        raws = list(adapter.list_lots(house, sale))
+        lot_links += len(raws)
+        log.info("%s: sale %s (%s): %d lot links", house["id"], sale.get("id"), sale.get("url"), len(raws))
+        for raw in raws:
             try:
                 if "_stored" in raw:
                     lot = reuse_stored(raw["_stored"], raw, sale)
@@ -73,6 +79,7 @@ def collect_house(house, fetcher, today, now, diagnose_dir=None, previous=()):
             except ValueError as err:
                 rejected += 1
                 log.debug("%s: rejected lot: %s", house["id"], err)
+    log.info("%s: %d sale links, %d lot links in total", house["id"], len(sales), lot_links)
     s = adapter.stats
     log.info("%s: lot pages: %d new, %d reused, %d deferred to later runs", house["id"], s["new"], s["reused"], s["deferred"])
     return lots, rejected
@@ -147,7 +154,8 @@ def _run(args, houses, active, previous, today, now, fetcher):
         except AdapterNotAvailable as err:
             log.info("%s: skipped, %s", house["id"], err)
         except Exception as err:  # one house failing must never stop the others
-            log.warning("%s: FAILED (%s: %s), keeping previous lots", house["id"], type(err).__name__, err)
+            log.warning("%s: FAILED (%s: %s), keeping previous lots", house["id"], type(err).__name__, err,
+                        exc_info=True)
 
     if args.diagnose:
         log.info("Diagnose run: sample pages saved under %s; no data written", args.diagnose_dir)

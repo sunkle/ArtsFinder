@@ -55,7 +55,10 @@ jobs:
         run: python3 -m collector.run
       - name: Diagnose (manual runs only)
         if: github.event_name == 'workflow_dispatch' && inputs.diagnose
-        run: python3 -m collector.run --diagnose
+        run: |
+          set -o pipefail
+          mkdir -p diagnose
+          python3 -m collector.run --diagnose 2>&1 | tee diagnose/run.log
       - name: Upload diagnose pages (manual runs only)
         if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnose
         uses: actions/upload-artifact@v4
@@ -64,6 +67,20 @@ jobs:
           path: diagnose/
           if-no-files-found: warn
           retention-days: 14
+      - name: Save diagnose folder to the 'diagnose' branch (manual runs only)
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnose
+        run: |
+          mkdir -p diagnose
+          tmp="$(mktemp -d)"
+          cp -r diagnose "$tmp/diagnose"
+          cd "$tmp"
+          git init -q
+          git checkout -q --orphan diagnose
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Diagnose run ${{ github.run_id }}"
+          git push --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" diagnose:diagnose
       - name: Build the app
         run: python3 app/build.py
       - name: Save data/lots.json if it changed
