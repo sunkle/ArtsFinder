@@ -1,0 +1,325 @@
+GET https://chiswickauctions.co.uk/robots.txt -> 200 (2276 bytes)
+robots.txt allows https://chiswickauctions.co.uk/
+GET https://chiswickauctions.co.uk/ -> 200 (2276 bytes)
+chiswick-auctions -> bot_challenge
+GET https://forumauctions.co.uk/robots.txt -> 200 (1194 bytes)
+robots.txt allows https://forumauctions.co.uk/
+GET https://forumauctions.co.uk/ -> 200 (0 bytes)
+forum-auctions -> js_only
+GET https://lotsroad.com/robots.txt -> 200 (346 bytes)
+robots.txt allows https://lotsroad.com/
+GET https://lotsroad.com/ -> 200 (116097 bytes)
+GET https://auctions.lotsroad.com/robots.txt -> 200 (459 bytes)
+robots.txt allows https://auctions.lotsroad.com/upcoming-auctions/
+GET https://auctions.lotsroad.com/upcoming-auctions/ -> HTTP 403 (attempt 1)
+robots.txt allows https://auctions.lotsroad.com/auction-results/
+GET https://auctions.lotsroad.com/auction-results/ -> HTTP 403 (attempt 1)
+lots-road-auctions -> ok
+GET https://olympiaauctions.com/robots.txt -> 200 (2276 bytes)
+robots.txt allows https://olympiaauctions.com/
+GET https://olympiaauctions.com/ -> 200 (2276 bytes)
+olympia-auctions -> bot_challenge
+GET https://roseberys.co.uk/robots.txt -> 200 (1323 bytes)
+robots.txt allows https://roseberys.co.uk/
+GET https://roseberys.co.uk/ -> 200 (0 bytes)
+roseberys -> js_only
+GET https://bellmans.co.uk/robots.txt -> 200 (456 bytes)
+robots.txt allows https://bellmans.co.uk/
+GET https://bellmans.co.uk/ -> HTTP 403 (attempt 1)
+bellmans -> error
+GET https://thecanterburyauctiongalleries.com/robots.txt -> 200 (45281 bytes)
+robots.txt allows https://thecanterburyauctiongalleries.com/
+GET https://thecanterburyauctiongalleries.com/ -> 200 (45281 bytes)
+canterbury-auction-galleries -> js_only
+GET https://gorringes.co.uk/robots.txt -> 200 (2259 bytes)
+robots.txt allows https://gorringes.co.uk/
+GET https://gorringes.co.uk/ -> 200 (135990 bytes)
+GET https://auction.gorringes.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://auction.gorringes.co.uk/asp/payments.asp
+GET https://auction.gorringes.co.uk/asp/payments.asp -> 200 (24657 bytes)
+robots.txt allows https://auction.gorringes.co.uk/account-update
+GET https://auction.gorringes.co.uk/account-update -> 200 (25625 bytes)
+gorringe-s -> ok
+GET https://mallams.co.uk/robots.txt -> 200 (455 bytes)
+robots.txt allows https://mallams.co.uk/
+GET https://mallams.co.uk/ -> HTTP 403 (attempt 1)
+mallams -> error
+GET https://tooveys.com/robots.txt -> 200 (81 bytes)
+robots.txt allows https://tooveys.com/
+GET https://tooveys.com/ -> 200 (25412 bytes)
+robots.txt allows https://tooveys.com/online-catalogue/
+GET https://tooveys.com/online-catalogue/ -> 200 (21068 bytes)
+robots.txt allows https://tooveys.com/forthcoming-auctions/
+GET https://tooveys.com/forthcoming-auctions/ -> 200 (25413 bytes)
+GET https://www.tooveys.com/robots.txt -> 200 (81 bytes)
+robots.txt allows https://www.tooveys.com/lots/528470/juan-manuel-blanes-a-gaucho-on-horseback-in-a-uruguayan-prairie-landscape/
+GET https://www.tooveys.com/lots/528470/juan-manuel-blanes-a-gaucho-on-horseback-in-a-uruguayan-prairie-landscape/ -> 200 (113942 bytes)
+toovey-s -> bot_challenge
+GET https://keysauctions.co.uk/robots.txt -> 200 (460 bytes)
+robots.txt allows https://keysauctions.co.uk/
+GET https://keysauctions.co.uk/ -> 200 (2276 bytes)
+keys-auctions -> bot_challenge
+GET https://lskauctioncentre.co.uk/robots.txt -> 200 (464 bytes)
+robots.txt allows https://lskauctioncentre.co.uk/
+GET https://lskauctioncentre.co.uk/ -> 200 (2276 bytes)
+lacy-scott-knight -> bot_challenge
+GET https://lockdales.com/robots.txt -> 200 (491 bytes)
+robots.txt allows https://lockdales.com/
+GET https://lockdales.com/ -> 200 (1787048 bytes)
+GET https://auctions.lockdales.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://auctions.lockdales.com/my-account/
+GET https://auctions.lockdales.com/my-account/ -> 200 (123897 bytes)
+GET https://www.lockdales.com/robots.txt -> 200 (491 bytes)
+robots.txt allows https://www.lockdales.com/about-our-auctions
+GET https://www.lockdales.com/about-our-auctions -> 200 (1296117 bytes)
+lockdales -> ok
+GET https://reemandansie.com/robots.txt -> 200 (458 bytes)
+robots.txt allows https://reemandansie.com/
+GET https://reemandansie.com/ -> 200 (2276 bytes)
+reeman-dansie -> bot_challenge
+GET https://bhandl.co.uk/robots.txt -> 200 (0 bytes)
+robots.txt allows https://bhandl.co.uk/
+GET https://bhandl.co.uk/ -> 200 (0 bytes)
+bearnes-hampton-littlewood -> js_only
+GET https://chorleys.com/robots.txt -> 200 (454 bytes)
+robots.txt allows https://chorleys.com/
+GET https://chorleys.com/ -> HTTP 403 (attempt 1)
+chorley-s -> error
+GET https://clevedonsalerooms.com/robots.txt -> 200 (463 bytes)
+robots.txt allows https://clevedonsalerooms.com/
+GET https://clevedonsalerooms.com/ -> 200 (2276 bytes)
+clevedon-salerooms -> bot_challenge
+GET https://cotswoldauction.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://cotswoldauction.co.uk/
+GET https://cotswoldauction.co.uk/ -> 200 (269946 bytes)
+cotswold-auction-company -> bot_challenge
+GET https://davidlay.co.uk/robots.txt -> 200 (456 bytes)
+robots.txt allows https://davidlay.co.uk/
+GET https://davidlay.co.uk/ -> 200 (2276 bytes)
+lay-s-was-david-lay -> bot_challenge
+GET https://dominicwinter.co.uk/robots.txt -> 200 (2276 bytes)
+robots.txt allows https://dominicwinter.co.uk/
+GET https://dominicwinter.co.uk/ -> 200 (2276 bytes)
+dominic-winter -> bot_challenge
+GET https://dukes-auctions.com/robots.txt -> 200 (460 bytes)
+robots.txt allows https://dukes-auctions.com/
+GET https://dukes-auctions.com/ -> HTTP 403 (attempt 1)
+duke-s -> error
+GET https://gardinerhoulgate.co.uk/robots.txt -> 200 (104 bytes)
+robots.txt allows https://gardinerhoulgate.co.uk/
+GET https://gardinerhoulgate.co.uk/ -> 200 (40673 bytes)
+GET https://auctions.gardinerhoulgate.co.uk/robots.txt -> 200 (291 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/my-account/
+GET https://auctions.gardinerhoulgate.co.uk/my-account/ -> 200 (56460 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/
+GET https://auctions.gardinerhoulgate.co.uk/ -> 200 (135777 bytes)
+gardiner-houlgate -> ok
+GET https://gth.net/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://gth.net/
+greenslade-taylor-hunt -> robots_disallow
+GET https://lawrences.co.uk/robots.txt -> 200 (76 bytes)
+robots.txt allows https://lawrences.co.uk/
+GET https://lawrences.co.uk/ -> 200 (40673 bytes)
+GET https://auctions.lawrences.co.uk/robots.txt -> 200 (367 bytes)
+robots.txt allows https://auctions.lawrences.co.uk/account_lookup/new
+GET https://auctions.lawrences.co.uk/account_lookup/new -> 200 (28044 bytes)
+robots.txt allows https://lawrences.co.uk/auction-calendar/
+GET https://lawrences.co.uk/auction-calendar/ -> 200 (44314 bytes)
+lawrences -> ok
+GET https://plymouthauctions.co.uk/robots.txt -> 200 (465 bytes)
+robots.txt allows https://plymouthauctions.co.uk/
+GET https://plymouthauctions.co.uk/ -> 200 (113388 bytes)
+robots.txt allows https://plymouthauctions.co.uk/contact-us/
+GET https://plymouthauctions.co.uk/contact-us/ -> 200 (96596 bytes)
+GET https://plymouthauctions.co.uk/ -> cached (113363 chars)
+robots.txt allows https://plymouthauctions.co.uk/lot-alerts/
+GET https://plymouthauctions.co.uk/lot-alerts/ -> 200 (91977 bytes)
+plymouth-auction-rooms -> ok
+GET https://whlane.co.uk/robots.txt -> network error <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)> (attempt 1)
+GET https://whlane.co.uk/robots.txt -> network error <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)> (attempt 2)
+GET https://whlane.co.uk/robots.txt -> network error <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1011)> (attempt 3)
+robots.txt DISALLOWS https://whlane.co.uk/
+w-h-lane-son -> robots_disallow
+GET https://brettells.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://brettells.com/
+GET https://brettells.com/ -> 200 (92412 bytes)
+brettells -> bot_challenge
+GET https://fieldingsauctioneers.co.uk/robots.txt -> 200 (0 bytes)
+robots.txt allows https://fieldingsauctioneers.co.uk/
+GET https://fieldingsauctioneers.co.uk/ -> 200 (77243 bytes)
+GET https://fieldingsauctioneers.co.uk/ -> cached (77205 chars)
+GET https://auctions.fieldingsauctioneers.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://auctions.fieldingsauctioneers.co.uk/my-account/
+GET https://auctions.fieldingsauctioneers.co.uk/my-account/ -> 200 (49752 bytes)
+robots.txt allows https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/da6876b8eda806fedf4b6d4e86644f1f/9b615028af0ce7db085bb45d23efc09c/decades-of-design-a-two-day-sale-lot-57/
+GET https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/da6876b8eda806fedf4b6d4e86644f1f/9b615028af0ce7db085bb45d23efc09c/decades-of-design-a-two-day-sale-lot-57/ -> 200 (62257 bytes)
+fieldings -> ok
+GET https://gildings.co.uk/robots.txt -> 200 (456 bytes)
+robots.txt allows https://gildings.co.uk/
+GET https://gildings.co.uk/ -> 200 (2276 bytes)
+gildings -> bot_challenge
+GET https://goldingyoung.com/robots.txt -> 200 (78 bytes)
+robots.txt allows https://goldingyoung.com/
+GET https://goldingyoung.com/ -> 200 (56746 bytes)
+robots.txt allows https://goldingyoung.com/about/bourne-saleroom/
+GET https://goldingyoung.com/about/bourne-saleroom/ -> 200 (37356 bytes)
+robots.txt allows https://goldingyoung.com/about/grantham-saleroom/
+GET https://goldingyoung.com/about/grantham-saleroom/ -> 200 (37263 bytes)
+GET https://auctions.goldingyoung.com/robots.txt -> 200 (158 bytes)
+robots.txt allows https://auctions.goldingyoung.com/lot-details/index/catalog/615/lot/422067/A-fine-and-rare-ken-tanto-with-dragon-mounts?url=%2Fm%2Fview-auctions%2Fcatalog%2Fid%2F615
+GET https://auctions.goldingyoung.com/lot-details/index/catalog/615/lot/422067/A-fine-and-rare-ken-tanto-with-dragon-mounts?url=%2Fm%2Fview-auctions%2Fcatalog%2Fid%2F615 -> 200 (3814 bytes)
+golding-young-mawer -> bot_challenge
+GET https://hallsgb.com/robots.txt -> network error <urlopen error [Errno -5] No address associated with hostname> (attempt 1)
+GET https://hallsgb.com/robots.txt -> network error <urlopen error [Errno -5] No address associated with hostname> (attempt 2)
+GET https://hallsgb.com/robots.txt -> network error <urlopen error [Errno -5] No address associated with hostname> (attempt 3)
+robots.txt DISALLOWS https://hallsgb.com/
+halls -> robots_disallow
+GET https://hansonsauctioneers.co.uk/robots.txt -> 200 (182 bytes)
+robots.txt allows https://hansonsauctioneers.co.uk/
+GET https://hansonsauctioneers.co.uk/ -> 200 (163569 bytes)
+robots.txt allows https://hansonsauctioneers.co.uk/about-us/
+GET https://hansonsauctioneers.co.uk/about-us/ -> 200 (153443 bytes)
+robots.txt allows https://hansonsauctioneers.co.uk/about-us/our-history/
+GET https://hansonsauctioneers.co.uk/about-us/our-history/ -> 200 (155978 bytes)
+hansons -> ok
+GET https://mellorsandkirk.com/robots.txt -> 200 (79 bytes)
+robots.txt allows https://mellorsandkirk.com/
+GET https://mellorsandkirk.com/ -> 200 (34267 bytes)
+GET https://auctions.mellorsandkirk.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://auctions.mellorsandkirk.com/my-account/
+GET https://auctions.mellorsandkirk.com/my-account/ -> 200 (38506 bytes)
+robots.txt allows https://mellorsandkirk.com/auction-calendar/
+GET https://mellorsandkirk.com/auction-calendar/ -> 200 (29341 bytes)
+robots.txt allows https://auctions.mellorsandkirk.com/catalogue/lot/627166e3c73d86902323bab4f232450b/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-101/
+GET https://auctions.mellorsandkirk.com/catalogue/lot/627166e3c73d86902323bab4f232450b/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-101/ -> 200 (52435 bytes)
+mellors-kirk -> ok
+GET https://serrell.com/robots.txt -> 200 (173 bytes)
+robots.txt allows https://serrell.com/
+GET https://serrell.com/ -> 200 (83143 bytes)
+GET https://auctions.serrell.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://auctions.serrell.com/
+GET https://auctions.serrell.com/ -> 200 (72787 bytes)
+GET https://www.serrell.com/robots.txt -> 200 (173 bytes)
+robots.txt allows https://www.serrell.com/auctions/
+GET https://www.serrell.com/auctions/ -> 200 (83771 bytes)
+philip-serrell -> ok
+GET https://trevanion.com/robots.txt -> 200 (171 bytes)
+robots.txt allows https://trevanion.com/
+GET https://trevanion.com/ -> 200 (296910 bytes)
+robots.txt allows https://trevanion.com/auctions/
+GET https://trevanion.com/auctions/ -> 200 (167806 bytes)
+GET https://auctions.trevanion.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://auctions.trevanion.com/auctions/
+GET https://auctions.trevanion.com/auctions/ -> 200 (31901 bytes)
+trevanion-was-trevanion-dean -> ok
+GET https://1818auctioneers.co.uk/robots.txt -> 200 (183 bytes)
+robots.txt allows https://1818auctioneers.co.uk/
+GET https://1818auctioneers.co.uk/ -> 200 (90544 bytes)
+GET https://1818auctioneers.co.uk/ -> cached (90475 chars)
+GET https://auctions.1818auctioneers.co.uk/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://auctions.1818auctioneers.co.uk/auctions
+1818-auctioneers -> ok
+GET https://adampartridge.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://adampartridge.co.uk/
+GET https://adampartridge.co.uk/ -> 200 (54267 bytes)
+robots.txt allows https://adampartridge.co.uk/auctions/
+GET https://adampartridge.co.uk/auctions/ -> 200 (2276 bytes)
+adam-partridge -> bot_challenge
+GET https://andersonandgarland.com/robots.txt -> 200 (464 bytes)
+robots.txt allows https://andersonandgarland.com/
+GET https://andersonandgarland.com/ -> 200 (2276 bytes)
+anderson-garland -> bot_challenge
+GET https://capesdunn.com/robots.txt -> 200 (62 bytes)
+robots.txt allows https://capesdunn.com/
+GET https://capesdunn.com/ -> 200 (113972 bytes)
+capes-dunn -> bot_challenge
+GET https://davidduggleby.com/robots.txt -> 200 (1652 bytes)
+robots.txt allows https://davidduggleby.com/
+GET https://davidduggleby.com/ -> 200 (527674 bytes)
+robots.txt allows https://davidduggleby.com/services/buying.aspx
+GET https://davidduggleby.com/services/buying.aspx -> 200 (285580 bytes)
+robots.txt allows https://davidduggleby.com/sell/selling.aspx
+GET https://davidduggleby.com/sell/selling.aspx -> 200 (250766 bytes)
+david-duggleby -> ok
+GET https://hutchinsonscott.co.uk/robots.txt -> 200 (463 bytes)
+robots.txt allows https://hutchinsonscott.co.uk/
+GET https://hutchinsonscott.co.uk/ -> 200 (2276 bytes)
+hutchinson-scott -> bot_challenge
+GET https://mitchellsauction.co.uk/robots.txt -> 200 (175 bytes)
+robots.txt allows https://mitchellsauction.co.uk/
+GET https://mitchellsauction.co.uk/ -> 200 (8095 bytes)
+GET https://www.mitchellsauction.co.uk/robots.txt -> 200 (175 bytes)
+robots.txt allows https://www.mitchellsauction.co.uk/
+GET https://www.mitchellsauction.co.uk/ -> 200 (8095 bytes)
+robots.txt allows https://www.mitchellsauction.co.uk/about/
+GET https://www.mitchellsauction.co.uk/about/ -> 200 (11682 bytes)
+mitchells -> ok
+GET https://morphets.co.uk/robots.txt -> 200 (245 bytes)
+robots.txt allows https://morphets.co.uk/
+GET https://morphets.co.uk/ -> 200 (98304 bytes)
+morphets -> bot_challenge
+GET https://thomsonroddick.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://thomsonroddick.com/
+GET https://thomsonroddick.com/ -> 200 (62779 bytes)
+thomson-roddick -> bot_challenge
+GET https://greatwesternauctions.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://greatwesternauctions.com/
+GET https://greatwesternauctions.com/ -> 200 (171182 bytes)
+great-western-auctions -> bot_challenge
+GET https://mctears.co.uk/robots.txt -> 200 (455 bytes)
+robots.txt allows https://mctears.co.uk/
+GET https://mctears.co.uk/ -> HTTP 403 (attempt 1)
+mctear-s -> error
+GET https://anthemionauction.com/robots.txt -> 200 (213 bytes)
+robots.txt allows https://anthemionauction.com/
+GET https://anthemionauction.com/ -> 200 (123199 bytes)
+GET https://anthemionauction.com/ -> cached (123191 chars)
+robots.txt allows https://anthemionauction.com
+GET https://anthemionauction.com -> 200 (123199 bytes)
+anthemion-auctions -> ok
+GET https://morganevans.com/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://morganevans.com/
+GET https://morganevans.com/ -> 200 (16663 bytes)
+GET https://www.morganevans.com/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://www.morganevans.com/en/property/auctions-and-tenders
+GET https://www.morganevans.com/en/property/auctions-and-tenders -> 200 (13650 bytes)
+robots.txt allows https://www.morganevans.com/en/machinery-tools-vehicles/tools-machinery-auction
+GET https://www.morganevans.com/en/machinery-tools-vehicles/tools-machinery-auction -> 200 (15382 bytes)
+morgan-evans -> ok
+GET https://peterfrancis.co.uk/robots.txt -> 200 (245 bytes)
+robots.txt allows https://peterfrancis.co.uk/
+GET https://peterfrancis.co.uk/ -> 200 (90256 bytes)
+robots.txt allows https://peterfrancis.co.uk/auctions
+GET https://peterfrancis.co.uk/auctions -> 200 (61853 bytes)
+robots.txt allows https://peterfrancis.co.uk/auction-results
+GET https://peterfrancis.co.uk/auction-results -> 200 (217933 bytes)
+robots.txt allows https://peterfrancis.co.uk/catalogue/lot/E0336491F5DCCFF011479649F988260E/634EE3A1A303F30DD2F30DB1954EA530/summer-fine-sale-lot-232/
+GET https://peterfrancis.co.uk/catalogue/lot/E0336491F5DCCFF011479649F988260E/634EE3A1A303F30DD2F30DB1954EA530/summer-fine-sale-lot-232/ -> 200 (69096 bytes)
+peter-francis -> ok
+GET https://rogersjones.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://rogersjones.co.uk/
+GET https://rogersjones.co.uk/ -> 200 (122513 bytes)
+GET https://rogersjones.co.uk/ -> cached (122493 chars)
+GET https://www.rogersjones.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://www.rogersjones.co.uk/en/forthcoming-sales
+GET https://www.rogersjones.co.uk/en/forthcoming-sales -> 200 (73634 bytes)
+GET https://auctions.rogersjones.co.uk/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9827/rogers10662/lot-details/371d406f-d066-4f43-9d1a-b50600c03abc
+rogers-jones -> ok
+GET https://bloomfieldauctions.co.uk/robots.txt -> 200 (132 bytes)
+robots.txt allows https://bloomfieldauctions.co.uk/
+GET https://bloomfieldauctions.co.uk/ -> 200 (431779 bytes)
+GET https://bloomfieldauctions.co.uk/ -> cached (431771 chars)
+robots.txt allows https://bloomfieldauctions.co.uk/about-us/
+GET https://bloomfieldauctions.co.uk/about-us/ -> 200 (382031 bytes)
+bloomfield-auctions -> ok
+GET https://rosss.com/robots.txt -> 200 (1080 bytes)
+robots.txt allows https://rosss.com/
+GET https://rosss.com/ -> 200 (58964 bytes)
+robots.txt allows https://rosss.com/upcoming-auctions/
+GET https://rosss.com/upcoming-auctions/ -> 200 (41774 bytes)
+robots.txt allows https://rosss.com/current-auctions/
+GET https://rosss.com/current-auctions/ -> 200 (43169 bytes)
+robots.txt allows https://rosss.com/irish-art-news/lot-95-cattle-grazing-by-joseph-hynes/1251/
+GET https://rosss.com/irish-art-news/lot-95-cattle-grazing-by-joseph-hynes/1251/ -> 200 (41564 bytes)
+ross-s-auctioneers -> ok
