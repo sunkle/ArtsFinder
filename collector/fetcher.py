@@ -4,6 +4,7 @@ Polite by design: robots.txt, crawl-delay (never under min_delay), one request a
 2 retries with backoff, a per-run disk cache, and an honest User-Agent (never a browser).
 """
 import hashlib
+import logging
 import os
 import tempfile
 import time
@@ -12,6 +13,7 @@ import urllib.request
 from urllib.parse import urlsplit
 from urllib.robotparser import RobotFileParser
 
+log = logging.getLogger("collector.fetcher")
 MAX_BYTES = 5_000_000
 RETRY_CODES = {429, 500, 502, 503, 504}
 
@@ -73,12 +75,16 @@ class Fetcher:
         cached = self._cache_path(url)
         if os.path.exists(cached):
             with open(cached, encoding="utf-8") as f:
-                return f.read()
+                text = f.read()
+            log.info("GET %s -> cached (%d chars)", url, len(text))
+            return text
         parts = urlsplit(url)
         if parts.scheme not in ("http", "https") or not parts.netloc:
             raise FetchError(f"not an http(s) url: {url}")
         parser, robots_delay = self._robots_for(parts, crawl_delay)
-        if not parser.can_fetch(self.ua, url):
+        allowed = parser.can_fetch(self.ua, url)
+        log.info("robots.txt %s %s", "allows" if allowed else "DISALLOWS", url)
+        if not allowed:
             raise RobotsDisallowed(f"robots.txt disallows {url}")
         text = self._request(url, max(self.min_delay, float(crawl_delay or 0), robots_delay))
         with open(cached, "w", encoding="utf-8") as f:
@@ -128,14 +134,17 @@ class Fetcher:
             try:
                 body, charset = self.opener(request, self.timeout)
                 self._last[host] = self.clock()
+                log.info("GET %s -> 200 (%d bytes)", url, len(body))
                 return body.decode(charset or "utf-8", errors="replace")
             except urllib.error.HTTPError as err:
                 self._last[host] = self.clock()
                 last_err = FetchError(f"HTTP {err.code} for {url}")
                 last_err.status = err.code
+                log.info("GET %s -> HTTP %s (attempt %d)", url, err.code, attempt + 1)
                 if err.code not in RETRY_CODES:
                     raise last_err
             except (urllib.error.URLError, OSError) as err:
                 self._last[host] = self.clock()
                 last_err = FetchError(f"network error for {url}: {err}")
+                log.info("GET %s -> network error %s (attempt %d)", url, err, attempt + 1)
         raise last_err
