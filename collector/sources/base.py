@@ -6,9 +6,11 @@ raw_lot   : {"lot_number", "title", "lot_url"            (required)
              "artist_text", "description", "medium_detail", "estimate_text",
              "dimensions", "date_made_text", "image_url"  (optional, as found on the page)}
 """
+import json
 import logging
 import os
 import re
+from datetime import date
 
 from ..fetcher import FetchError
 
@@ -16,7 +18,7 @@ DEFAULT_NEW_LOT_PAGES = 150
 log = logging.getLogger("collector.sources")
 
 # Sales whose title does not match are skipped (jewellery, watches, stamps, coins, ...). Shared by all adapters;
-# a house can override it with `sale_include` / `sale_exclude` (regexes) in houses.json.
+# a house can override it with `sale_include` / `sale_exclude` (regexes), or add words with `sale_include_extra`.
 ART_SALE = (r"\b(art|arts|artists?|paintings?|pictures?|prints?|drawings?|watercolou?rs?|sculptures?|"
             r"pottery|contemporary|modern|british|scottish|cornish|impressionist|illustrations?)\b")
 
@@ -24,7 +26,10 @@ ART_SALE = (r"\b(art|arts|artists?|paintings?|pictures?|prints?|drawings?|waterc
 def sale_wanted(house, *texts):
     """True if the sale (title and any summary text) passes the house's sale_include / sale_exclude."""
     text = " ".join(t for t in texts if t)
-    include = re.compile(house.get("sale_include") or ART_SALE, re.I)
+    include = house.get("sale_include") or ART_SALE
+    if house.get("sale_include_extra"):  # keep the shared art words and add house-specific ones (e.g. "monthly")
+        include += "|" + house["sale_include_extra"]
+    include = re.compile(include, re.I)
     exclude = house.get("sale_exclude")
     ok = bool(include.search(text)) and not (exclude and re.search(exclude, text, re.I))
     if not ok:
@@ -58,6 +63,47 @@ class Adapter:
     def fetch(self, house, url):
         """Get a page, applying this house's crawl_delay. The only way adapters read the web."""
         return self.fetcher.get(url, crawl_delay=house.get("crawl_delay", 0))
+
+    def fetch_json(self, house, url, payload):
+        """POST a JSON body to a site's own JSON endpoint and return the decoded answer (None if unreadable)."""
+        try:
+            return json.loads(self.fetcher.post_json(url, payload, crawl_delay=house.get("crawl_delay", 0)))
+        except (ValueError, FetchError) as err:
+            log.warning("%s: %s unreadable: %s", house["id"], url, err)
+            return None
+
+    def today(self):
+        """Today's date; adapters that must guess a year use it. Tests set `adapter.today_override`."""
+        return getattr(self, "today_override", None) or date.today()
+
+    def crawl_pages(self, house, first_url, parse_page, kind="sale", max_pages=None):
+        """Read a paged listing: fetch first_url, then every page parse_page names, until a page adds nothing new.
+
+        parse_page(html, url) -> (refs, more_page_urls); each ref is a dict with a unique "id".
+        Returns the refs in page order. Stops after max_pages (default house["max_pages"], 40)."""
+        max_pages = max_pages or house.get("max_pages", 40)
+        queue, seen, refs = [first_url], set(), {}
+        while queue and len(seen) < max_pages:
+            url = queue.pop(0)
+            if url in seen:
+                continue
+            seen.add(url)
+            try:
+                html = self.fetch(house, url)
+            except FetchError as err:
+                log.warning("%s: %s page failed: %s", house["id"], kind, err)
+                break
+            self.snapshot(house, kind, url, html)
+            found, more = parse_page(html, url)
+            new = [r for r in found if r["id"] not in refs]
+            for r in new:
+                refs[r["id"]] = r
+            if not new:
+                break  # nothing new: past the end (or a page that ignores the page number)
+            queue += [u for u in more if u not in seen and u not in queue]
+            if self.diagnosing:
+                break
+        return list(refs.values())
 
     def list_sales(self, house):
         """Return the upcoming sales: a list of sale dicts."""

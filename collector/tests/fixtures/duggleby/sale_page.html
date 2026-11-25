@@ -1,0 +1,66 @@
+<!-- excerpt of the real page https://www.davidduggleby.com/auctions/2787/Modern-Art/ (saved 25 Nov 2026): title, visible sale text and the JavaScript that loads and draws the lots; the lots themselves are not in the page -->
+<html><head><title>Modern Art Auction | 03/12/2026 |  Bid Now</title></head><body>
+<h1>Modern Art</h1>
+<p>Thursday 03 December 2026 11:00 Venue: Online &amp; Live Broadcast from Duggleby Stephenson of York</p>
+<p>Loading Lots Please wait while we load your selections.</p>
+<script>
+            const requestBody = {
+                AuctionNo: auctionNo,
+                SearchText: searchText,
+                Sort: sort,
+                Page: page,
+                ClientNo: clientNo,
+                PageSize: pageSize,
+                Preview: IS_PREVIEW,
+                Filters: Object.entries(filters).map(([key, values]) => ({
+                    FilterType: key,
+                    Values: values
+                }))
+            };
+
+            const fetchStart = performance.now();
+
+            return fetch('/api/Auctions/FilterBidItems', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            })
+                .then(response => {
+        let lastSortOption = 'featured';
+        const pageSize = 800;
+            const auctionNo = 2787;
+           data-item-no="${item.ItemNo}"
+           aria-label="Favourite this item" onclick="this.blur();">
+           </button>`;
+
+                var itemHtml = `
+        <div class="space-y-4 item-card" id="bidItem${item.ItemNo}"  
+            data-auction-no="${item.ItemAuction}" 
+            data-lot-no="${item.ItemLotNo}${item.ItemLotA}" 
+            data-item-no="${item.ItemNo}" 
+            data-category="${item.ItemCat}" 
+            >  
+            <div class="relative" > 
+                 ${favButtonHtml}
+                <a href="${itemUrl}">
+                    <img src="${item.ItemThumbnail}" alt="${item.ItemDescription}" loading="lazy" decoding="async" />
+                </a>
+            </div> 
+            <div class="space-y-4">
+                 ${(auctionNo > 10) ? `
+                <div class="space-y-4">
+                    <div class="text-center">
+                        <h3 class="font-sans text-sm leading-tight " ><strong>LOT ${item.ItemLotNo}${item.ItemLotA}</strong></h3>  
+                    </div>
+                </div>` : ''}
+                <div class="space-y-4">
+                    <div class="text-center" style="height: 60px;">
+                        <h3 class="font-sans text-sm leading-tight">${item.ItemDescriptionTruncated}</h3>
+                    </div>
+                </div>
+                <div class="text-center space-y-1 bidBox " >
+                    <div class="text-center space-y-4">
+                         <div class="text-center">
+                             <p>${item.ItemEstimateText}</p>
+</script>
+</body></html>

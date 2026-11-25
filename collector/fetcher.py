@@ -4,6 +4,7 @@ Polite by design: robots.txt, crawl-delay (never under min_delay), one request a
 2 retries with backoff, a per-run disk cache, and an honest User-Agent (never a browser).
 """
 import hashlib
+import json
 import logging
 import os
 import tempfile
@@ -71,8 +72,16 @@ class Fetcher:
     # ---- public -------------------------------------------------------
     def get(self, url, crawl_delay=0):
         """Return the page text. Raises FetchError / RobotsDisallowed / BlockedHost."""
+        return self._fetch(url, crawl_delay, None)
+
+    def post_json(self, url, payload, crawl_delay=0):
+        """POST a JSON body and return the response text (for sites whose lists load through a JSON endpoint,
+        e.g. David Duggleby). Same rules as get(): robots.txt, throttle, cache, honest User-Agent."""
+        return self._fetch(url, crawl_delay, json.dumps(payload, sort_keys=True).encode("utf-8"))
+
+    def _fetch(self, url, crawl_delay, data):
         check_not_blocked(url)
-        cached = self._cache_path(url)
+        cached = self._cache_path(url, data)
         if os.path.exists(cached):
             with open(cached, encoding="utf-8") as f:
                 text = f.read()
@@ -86,7 +95,7 @@ class Fetcher:
         log.info("robots.txt %s %s", "allows" if allowed else "DISALLOWS", url)
         if not allowed:
             raise RobotsDisallowed(f"robots.txt disallows {url}")
-        text = self._request(url, max(self.min_delay, float(crawl_delay or 0), robots_delay))
+        text = self._request(url, max(self.min_delay, float(crawl_delay or 0), robots_delay), data)
         with open(cached, "w", encoding="utf-8") as f:
             f.write(text)
         return text
@@ -97,8 +106,8 @@ class Fetcher:
             self._tmp = None
 
     # ---- internals ----------------------------------------------------
-    def _cache_path(self, url):
-        return os.path.join(self.cache_dir, hashlib.sha256(url.encode()).hexdigest())
+    def _cache_path(self, url, data=None):
+        return os.path.join(self.cache_dir, hashlib.sha256(url.encode() + (b"\0" + data if data else b"")).hexdigest())
 
     def _robots_for(self, parts, crawl_delay):
         origin = f"{parts.scheme}://{parts.netloc}"
@@ -122,10 +131,13 @@ class Fetcher:
         if wait > 0:
             self.sleep(wait)
 
-    def _request(self, url, delay):
+    def _request(self, url, delay, data=None):
         check_not_blocked(url)
         host = urlsplit(url).netloc
-        request = urllib.request.Request(url, headers={"User-Agent": self.ua})
+        headers = {"User-Agent": self.ua}
+        if data is not None:
+            headers.update({"Content-Type": "application/json", "Accept": "application/json"})
+        request = urllib.request.Request(url, data=data, headers=headers)
         last_err = None
         for attempt in range(self.retries + 1):
             if attempt:
@@ -134,7 +146,7 @@ class Fetcher:
             try:
                 body, charset = self.opener(request, self.timeout)
                 self._last[host] = self.clock()
-                log.info("GET %s -> 200 (%d bytes)", url, len(body))
+                log.info("%s %s -> 200 (%d bytes)", request.get_method(), url, len(body))
                 return body.decode(charset or "utf-8", errors="replace")
             except urllib.error.HTTPError as err:
                 self._last[host] = self.clock()

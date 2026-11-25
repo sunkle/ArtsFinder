@@ -8,7 +8,7 @@ class FakeNet:
     """Stands in for the network. routes: url -> bytes | int (HTTP error code) | list of those (in order)."""
 
     def __init__(self, routes):
-        self.routes, self.calls, self.times, self.agents = routes, [], [], []
+        self.routes, self.calls, self.times, self.agents, self.bodies = routes, [], [], [], []
         self.now = 0.0
 
     def clock(self):
@@ -22,6 +22,7 @@ class FakeNet:
         self.calls.append(url)
         self.times.append(self.now)
         self.agents.append(request.get_header("User-agent"))
+        self.bodies.append((request.get_method(), request.data, request.get_header("Content-type")))
         item = self.routes.get(url, 404)
         if isinstance(item, list):
             item = item.pop(0)
@@ -72,6 +73,19 @@ class FetcherTests(unittest.TestCase):
         self.assertTrue(all(a == "ArtsFinder-personal/0.1 (+https://github.com/me/arts-finder)" for a in net.agents))
         self.assertNotIn("Mozilla", net.agents[0])
         self.assertIn("ArtsFinder-personal", user_agent())
+
+    def test_post_json_sends_a_json_body_obeys_robots_and_caches_per_body(self):
+        net, f = make({"https://a.test/robots.txt": b"User-agent: *\nDisallow: /private/", "https://a.test/api": b'{"ok": 1}'})
+        self.assertEqual(f.post_json("https://a.test/api", {"Page": 1}), '{"ok": 1}')
+        self.assertEqual(net.bodies[-1], ("POST", b'{"Page": 1}', "application/json"))
+        f.post_json("https://a.test/api", {"Page": 1})                      # same body: from cache
+        self.assertEqual(net.calls, ["https://a.test/robots.txt", "https://a.test/api"])
+        f.post_json("https://a.test/api", {"Page": 2})                      # another body: a new request
+        self.assertEqual(len(net.calls), 3)
+        with self.assertRaises(RobotsDisallowed):
+            f.post_json("https://a.test/private/x", {})
+        with self.assertRaises(BlockedHost):
+            f.post_json("https://www.the-saleroom.com/api", {})
 
     def test_robots_disallow_blocks(self):
         net, f = make({"https://a.test/robots.txt": b"User-agent: *\nDisallow: /private\n",

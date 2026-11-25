@@ -99,7 +99,10 @@ reason in `disabled_reason`, in quotes. Commit. At the next run its lots disappe
 | House | adapter | now |
 |---|---|---|
 | Hansons, Fieldings, Peter Francis | `whitelabel` | on |
-| Gorringe's, Lawrences, David Duggleby, Rogers Jones | `gorringes`, `lawrences`, `duggleby`, `rogersjones` | on, adapter not written yet (skipped until it is) |
+| Gorringe's | `gorringes` | on. Calendar read from real pages; lot listing and lot pages are guesses (never saved) until the first `diagnose` run |
+| Lawrences | `lawrences` | on. Calendar and lot pages read from real pages; the catalogue page (`/sales/fine-art-sales/fs<DDMMYY>/`) is a guess and is only tried within 45 days of a sale |
+| David Duggleby | `duggleby` | on. Reads the site's own JSON lists (`/api/Auctions/...`, found in the page's script); field names not yet confirmed against a real answer; no lot pages needed |
+| Rogers Jones | `rogersjones` | on. Sales list read from a real page; bidding-site catalogue and lot pages are guesses; sales still taking entries have no lots yet |
 | Morphets | `easylive` | on, adapter not written yet |
 | Gardiner Houlgate, Mellors & Kirk, Trevanion, Philip Serrell, Morgan Evans | `whitelabel` / none / `easylive` | off: terms forbid copying or using the text (reason in `houses.json`) |
 | Ross's | none | off: terms unreadable, read them by hand |
@@ -115,6 +118,12 @@ The `goauction` adapter reads the GoAuction platform (`/auction/details/...?au=`
 `/auction/lot/...?lot=` lot pages) shared by five houses. A house using it also needs `calendar_urls`
 in `houses.json` (the page(s) that list its sales; `{month}` becomes YYYY-MM). Optional per-house
 settings are listed at the top of `collector/sources/goauction.py`.
+
+The four single-house adapters (`gorringes`, `lawrences`, `duggleby`, `rogersjones`) each list at the top of their
+file what was read from real saved pages and what is still a guess. Their houses use `sale_include_extra` (words
+added to the shared art words, e.g. Rogers Jones' "monthly" sales). The generic lot-page reader they share is
+`collector/sources/lotpage.py`; a house with a JSON list (Duggleby) is read through `Fetcher.post_json`, which obeys
+the same robots.txt and 3 s rules as every other request.
 
 **Run time.** Collection is incremental. Each night the robot reads the sale listing pages but opens a lot
 page only for lots it has not stored before; known lots are reused (their estimate and sale dates are refreshed

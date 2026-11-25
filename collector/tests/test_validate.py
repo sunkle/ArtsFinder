@@ -72,7 +72,7 @@ class ValidateTests(unittest.TestCase):
             houses = json.load(fh)["houses"]
         keys = {"id", "name", "town", "region", "website", "adapter", "enabled", "crawl_delay", "disabled_reason",
                 "content_policy"}
-        optional = {"calendar_urls", "calendar_months", "sale_include", "sale_exclude", "max_pages", "max_lots_per_sale", "max_new_lot_pages", "keep_existing_lots"}
+        optional = {"calendar_urls", "calendar_months", "sale_include", "sale_include_extra", "sale_exclude", "max_pages", "max_lots_per_sale", "max_new_lot_pages", "keep_existing_lots"}
         for h in houses:
             self.assertEqual(set(h) - optional, keys, h["id"])
             if h["adapter"] in ("goauction", "whitelabel"):

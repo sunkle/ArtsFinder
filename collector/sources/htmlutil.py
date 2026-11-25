@@ -193,6 +193,34 @@ def card_of(link, key_of):
     return best
 
 
+_ESTIMATE = re.compile(r"£\s*[\d,]+(?:\.\d+)?(?:\s*[-–—]\s*£?\s*[\d,]+(?:\.\d+)?)?")
+
+
+def first_estimate(lines):
+    """First money figure or range ('£300 - £500') in some text lines, or None."""
+    for line in lines:
+        m = _ESTIMATE.search(line)
+        if m:
+            return m.group(0)
+    return None
+
+
+def page_links(root, base_url, params=("page", "pg", "pn", "p")):
+    """Absolute URLs of the same page with another page number (links like ?page=2): the 'next page' links."""
+    base = urlsplit(base_url)
+    out = []
+    for a in root.find_all("a"):
+        href = a.get("href")
+        if not href or href.startswith(("#", "javascript:", "mailto:")):
+            continue
+        url = clean_url(base_url, href)
+        parts = urlsplit(url)
+        names = {q.split("=")[0].lower() for q in parts.query.split("&") if q}
+        if parts.netloc == base.netloc and parts.path == base.path and names & set(params) and url not in out:
+            out.append(url)
+    return out
+
+
 def meta_tags(root):
     """{'og:title': ..., 'description': ...} from <meta> tags (first one wins)."""
     out = {}
