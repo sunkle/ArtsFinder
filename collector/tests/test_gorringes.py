@@ -1,13 +1,14 @@
-"""Tests for the Gorringe's adapter. The calendar and catalogue-search tests use trimmed copies of real pages
-(fixtures/gorringes/); the lot listing and lot page were never saved, so those tests use small SYNTHETIC pages
-built from real lot URLs in data/lots.json and are marked as such."""
+"""Tests for the Gorringe's adapter. Calendar, catalogue listing and lot page tests use trimmed copies of real
+pages (fixtures/gorringes/, diagnose run of 25 Nov 2026); the listing is also checked against the 11 lots collected
+by hand in data/lots.json. Only the second listing page is derived (the first page with other lot numbers)."""
+import json
 import os
 import re
 import unittest
 
 from collector.sources import get_adapter
 from collector.sources.gorringes import GorringesAdapter
-from collector.tagger import tag
+from collector.tagger import parse_estimate, tag
 from collector.tests.fakes import FakeFetcher
 from collector.validate import validate_lot
 
@@ -31,20 +32,6 @@ GRANT = lot_url("Duncan-Grant,-1885-1978,-'Wrestlers'", 20, 90216814)
 SICKERT = lot_url("Walter-Richard-Sickert,-1860-1942,-A-head-and-shoulders-port", 2, 90206208)
 BEVAN = lot_url("Robert-Polhill-Bevan,-1865-1925,-'Cumberland-Market'", 6, 90206192)
 LIST_URL = "https://auction.gorringes.co.uk/asp/searchresults.asp?st=D&sale_no=011226&pg={}"
-
-
-def listing(*lots):
-    """SYNTHETIC listing page: one div per lot with artist, title, estimate."""
-    cards = "".join(f'<div class="lot"><a href="{u}"><img src="/thumb/{n}.jpg"></a><p>{a}</p><p>{t}</p><p>Estimate £{e}</p></div>'
-                    for u, n, a, t, e in lots)
-    return f"<html><body>{cards}</body></html>"
-
-
-def lot_page(title, medium, est):
-    """SYNTHETIC lot page in the generic label layout."""
-    return (f"<html><head><title>{title} - Gorringe's</title></head><body><h1>{title}</h1>"
-            f"<p>Medium: {medium}</p><p>Estimate: {est}</p><p>Dimensions: 25 x 19cm</p>"
-            f'<img src="/full/814/90216814_Catalog_gp7gr94oiH.JPG"></body></html>')
 
 
 class CalendarTests(unittest.TestCase):  # REAL pages
@@ -104,53 +91,119 @@ class LotUrlTests(unittest.TestCase):  # REAL lot URLs
         self.assertEqual(GorringesAdapter._slug(SICKERT), ("Walter Richard Sickert", "1860-1942", "A head and shoulders port"))
 
 
-class LotsTests(unittest.TestCase):  # SYNTHETIC listing and lot pages (unverified layouts)
-    def pages(self):
-        return {
-            LIST_URL.format(1): listing((GRANT, 20, "Duncan Grant (1885-1978)", "Wrestlers", "1,000 - £1,500"),
-                                        (SICKERT, 2, "Walter Richard Sickert (1860-1942)", "A head and shoulders portrait sketch of a woman", "300 - £500")),
-            LIST_URL.format(2): listing((BEVAN, 6, "Robert Polhill Bevan (1865-1925)", "Cumberland Market", "300 - £500")),
-            GRANT: lot_page("Wrestlers", "Pencil on paper", "£1,000 - £1,500"),
-            SICKERT: lot_page("A head and shoulders portrait sketch of a woman", "Pencil on paper", "£300 - £500"),
-            BEVAN: lot_page("Cumberland Market", "Soft pencil on paper", "£300 - £500"),
-        }
+class RealCatalogueFakeFetcher(FakeFetcher):
+    """Serves the real lot page for every lot-detail URL (the other 39 lots are not saved)."""
 
-    def sale(self):
-        return {"id": "011226", "title": "Art & Design Post 1880", "date": "2026-12-01", "end_date": None,
-                "url": "https://auction.gorringes.co.uk/auction-catalog/011226"}
+    def get(self, url, crawl_delay=0):
+        if "/auction-lot-detail/" in url:
+            self.calls.append(url)
+            return fixture("lot_011226_1.html")
+        return super().get(url, crawl_delay)
 
-    def test_listing_reader(self):
-        refs, _ = GorringesAdapter(None).parse_listing(self.pages()[LIST_URL.format(1)], LIST_URL.format(1))
-        self.assertEqual([(r["id"], r["lot_number"], r["estimate_text"]) for r in refs],
-                         [("90216814", "20", "£1,000 - £1,500"), ("90206208", "2", "£300 - £500")])
-        self.assertEqual(refs[0]["title"], "Wrestlers")
 
-    def test_all_pages_are_read_and_stop_when_a_page_is_empty(self):
-        fetcher = FakeFetcher(dict(self.pages(), **{LIST_URL.format(3): listing()}))
-        lots = GorringesAdapter(fetcher).list_lots(HOUSE, self.sale())
-        self.assertEqual([l["lot_number"] for l in lots], ["20", "2", "6"])
-        self.assertEqual([u for u in fetcher.calls if "searchresults" in u], [LIST_URL.format(n) for n in (1, 2, 3)])
+SALE = {"id": "011226", "title": "Art & Design Post 1880", "date": "2026-12-01", "end_date": None,
+        "url": "https://auction.gorringes.co.uk/auction-catalog/011226"}
+LOT1 = lot_url("Th&233;odore-Rivi&232;re,-French-1857-1912,-An-elegant-you", 1, 90215475)
 
-    def test_raw_lot_tags_into_a_valid_lot(self):
-        lots = GorringesAdapter(FakeFetcher(self.pages())).list_lots(HOUSE, self.sale())
-        lot = tag(lots[0], HOUSE, self.sale())
-        self.assertEqual((lot["artist"], lot["artist_dates"], lot["title"], lot["type"], lot["estimate_low"],
-                          lot["estimate_high"]), ("Duncan Grant", "1885-1978", "Wrestlers", "Work on paper", 1000, 1500))
-        self.assertEqual(lot["id"], "gorringes-011226-20")
+
+def stored_lots():
+    """The 11 Gorringe's lots collected by hand earlier (data/lots.json, real data)."""
+    path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "lots.json")
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    return [l for l in (data["lots"] if isinstance(data, dict) else data) if l["house_id"] == "gorringes"]
+
+
+class ListingTests(unittest.TestCase):  # REAL page: auction-catalog/011226 (page 1 of 29)
+    def setUp(self):
+        self.html = fixture("catalog_011226_p1.html")
+        self.refs, _ = GorringesAdapter(None).parse_listing(self.html, SALE["url"])
+
+    def test_twenty_lots_numbered_1_to_20(self):
+        self.assertEqual([r["lot_number"] for r in self.refs], [str(n) for n in range(1, 21)])
+
+    def test_first_lot(self):
+        first = self.refs[0]
+        self.assertEqual((first["id"], first["title"], first["estimate_text"]),
+                         ("90215475", "Théodore Rivière, French 1857-1912, An elegan", "£400 - 600"))
+        self.assertEqual(first["url"], LOT1)
+
+    def test_title_is_the_card_text_not_a_button(self):
+        self.assertTrue(self.refs[1]["title"].startswith("Walter Richard Sickert, 1860-1942"))
+        self.assertFalse(any("Bid" in r["title"] for r in self.refs))
+
+    def test_page_count_ignores_the_old_pager_in_a_comment(self):
+        self.assertIn("Page 1 of 32", self.html)  # the page really holds both
+        self.assertEqual(GorringesAdapter.page_count(self.html), 29)
+        self.assertIsNone(GorringesAdapter.page_count("<p>no pager</p>"))
+
+    def test_matches_the_eleven_lots_collected_by_hand(self):
+        by_id = {r["id"]: r for r in self.refs}
+        stored = stored_lots()
+        self.assertEqual(len(stored), 11)
+        for lot in stored:
+            ref = by_id[GorringesAdapter._refno(lot["lot_url"])]
+            self.assertEqual(ref["lot_number"], lot["lot_number"], lot["title"])
+            self.assertEqual(ref["url"], lot["lot_url"], lot["title"])
+            self.assertEqual(parse_estimate(ref["estimate_text"]), (lot["estimate_low"], lot["estimate_high"]), lot["title"])
+            # the listing headline is cut at ~45 characters but names the artist (often with Sir / RA added)
+            self.assertIn(lot["artist"].split()[-1], ref["title"], lot["title"])
+
+
+class LotPageTests(unittest.TestCase):  # REAL page: lot 1, Théodore Rivière
+    def setUp(self):
+        self.raw = GorringesAdapter(None).parse_lot(fixture("lot_011226_1.html"), LOT1, HOUSE)
+
+    def test_fields(self):
+        self.assertEqual(self.raw, {
+            "lot_url": LOT1, "lot_number": "1", "artist_text": "Théodore Rivière (French, 1857-1912)",
+            "title": "An elegant young woman seated in an intimate boudoir or salon",
+            "estimate_text": "£400-600", "medium_detail": "signed lower right, oil on canvas",
+            "description": "signed lower right, oil on canvas, 61cm x 49cm",
+            "image_url": "https://auction.gorringes.co.uk/full/475/90215475_Catalog_AMxk2KEpzp.JPG"})
+
+    def test_tags_into_a_valid_lot(self):
+        """This lot used to be rejected as 'not artwork (type Other, no artist dates)': nothing was read from the page."""
+        lot = tag(self.raw, HOUSE, SALE, collected_at="2026-11-25T00:00:00Z")
+        self.assertEqual((lot["artist"], lot["artist_dates"], lot["type"], lot["medium"], lot["estimate_low"],
+                          lot["estimate_high"], lot["dimensions"]),
+                         ("Théodore Rivière", "1857-1912", "Painting", "Oil", 400, 600, "61 x 49cm"))
+        self.assertEqual(lot["id"], "gorringes-011226-1")
         self.assertEqual(validate_lot(lot), [])
 
+    def test_lot_without_an_artist_line_starts_with_its_title(self):
+        html = ('<div class="lot-container"><h2> Lot 5 , A walnut chest</h2>'
+                '<p><b>A walnut chest of drawers,</b><br />18th century,<br />£100-200<br /></p></div>')
+        raw = GorringesAdapter(None).parse_lot(html, lot_url("A-walnut-chest", 5, 1))
+        self.assertEqual((raw["title"], raw.get("artist_text"), raw["estimate_text"], raw["lot_number"]),
+                         ("A walnut chest of drawers", None, "£100-200", "5"))
+
+
+class LotsTests(unittest.TestCase):  # real listing page + real lot page
+    def pages(self):
+        page1 = fixture("catalog_011226_p1.html")
+        page2 = page1.replace("refno=9", "refno=8")  # a second page with other lots
+        return {LIST_URL.format(1): page1, LIST_URL.format(2): page2}
+
+    def test_every_page_is_read_until_one_fails_or_adds_nothing(self):
+        fetcher = RealCatalogueFakeFetcher(self.pages())
+        lots = GorringesAdapter(fetcher).list_lots(HOUSE, SALE)
+        listing_calls = [u for u in fetcher.calls if "searchresults" in u]
+        self.assertEqual(listing_calls[:3], [LIST_URL.format(n) for n in (1, 2, 3)])  # 29 pages queued from the pager
+        self.assertEqual(len(lots), 40)
+        self.assertEqual([l["lot_number"] for l in lots[:3]], ["1", "2", "3"])
+
     def test_known_lots_are_not_fetched_again(self):
-        fetcher = FakeFetcher(self.pages())
+        fetcher = RealCatalogueFakeFetcher(self.pages())
         adapter = GorringesAdapter(fetcher)
-        adapter.previous_lots = [{"lot_url": GRANT, "lot_number": "20", "title": "Wrestlers"}]
-        lots = adapter.list_lots(HOUSE, self.sale())
-        self.assertNotIn(GRANT, fetcher.calls)
-        self.assertIn(SICKERT, fetcher.calls)
-        self.assertEqual((adapter.stats["reused"], adapter.stats["new"]), (1, 2))
+        adapter.previous_lots = [{"lot_url": LOT1, "lot_number": "1", "title": "An elegant young woman"}]
+        lots = adapter.list_lots(HOUSE, SALE)
+        self.assertNotIn(LOT1, fetcher.calls)
+        self.assertEqual((adapter.stats["reused"], adapter.stats["new"]), (1, 39))
         self.assertIn("_stored", lots[0])
 
     def test_sale_without_catalogue_has_no_lots(self):
-        self.assertEqual(GorringesAdapter(FakeFetcher()).list_lots(HOUSE, dict(self.sale(), url=None)), [])
+        self.assertEqual(GorringesAdapter(FakeFetcher()).list_lots(HOUSE, dict(SALE, url=None)), [])
 
 
 if __name__ == "__main__":

@@ -130,6 +130,30 @@ class SalePageTests(unittest.TestCase):
     def test_catalogue_without_lots_yet(self):
         self.assertEqual(adapter().parse_sale_page(fixture("sale_peterfrancis_empty"), "https://x.test/"), ([], 1))
 
+    HANSONS_SALE = ("https://auctions.hansonsauctioneers.co.uk/catalogue/b15bae525138a9ecef8028f98e99b26e/"
+                    "a4ea5662dfdd714dd24e999c0ecc040d/pre-christmas-sale/")
+
+    def test_hansons_real_sale_page_has_no_lots_in_the_html(self):
+        """REAL page (diagnose 25 Nov 2026): the lot list is an Alpine.js template filled by auction_catalogue.js;
+        the 'Catalogue coming soon...' text sits inside an unrendered <template> and says nothing."""
+        html = fixture("sale_hansons_pre_christmas")
+        self.assertEqual(adapter().parse_sale_page(html, self.HANSONS_SALE), ([], 1))
+        self.assertIn("lots loaded by script", WhiteLabelAdapter.no_lots_reason(html))
+        self.assertNotIn("not yet online", WhiteLabelAdapter.no_lots_reason(html))
+
+    def test_empty_sale_page_logs_the_reason_once(self):
+        house = {"id": "hansons", "crawl_delay": 3}
+        a = WhiteLabelAdapter(FakeFetcher({self.HANSONS_SALE: fixture("sale_hansons_pre_christmas")}))
+        with self.assertLogs("collector.whitelabel", "WARNING") as logs:
+            self.assertEqual(a.lot_refs(house, self.HANSONS_SALE), [])
+        self.assertEqual(len(logs.output), 1)
+        self.assertIn("lots loaded by script", logs.output[0])
+
+    def test_reason_when_the_page_says_the_catalogue_is_coming_soon(self):
+        html = "<html><body><p>Catalogue coming soon...</p></body></html>"
+        self.assertEqual(WhiteLabelAdapter.no_lots_reason(html), "catalogue not yet online")
+        self.assertIn("not recognised", WhiteLabelAdapter.no_lots_reason("<html><body>hello</body></html>"))
+
     def test_page_url(self):
         self.assertEqual(WhiteLabelAdapter.page_url("https://x.test/catalogue/a/b/c/", 1), "https://x.test/catalogue/a/b/c/")
         self.assertEqual(WhiteLabelAdapter.page_url("https://x.test/catalogue/a/b/c/", 3), "https://x.test/catalogue/a/b/c/?currentPageNo=3")

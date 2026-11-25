@@ -94,12 +94,14 @@ class ValidateTests(unittest.TestCase):
         with open(path) as fh:
             by_id = {h["id"]: h for h in json.load(fh)["houses"]}
         enabled = {i for i, h in by_id.items() if h["enabled"]}
-        self.assertEqual(enabled, {"hansons", "gorringes", "rogersjones"})  # RULES.md, v0.4 Decision (25 Nov 2026)
+        self.assertEqual(enabled, {"hansons", "gorringes"})  # RULES.md, v0.4.1 Decision (25 Nov 2026)
         for i in enabled:
             self.assertEqual(by_id[i]["content_policy"], "full", i)
-        for i in ("fieldings", "peterfrancis", "duggleby", "lawrences", "morphets"):  # v0.4 Decision, 25 Nov 2026
+        for i in ("fieldings", "peterfrancis", "duggleby", "lawrences", "morphets", "rogersjones"):  # v0.4 / v0.4.1 Decisions
             self.assertFalse(by_id[i]["enabled"], i)
             self.assertTrue(by_id[i]["disabled_reason"], i)
+        self.assertIn("403", by_id["rogersjones"]["disabled_reason"])
+        self.assertFalse(by_id["rogersjones"].get("keep_existing_lots"))
         for i in by_id:  # nothing enabled may be a bot-challenge house or reach the-saleroom
             if by_id[i]["enabled"]:
                 self.assertNotIn("bot challenge", (by_id[i]["disabled_reason"] or "").lower(), i)
