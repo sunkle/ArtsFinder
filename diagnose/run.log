@@ -1,0 +1,63 @@
+GET https://auctions.hansonsauctioneers.co.uk/robots.txt -> 200 (379 bytes)
+robots.txt allows https://auctions.hansonsauctioneers.co.uk/auctions/
+GET https://auctions.hansonsauctioneers.co.uk/auctions/ -> 200 (178562 bytes)
+hansons: skipping sale 'Medals, Militaria, and Firearms Auction.' (does not look like art)
+hansons: skipping sale 'Historica Coins & Banknotes November 26th Sale.' (does not look like art)
+hansons: skipping sale 'The Great British Comedy Auction' (does not look like art)
+hansons: skipping sale 'London November Auction - Jewellery, Silver, Luxury Handbags and Spirits' (does not look like art)
+hansons: skipping sale 'Pre Christmas Sale silver, gold, jewellery, fashion and fur' (does not look like art)
+hansons: skipping sale 'The Christmas Library Auction: Presented by Rare Books Auctions' (does not look like art)
+hansons: skipping sale 'Hertfordshire - Fine Jewellery, Watches, Silver & Objects of Virtue, followed by' (does not look like art)
+hansons: skipping sale 'Cornwall Silver, Jewellery and Watches Sale.' (does not look like art)
+hansons: skipping sale 'Royston Hertfordshire - February Jewellery & Watches, Silver, and Antiques.' (does not look like art)
+hansons: skipping sale 'Royston Hertfordshire - March Collectors Sale including Coins, Stamps, Militaria' (does not look like art)
+hansons: found 4 sale links
+robots.txt allows https://auctions.hansonsauctioneers.co.uk/catalogue/b15bae525138a9ecef8028f98e99b26e/a4ea5662dfdd714dd24e999c0ecc040d/pre-christmas-sale/
+GET https://auctions.hansonsauctioneers.co.uk/catalogue/b15bae525138a9ecef8028f98e99b26e/a4ea5662dfdd714dd24e999c0ecc040d/pre-christmas-sale/ -> 200 (45755 bytes)
+hansons: no lots in https://auctions.hansonsauctioneers.co.uk/catalogue/b15bae525138a9ecef8028f98e99b26e/a4ea5662dfdd714dd24e999c0ecc040d/pre-christmas-sale/: lots loaded by script (the page's lot list is filled in by auction_catalogue.js from the site's own search endpoint, which we do not use: RULES.md); nothing to read in the HTML
+hansons: sale b15bae5251 (https://auctions.hansonsauctioneers.co.uk/catalogue/b15bae525138a9ecef8028f98e99b26e/a4ea5662dfdd714dd24e999c0ecc040d/pre-christmas-sale/): 0 lot links
+robots.txt allows https://auctions.hansonsauctioneers.co.uk/catalogue/0d70f896aedbffa3e382ed05bd116e69/a4ea5662dfdd714dd24e999c0ecc040d/holloways-christmas-jewellery-silver-fine-arts-antiques-/
+GET https://auctions.hansonsauctioneers.co.uk/catalogue/0d70f896aedbffa3e382ed05bd116e69/a4ea5662dfdd714dd24e999c0ecc040d/holloways-christmas-jewellery-silver-fine-arts-antiques-/ -> 200 (46137 bytes)
+hansons: no lots in https://auctions.hansonsauctioneers.co.uk/catalogue/0d70f896aedbffa3e382ed05bd116e69/a4ea5662dfdd714dd24e999c0ecc040d/holloways-christmas-jewellery-silver-fine-arts-antiques-/: lots loaded by script (the page's lot list is filled in by auction_catalogue.js from the site's own search endpoint, which we do not use: RULES.md); nothing to read in the HTML
+hansons: sale 0d70f896ae (https://auctions.hansonsauctioneers.co.uk/catalogue/0d70f896aedbffa3e382ed05bd116e69/a4ea5662dfdd714dd24e999c0ecc040d/holloways-christmas-jewellery-silver-fine-arts-antiques-/): 0 lot links
+robots.txt allows https://auctions.hansonsauctioneers.co.uk/catalogue/f220ad5ef768ace9ba3667df7d808a51/a4ea5662dfdd714dd24e999c0ecc040d/two-day-christmas-derbyshire-fine-art-sale-to-include-the-c/
+GET https://auctions.hansonsauctioneers.co.uk/catalogue/f220ad5ef768ace9ba3667df7d808a51/a4ea5662dfdd714dd24e999c0ecc040d/two-day-christmas-derbyshire-fine-art-sale-to-include-the-c/ -> 200 (46177 bytes)
+hansons: no lots in https://auctions.hansonsauctioneers.co.uk/catalogue/f220ad5ef768ace9ba3667df7d808a51/a4ea5662dfdd714dd24e999c0ecc040d/two-day-christmas-derbyshire-fine-art-sale-to-include-the-c/: lots loaded by script (the page's lot list is filled in by auction_catalogue.js from the site's own search endpoint, which we do not use: RULES.md); nothing to read in the HTML
+robots.txt allows https://auctions.hansonsauctioneers.co.uk/catalogue/f220ad5ef768ace9ba3667df7d808a51/d4bcb8975434d2db3c9794c53cafda07/two-day-christmas-derbyshire-fine-art-sale-to-include-the-c/
+GET https://auctions.hansonsauctioneers.co.uk/catalogue/f220ad5ef768ace9ba3667df7d808a51/d4bcb8975434d2db3c9794c53cafda07/two-day-christmas-derbyshire-fine-art-sale-to-include-the-c/ -> 200 (46177 bytes)
+hansons: no lots in https://auctions.hansonsauctioneers.co.uk/catalogue/f220ad5ef768ace9ba3667df7d808a51/d4bcb8975434d2db3c9794c53cafda07/two-day-christmas-derbyshire-fine-art-sale-to-include-the-c/: lots loaded by script (the page's lot list is filled in by auction_catalogue.js from the site's own search endpoint, which we do not use: RULES.md); nothing to read in the HTML
+hansons: sale f220ad5ef7 (https://auctions.hansonsauctioneers.co.uk/catalogue/f220ad5ef768ace9ba3667df7d808a51/a4ea5662dfdd714dd24e999c0ecc040d/two-day-christmas-derbyshire-fine-art-sale-to-include-the-c/): 0 lot links
+robots.txt allows https://auctions.hansonsauctioneers.co.uk/catalogue/85fbb129bbdac394f54c4ecd922d81e6/a4ea5662dfdd714dd24e999c0ecc040d/hertfordshire-royston-a-timed-sale-of-antique-furniture/
+GET https://auctions.hansonsauctioneers.co.uk/catalogue/85fbb129bbdac394f54c4ecd922d81e6/a4ea5662dfdd714dd24e999c0ecc040d/hertfordshire-royston-a-timed-sale-of-antique-furniture/ -> 200 (46144 bytes)
+hansons: no lots in https://auctions.hansonsauctioneers.co.uk/catalogue/85fbb129bbdac394f54c4ecd922d81e6/a4ea5662dfdd714dd24e999c0ecc040d/hertfordshire-royston-a-timed-sale-of-antique-furniture/: lots loaded by script (the page's lot list is filled in by auction_catalogue.js from the site's own search endpoint, which we do not use: RULES.md); nothing to read in the HTML
+hansons: sale 85fbb129bb (https://auctions.hansonsauctioneers.co.uk/catalogue/85fbb129bbdac394f54c4ecd922d81e6/a4ea5662dfdd714dd24e999c0ecc040d/hertfordshire-royston-a-timed-sale-of-antique-furniture/): 0 lot links
+hansons: 4 sale links, 0 lot links in total
+hansons: lot pages: 0 new, 0 reused, 0 deferred to later runs
+hansons: 0 lots, 0 rejected (nothing found: keeping previous lots)
+GET https://www.gorringes.co.uk/robots.txt -> 200 (2259 bytes)
+robots.txt allows https://www.gorringes.co.uk/calendar
+GET https://www.gorringes.co.uk/calendar -> 200 (148897 bytes)
+gorringes: skipping sale 'Pop Culture & Sporting History | House & Garden Sales' (does not look like art)
+gorringes: skipping sale 'Toys & Transport | House & Garden Sales' (does not look like art)
+gorringes: skipping sale 'December Jewels | House & Garden Sales' (does not look like art)
+gorringes: skipping sale 'Books & Manuscripts' (does not look like art)
+gorringes: skipping sale 'House & Garden Sale' (does not look like art)
+gorringes: skipping sale 'House & Garden Sale' (does not look like art)
+gorringes: skipping sale 'House & Garden Sale' (does not look like art)
+gorringes: skipping sale 'Fine Jewellery, Silver & Watches' (does not look like art)
+gorringes: skipping sale 'House & Garden Sale | Militaria & Medals' (does not look like art)
+gorringes: found 1 sale links
+GET https://auction.gorringes.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://auction.gorringes.co.uk/auction-catalog/011226
+GET https://auction.gorringes.co.uk/auction-catalog/011226 -> 200 (66751 bytes)
+robots.txt allows https://auction.gorringes.co.uk/asp/searchresults.asp?st=D&sale_no=011226&pg=1
+GET https://auction.gorringes.co.uk/asp/searchresults.asp?st=D&sale_no=011226&pg=1 -> 200 (66751 bytes)
+robots.txt allows https://auction.gorringes.co.uk/auction-lot-detail/Th&233;odore-Rivi&232;re,-French-1857-1912,-An-elegant-you&salelot=011226+++++1+&refno=90215475
+GET https://auction.gorringes.co.uk/auction-lot-detail/Th&233;odore-Rivi&232;re,-French-1857-1912,-An-elegant-you&salelot=011226+++++1+&refno=90215475 -> 200 (28869 bytes)
+robots.txt allows https://auction.gorringes.co.uk/auction-lot-detail/Walter-Richard-Sickert,-1860-1942,-A-head-and-shoulders-port&salelot=011226+++++2+&refno=90206208
+GET https://auction.gorringes.co.uk/auction-lot-detail/Walter-Richard-Sickert,-1860-1942,-A-head-and-shoulders-port&salelot=011226+++++2+&refno=90206208 -> 200 (29136 bytes)
+gorringes: sale 011226 (https://auction.gorringes.co.uk/auction-catalog/011226): 2 lot links
+gorringes: 1 sale links, 2 lot links in total
+gorringes: lot pages: 2 new, 0 reused, 0 deferred to later runs
+gorringes: 2 lots, 0 rejected
+Diagnose run: sample pages saved under /home/runner/work/ArtsFinder/ArtsFinder/diagnose; no data written
