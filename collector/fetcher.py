@@ -7,16 +7,65 @@ import hashlib
 import json
 import logging
 import os
+import re
 import tempfile
 import time
 import urllib.error
 import urllib.request
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 from urllib.robotparser import RobotFileParser
 
 log = logging.getLogger("collector.fetcher")
 MAX_BYTES = 5_000_000
 RETRY_CODES = {429, 500, 502, 503, 504}
+
+
+class _Robots(RobotFileParser):
+    """RobotFileParser whose allow/deny decision is the same on Python 3.11-3.13.
+
+    The standard library only learned `*` and `$` wildcards in 3.13, so we decide ourselves,
+    the way Google's spec does: rules are matched against path+query, the longest matching rule
+    wins, and Allow wins a tie. crawl_delay() still comes from the standard parser.
+    """
+
+    def parse(self, lines):
+        lines = list(lines)
+        super().parse(lines)
+        self._groups = []                  # [(agent tokens, [(allow, pattern)])]
+        agents, rules, in_rules = [], [], False
+        for raw in lines:
+            line = raw.split("#", 1)[0].strip()
+            if ":" not in line:
+                continue
+            key, value = (x.strip() for x in line.split(":", 1))
+            key = key.lower()
+            if key == "user-agent":
+                if in_rules:
+                    agents, rules, in_rules = [], [], False
+                if not agents or not self._groups or self._groups[-1][1] is not rules:
+                    rules = []
+                    self._groups.append((agents, rules))
+                agents.append(value.lower())
+            elif key in ("allow", "disallow") and agents:
+                in_rules = True
+                if value:                  # an empty Disallow means "allow all": no rule
+                    rules.append((key == "allow", unquote(value)))
+
+    def can_fetch(self, useragent, url):
+        parts = urlsplit(url)
+        target = unquote((parts.path or "/") + ("?" + parts.query if parts.query else ""))
+        token = useragent.split("/")[0].lower()
+        named = [r for a, r in self._groups if any(x != "*" and x in token for x in a)]
+        rules = [r for g in (named or [r for a, r in self._groups if "*" in a]) for r in g]
+        best = None                        # (pattern length, allow)
+        for allow, pattern in rules:
+            regex = re.escape(pattern).replace(r"\*", ".*")
+            if regex.endswith(r"\$"):
+                regex = regex[:-2] + "$"
+            if re.match(regex, target):
+                if best is None or (len(pattern), allow) > best:
+                    best = (len(pattern), allow)
+        return best is None or best[1]
 
 
 class FetchError(Exception):
@@ -81,7 +130,7 @@ class Fetcher:
             cache_dir = self._tmp.name
         self.cache_dir = cache_dir
         self._last = {}    # host -> time of last request
-        self._robots = {}  # origin -> (RobotFileParser, crawl_delay or 0)
+        self._robots = {}  # origin -> (_Robots, crawl_delay or 0)
 
     # ---- public -------------------------------------------------------
     def get(self, url, crawl_delay=0):
@@ -129,7 +178,7 @@ class Fetcher:
     def _robots_for(self, parts, crawl_delay):
         origin = f"{parts.scheme}://{parts.netloc}"
         if origin not in self._robots:
-            parser = RobotFileParser()
+            parser = _Robots()
             try:
                 text = self._request(origin + "/robots.txt", max(self.min_delay, float(crawl_delay or 0)))
                 parser.parse(text.splitlines())

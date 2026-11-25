@@ -154,6 +154,7 @@ python3 app/build.py some.json --out /tmp/x    # build from another data file in
 python3 app/test/run_tests.py                  # app tests (Playwright + Chrome): builds the fixture itself into a temp folder, dates are relative to today
 ```
 
+- CI (GitHub Actions) runs the tests on Python 3.12; they must pass on 3.11-3.13.
 - `collector/fetcher.py` is the only code that uses the network.
 - `collector/sources/<name>.py` adapters fetch and parse only; register them in `collector/sources/__init__.py`.
   `example_html.py` is the template.
