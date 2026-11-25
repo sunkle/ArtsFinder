@@ -245,5 +245,20 @@ class ListLotsTests(unittest.TestCase):
                 self.assertIn("oil on card", lot["description"])
 
 
+class HeadlineTests(unittest.TestCase):
+    def test_no_split_at_abbreviations_or_initials(self):
+        cases = [("The Beatles - Sgt. Peppers Lonely Hearts Club Band PCS 7027, a rare copy", "The Beatles - Sgt. Peppers Lonely Hearts Club Band PCS 7027"),
+                 ("John Piper - St. Ives harbour at dusk. Signed", "John Piper - St. Ives harbour at dusk"),
+                 ("Mr. Punch and Dr. Who figures, boxed", "Mr. Punch and Dr. Who figures"),
+                 ("J. M. W. Turner - Venice sunset. Framed", "J. M. W. Turner - Venice sunset")]
+        for text, want in cases:
+            with self.subTest(text=text):
+                self.assertEqual(WhiteLabelAdapter._headline(text), want)
+
+    def test_real_sentence_ends_still_split(self):
+        self.assertEqual(WhiteLabelAdapter._headline("Harbour at dusk. Oil on canvas, signed"), "Harbour at dusk")
+        self.assertEqual(WhiteLabelAdapter._headline("Harbour at dusk, oil on canvas"), "Harbour at dusk")
+
+
 if __name__ == "__main__":
     unittest.main()

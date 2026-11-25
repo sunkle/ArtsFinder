@@ -1,10 +1,13 @@
 """Turns free catalogue text into the SPEC fields. Pure: no network, no files.
 Unknown means None. Never invent."""
 import html
+import logging
 import re
 from datetime import datetime, timezone
 
 from .schema import CONTENT_POLICIES, MAX_DESC, load_shared
+
+log = logging.getLogger("collector.tagger")
 
 # ---- the "not an original work" and "not art" rules live in shared/rules.json (the app embeds the same file) ----
 RULES = load_shared("rules.json")
@@ -54,12 +57,12 @@ KEYWORDS = {
     ("Photograph", "Other"): r"photograph|gelatin silver|c-type|chromogenic",
     (None, "Mixed media"): r"mixed media|collage|assemblage",
     ("Painting", "Oil"): r"\boils?\b",
-    ("Painting", "Acrylic"): r"acrylic|\bvinyl\b",
+    ("Painting", "Acrylic"): r"acrylic|\bvinyl\b(?!\s+(?:records?|discs?|albums?|lps?)\b)",
     ("Painting", "Tempera"): r"tempera",
     ("Work on paper", "Watercolour"): r"water-?colou?r",
     ("Work on paper", "Gouache"): r"gouache|body-?colou?r",
     ("Work on paper", "Pastel"): r"pastel",
-    ("Work on paper", "Pencil/Charcoal/Ink"): r"pencil|charcoal|\bink\b|crayon|chalk|graphite|conte\b|felt[- ]?tip",
+    ("Work on paper", "Pencil/Charcoal/Ink"): r"pencil|charcoal|\bink\b|crayon|chalk|graphite|conte\b|felt[- ]?tip|\bwash\b|\bsepia\b|\bpen\b|drawing",
     ("Sculpture", "Bronze"): r"bronze",
     ("Sculpture", "Stone/Marble"): r"marble|alabaster|granite|limestone|soapstone|portland stone|carved stone",
     ("Sculpture", "Wood"): r"limewood|carved wood|wood carving|carved oak",
@@ -193,12 +196,17 @@ def _mixed_type(text):
     return "Other"
 
 
+_ON_PAPER = re.compile(r"\bon paper\b", re.I)
+
+
 def classify(*texts):
     """Try each text in order (most reliable first). Returns (type, medium); ('Other','Other') if unknown."""
     for text in texts:
         for typ, medium, rx in _COMPILED:
             if text and rx.search(text):
                 return (typ or _mixed_type(text)), medium
+    if any(text and _ON_PAPER.search(text) for text in texts):
+        return "Work on paper", "Other"
     return "Other", "Other"
 
 
@@ -209,6 +217,7 @@ _YEAR_PATTERNS = [
     re.compile(r"\b(\d{3}0)s\b"),
     re.compile(r"\((" + _YEAR + r")\)"),
 ]
+_TITLE_YEAR = re.compile(r",\s*(1[89]\d\d|20\d\d)\s*$")  # "Terracotta Vessel, 1985": the title only
 
 
 def parse_year(*texts):
@@ -288,9 +297,12 @@ def resolve_end(sale_date, *candidates):
 
 
 def apply_content_policy(lot, house):
-    """Enforce the house's content_policy on a finished Lot (a copy is returned). A house with no policy is
-    treated as "full"; an unknown value is an error (fails closed rather than leaking images)."""
-    policy = house.get("content_policy", "full")
+    """Enforce the house's content_policy on a finished Lot (a copy is returned). Fails closed: a house with
+    no policy is treated as "text_only" (with a warning); an unknown value is an error."""
+    policy = house.get("content_policy")
+    if policy is None:
+        log.warning("%s: no content_policy in houses.json, treating as text_only", house.get("id"))
+        policy = "text_only"
     if policy not in CONTENT_POLICIES:
         raise ValueError(f"unknown content_policy {policy!r} for {house.get('id')}")
     return dict(lot, image_url=None) if policy == "text_only" else lot
@@ -318,11 +330,17 @@ def tag(raw_lot, house, sale, collected_at=None):
     typ, medium = classify(medium_detail, f"{title} {description_full}")
     if is_non_art(typ, title, medium_detail, description_full):
         raise NotArt(f"not artwork: {title}")
+    if typ == "Other" and not artist_dates and not _SCULPTURE_WORDS.search(f"{title} {medium_detail or ''} {description_full}"):
+        raise NotArt(f"not artwork (type Other, no artist dates): {title}")  # furniture, silver, memorabilia ...
 
     # Search for a year without the artist's own life dates getting in the way.
     body = description_full.replace(artist_text, " ") if artist_text else description_full
     given_date_text = clean_text(raw_lot.get("date_made_text")) or None
     year, matched = parse_year(given_date_text, medium_detail, body, title)
+    if year is None:
+        m = _TITLE_YEAR.search(title)
+        if m and int(m.group(1)) <= datetime.now().year:
+            year, matched = int(m.group(1)), m.group(1)
 
     low = _int_or_none(raw_lot.get("estimate_low"))
     high = _int_or_none(raw_lot.get("estimate_high"))

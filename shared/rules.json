@@ -4,8 +4,11 @@
   "hidden_types": ["Print"],
   "title_words": ["reproduction", "poster", "print", "prints", "printed", "giclee", "giclée", "after"],
   "description_words": ["reproduction", "poster"],
-  "non_art_words": ["ring", "jewellery", "jewelry", "watch", "wristwatch", "brooch", "pendant", "necklace", "bracelet", "bangle",
-                    "earring", "cufflink", "pottery", "studio pottery", "vase", "bowl", "ceramic bowl", "ceramic vase", "jug",
-                    "teapot", "charger", "mug", "tankard", "goblet", "candlestick", "cutlery", "coin", "medal", "stamp", "banknote"],
+  "non_art_words": ["ring", "jewellery", "jewelry", "watch", "wristwatch", "brooch", "pendant", "necklace", "bracelet", "bangle", "earring",
+                    "cufflink", "pottery", "studio pottery", "vase", "bowl", "ceramic bowl", "ceramic vase", "jug", "teapot", "charger", "mug",
+                    "tankard", "goblet", "candlestick", "cutlery", "coin", "medal", "stamp", "banknote", "furniture", "cabinet", "chair", "table",
+                    "sideboard", "wardrobe", "bookcase", "desk", "commode", "chest", "clock", "barometer", "lamp", "mirror", "rug", "carpet",
+                    "silver", "silver plate", "plated", "salver", "coffee pot", "tin", "biscuit tin", "record", "vinyl", "lp", "programme", "program",
+                    "memorabilia", "autograph", "trophy", "spoon", "fork", "flatware", "tea set", "dinner service", "cigarette case", "snuff box"],
   "sculpture_words": ["sculpture", "maquette", "sculpted"]
 }

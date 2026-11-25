@@ -75,7 +75,7 @@ class LawrencesAdapter(Adapter):
             self.snapshot(house, "calendar", cal_url, html)
             sales += self.parse_calendar(html, cal_url, house)
         sales = [s for s in sales if sale_wanted(house, s["title"])]
-        return sorted(sales[:1] if self.diagnosing else sales, key=lambda s: (s["date"], s["id"]))
+        return sorted(sales, key=lambda s: (s["date"], s["id"]))
 
     def _safe_fetch(self, house, url):
         try:
@@ -140,12 +140,16 @@ class LawrencesAdapter(Adapter):
             log.info("lawrences: %s is too far ahead for a catalogue yet", sale["title"])
             return []
         base = house.get("catalogue_base", CATALOGUE_BASE).rstrip("/")
-        section = house.get("catalogue_section", "fine-art-sales")
+        sections = [house.get("catalogue_section", "fine-art-sales")]
+        if self.diagnosing and "catalogue_section" not in house:
+            sections.append("general-sales")  # diagnose also tries the other section name
+        self.diagnose_fetch(house, "catalog", sale.get("url"))  # the Auctionet event page
         refs = {}
-        for day in sale.get("days") or [sale["date"]]:
-            url = f"{base}/sales/{section}/{day_code(date.fromisoformat(day))}/"
-            for ref in self.crawl_pages(house, url, self.parse_listing):
-                refs.setdefault(ref["id"], ref)
+        for section in sections:
+            for day in sale.get("days") or [sale["date"]]:
+                url = f"{base}/sales/{section}/{day_code(date.fromisoformat(day))}/"
+                for ref in self.crawl_pages(house, url, self.parse_listing):
+                    refs.setdefault(ref["id"], ref)
         return self.fetch_lots(house, list(refs.values()), self._stored_key, self.parse_lot)
 
     @staticmethod

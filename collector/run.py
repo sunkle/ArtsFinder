@@ -79,6 +79,8 @@ def collect_house(house, fetcher, today, now, diagnose_dir=None, previous=()):
             except ValueError as err:
                 rejected += 1
                 log.debug("%s: rejected lot: %s", house["id"], err)
+        if diagnose_dir and adapter.diagnose_done():
+            break  # one sale/catalogue page and one lot page are saved: enough
     log.info("%s: %d sale links, %d lot links in total", house["id"], len(sales), lot_links)
     s = adapter.stats
     log.info("%s: lot pages: %d new, %d reused, %d deferred to later runs", house["id"], s["new"], s["reused"], s["deferred"])
@@ -100,6 +102,12 @@ def merge_lots(previous, results, active_ids, today):
         fresh = results.get(house_id)
         old = [l for l in prev_by_house.get(house_id, []) if last_day(l) >= today]
         chosen = fresh if fresh else old
+        if fresh and old and len(fresh) * 2 < len(old):
+            # Data-loss guard: a much smaller answer is more likely a broken reader than a real change.
+            log.warning("%s: only %d lots found, had %d for sales still to come: keeping the old lots too",
+                        house_id, len(fresh), len(old))
+            fresh_ids = {l["id"] for l in fresh}
+            chosen = list(fresh) + [l for l in old if l["id"] not in fresh_ids]
         for lot in chosen:
             if last_day(lot) >= today and lot["id"] not in seen:
                 seen.add(lot["id"])
@@ -129,7 +137,8 @@ def main(argv=None):
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     houses = load_json(args.houses, {}).get("houses", [])
-    active = [h for h in houses if h.get("enabled") and (not args.only or h["id"] == args.only)]
+    # --diagnose --only <id> may inspect a switched-off house (it fetches a few pages and writes no data)
+    active = [h for h in houses if (h.get("enabled") or (args.diagnose and args.only)) and (not args.only or h["id"] == args.only)]
     previous = load_json(args.out, {}).get("lots", [])
     today, now = uk_today(), datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     fetcher = Fetcher()

@@ -38,6 +38,9 @@ _ESTIMATE_LINE = re.compile(r"^estimate\s*(£.*)$", re.I)
 _CARD_JUNK = re.compile(r"^(lot\s+\d|estimate|hammer|starting bid|current bid|fees\b|watch lot|sold\b|unsold|withdrawn|£)", re.I)
 _RESALE = re.compile(r"^artist resale rights apply\s*[-–:]*\s*", re.I)
 _SALE_ID_LEN = 10
+# A full stop after one of these (or a single initial) does not end a clause.
+_ABBREVIATIONS = {"sgt", "st", "mr", "mrs", "ms", "dr", "prof", "rev", "capt", "col", "gen", "lt", "mt", "no", "fl",
+                  "ca", "sr", "jr", "ltd", "co", "vs", "hon", "rt"}
 
 # "Name - Title" / "Name: Title" at the start of a description: the left part must look like an artist
 # (life dates, or 2-5 capitalised words, optionally after an attribution phrase and a dagger).
@@ -63,7 +66,7 @@ class WhiteLabelAdapter(Adapter):
                 cards.setdefault((card["auction"], card["day"]), card)
         wanted = [c for c in cards.values() if sale_wanted(house, c["title"], c["summary"])]
         sales = self.group_sales(wanted)
-        return sales[:1] if self.diagnosing else sales
+        return sales
 
     def parse_calendar(self, html, base_url):
         """One dict per sale card (= per sale DAY): auction, day, url, title, summary, date."""
@@ -294,7 +297,13 @@ class WhiteLabelAdapter(Adapter):
     def _headline(text, limit=100):
         """No bold lead-in on the page: the first clause of the description, at most `limit` characters."""
         text = (text or "").strip()
-        clause = re.split(r",\s|;\s|\.\s", text, maxsplit=1)[0]
+        clause = text
+        for m in re.finditer(r",\s|;\s|\.\s", text):
+            word = re.search(r"([A-Za-z]+)$", text[:m.start()])
+            if m.group().startswith(".") and word and (len(word.group(1)) == 1 or word.group(1).lower() in _ABBREVIATIONS):
+                continue  # "Sgt. Peppers", "St. Ives", "J. M. W. Turner": not the end of a clause
+            clause = text[:m.start()]
+            break
         if 8 <= len(clause) <= limit:
             return clause
         if len(text) <= limit:

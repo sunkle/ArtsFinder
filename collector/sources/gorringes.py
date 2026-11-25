@@ -53,7 +53,7 @@ class GorringesAdapter(LotPageMixin, Adapter):
             for sale in refs:
                 found.setdefault(sale["id"], sale)
         sales = [s for s in found.values() if sale_wanted(house, s["title"])]
-        return sorted(sales[:1] if self.diagnosing else sales, key=lambda s: (s["date"], s["id"]))
+        return sorted(sales, key=lambda s: (s["date"], s["id"]))
 
     def _calendar_page(self, html, url):
         root = parse(html)
@@ -100,6 +100,7 @@ class GorringesAdapter(LotPageMixin, Adapter):
     def list_lots(self, house, sale):
         if not sale.get("url"):
             return []  # catalogue not online yet
+        self.diagnose_fetch(house, "catalog", sale["url"])  # the verified "View Lots" page auction-catalog/<code>
         template = house.get("lots_url") or LOTS_URL
         code = sale["id"]
         first = template.format(code=code, page=1)

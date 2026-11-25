@@ -52,7 +52,7 @@ class RogersJonesAdapter(LotPageMixin, Adapter):
             for sale in self.parse_calendar(html, cal_url):
                 found.setdefault(sale["id"], sale)
         sales = [s for s in found.values() if sale_wanted(house, s["title"], s["summary"])]
-        return sorted(sales[:1] if self.diagnosing else sales, key=lambda s: (s["date"], s["id"]))
+        return sorted(sales, key=lambda s: (s["date"], s["id"]))
 
     def parse_calendar(self, html, base_url):
         """One dict per sale box: id, title, summary, location, date, end_date (None), url (catalogue or None),

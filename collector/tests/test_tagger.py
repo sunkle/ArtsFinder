@@ -13,6 +13,11 @@ def raw(**kw):
     return base
 
 
+def art(**kw):
+    """A lot that passes the junk filter (it is a painting)."""
+    return raw(**dict({"medium_detail": "oil on canvas"}, **kw))
+
+
 class ArtistTests(unittest.TestCase):
     CASES = [
         ("JOHN PIPER (1903-1992)", ("John Piper", "1903-1992", None)),
@@ -179,7 +184,7 @@ class EstimateTests(unittest.TestCase):
                 self.assertEqual(parse_estimate(text), expected)
 
     def test_raw_numbers_win(self):
-        lot = tag(raw(estimate_low=100, estimate_high=200, estimate_text="£5-6"), HOUSE, SALE)
+        lot = tag(art(estimate_low=100, estimate_high=200, estimate_text="£5-6"), HOUSE, SALE)
         self.assertEqual((lot["estimate_low"], lot["estimate_high"]), (100, 200))
 
 
@@ -242,15 +247,15 @@ class TagTests(unittest.TestCase):
         self.assertEqual(lot["dimensions"], "40 x 50cm")
 
     def test_unknowns_are_none(self):
-        lot = tag(raw(), HOUSE, SALE)
+        lot = tag(raw(title="Untitled sculpture", medium_detail=None), HOUSE, SALE)
         for f in ("artist", "artist_dates", "attribution_note", "year_made", "estimate_low", "estimate_high",
                   "dimensions", "image_url", "medium_detail", "date_made_text"):
             self.assertIsNone(lot[f], f)
-        self.assertEqual((lot["type"], lot["medium"]), ("Other", "Other"))
+        self.assertEqual((lot["type"], lot["medium"]), ("Sculpture", "Other"))
         self.assertEqual(validate_lot(lot), [])
 
     def test_description_truncated(self):
-        lot = tag(raw(description="word " * 200), HOUSE, SALE)
+        lot = tag(art(description="word " * 200), HOUSE, SALE)
         self.assertLessEqual(len(lot["description"]), 300)
 
     def test_missing_required_raises(self):
@@ -263,13 +268,13 @@ class TagTests(unittest.TestCase):
             tag(raw(), HOUSE, {"id": "1", "date": "3 Dec"})
 
     def test_one_day_sale_has_no_end_date_and_a_multi_day_sale_does(self):
-        self.assertIsNone(tag(raw(), HOUSE, SALE)["sale_end_date"])
-        lot = tag(raw(), HOUSE, dict(SALE, date="2026-11-26", end_date="2026-11-27"))
+        self.assertIsNone(tag(art(), HOUSE, SALE)["sale_end_date"])
+        lot = tag(art(), HOUSE, dict(SALE, date="2026-11-26", end_date="2026-11-27"))
         self.assertEqual((lot["sale_date"], lot["sale_end_date"]), ("2026-11-26", "2026-11-27"))
         self.assertEqual(validate_lot(lot), [])
 
     def test_lot_page_date_can_widen_the_sale_end_but_not_move_the_start(self):
-        lot = tag(raw(sale_date="2026-11-27"), HOUSE, dict(SALE, date="2026-11-26"))
+        lot = tag(art(sale_date="2026-11-27"), HOUSE, dict(SALE, date="2026-11-26"))
         self.assertEqual((lot["sale_date"], lot["sale_end_date"]), ("2026-11-26", "2026-11-27"))
 
     def test_clean_text(self):
@@ -286,8 +291,11 @@ class ContentPolicyTests(unittest.TestCase):
     def test_full_keeps_the_image_link(self):
         self.assertEqual(self.lot(content_policy="full")["image_url"], self.IMG)
 
-    def test_no_policy_means_full(self):
-        self.assertEqual(self.lot()["image_url"], self.IMG)
+    def test_missing_policy_fails_closed_to_text_only(self):
+        with self.assertLogs("collector.tagger", "WARNING"):
+            lot = self.lot()
+        self.assertIsNone(lot["image_url"])
+        self.assertEqual(lot["description"], "Oil on canvas, a harbour at dusk")
 
     def test_text_only_has_no_image_link_but_keeps_the_description(self):
         lot = self.lot(content_policy="text_only")
@@ -302,6 +310,68 @@ class ContentPolicyTests(unittest.TestCase):
         original = {"image_url": self.IMG}
         self.assertEqual(apply_content_policy(original, {"content_policy": "text_only"}), {"image_url": None})
         self.assertEqual(original["image_url"], self.IMG)
+
+
+class JunkFilterTests(unittest.TestCase):
+    """SPEC "Lots that are skipped": type Other with no artist life dates and no sculpture word is not artwork.
+    Titles are the real junk lots found by the checker (review/REVIEW-v0.4.md)."""
+    JUNK = ["Queen - A collection of items to include a signed Works! tour programme signed by Freddie Mercury",
+            "Sgt. Peppers Lonely Hearts Club Band PCS 7027",
+            "A Macfarlane Lang advertising 'Engine' biscuit tin",
+            "Art Deco design veneered walnut Bullseye cabinet with Bakelite handles",
+            "A money bag of GB silver coinage to include: mainly Half Crowns and Florins",
+            "A George III silver coffee pot", "A Georgian silver salver", "A mahogany longcase clock",
+            "A collection of vinyl records", "A walnut sideboard"]
+
+    def test_real_junk_is_skipped(self):
+        for title in self.JUNK:
+            with self.subTest(title=title), self.assertRaises(NotArt):
+                tag(raw(title=title, description=title + ". Dated 1892."), HOUSE, SALE)
+
+    def test_unknown_type_without_dates_is_skipped_even_when_no_word_matches(self):
+        with self.assertRaises(NotArt):
+            tag(raw(title="A quantity of assorted bric-a-brac"), HOUSE, SALE)
+
+    def test_odundo_pot_stays(self):
+        lot = tag(raw(title="Terracotta Vessel, 1985", artist_text="DAME MAGDALENE ODUNDO (BORN 1950)",
+                      description="a large coil built terracotta vessel"), HOUSE, SALE)
+        self.assertEqual((lot["type"], lot["medium"], lot["artist_dates"], lot["year_made"]),
+                         ("Other", "Ceramic", "b.1950", 1985))
+
+    def test_sculpture_word_keeps_an_undated_other_lot(self):
+        self.assertEqual(tag(raw(title="Abstract sculpture"), HOUSE, SALE)["type"], "Sculpture")
+
+    def test_pictures_are_never_skipped_for_a_junk_word(self):
+        for title in ("Still life with silver teapot", "Interior with a clock and table"):
+            self.assertEqual(tag(raw(title=title, medium_detail="oil on canvas"), HOUSE, SALE)["type"], "Painting")
+
+
+class WorkOnPaperTests(unittest.TestCase):
+    def test_wash_sepia_pen_drawing_are_works_on_paper(self):
+        for text in ("Sepia wash on paper", "pen and brown wash", "wash drawing", "pen and ink", "A drawing of a horse"):
+            with self.subTest(text=text):
+                self.assertEqual(classify(text)[0], "Work on paper")
+        self.assertEqual(classify("Sepia wash on paper"), ("Work on paper", "Pencil/Charcoal/Ink"))
+
+    def test_on_paper_alone_falls_back_to_work_on_paper_other(self):
+        self.assertEqual(classify("Mysterious technique on paper"), ("Work on paper", "Other"))
+
+    def test_keywords_still_win_over_the_on_paper_fallback(self):
+        self.assertEqual(classify("etching on paper"), ("Print", "Etching/Engraving"))
+
+    def test_sepia_wash_lot_is_kept(self):
+        lot = tag(raw(title="Harbour", medium_detail="Sepia wash on paper"), HOUSE, SALE)
+        self.assertEqual((lot["type"], lot["medium"]), ("Work on paper", "Pencil/Charcoal/Ink"))
+
+
+class TitleYearTests(unittest.TestCase):
+    def test_year_after_a_comma_in_the_title(self):
+        lot = tag(raw(title="Terracotta Vessel, 1985", medium_detail="terracotta", artist_text="A Potter (1950-2020)"), HOUSE, SALE)
+        self.assertEqual((lot["year_made"], lot["date_made_text"]), (1985, "1985"))
+
+    def test_a_year_in_the_middle_of_a_title_is_not_used(self):
+        lot = tag(raw(title="Winter 1985, Harbour", medium_detail="oil on canvas"), HOUSE, SALE)
+        self.assertIsNone(lot["year_made"])
 
 
 if __name__ == "__main__":

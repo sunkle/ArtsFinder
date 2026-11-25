@@ -84,7 +84,18 @@ Low value, skip for now: Lockdales, Fieldings, Peter Francis, Anthemion, Bloomfi
 
 ### Decision (25 Nov 2026, user): public but unlisted, and what that means per house
 The site stays public (free hosting) but unlisted. A house whose terms forbid copying or using catalogue text is **not collected at all**; a house whose terms could not be read is off until someone reads them. Each collected house has `content_policy` in `collector/houses.json` ("full" = description + image link, "text_only" = description only).
-- **On, "full":** Hansons, Fieldings, Peter Francis, Gorringe's, Lawrences, David Duggleby, Rogers Jones (and Morphets once its adapter exists).
+- **On, "full":** Hansons, Gorringe's, Rogers Jones only (see "v0.4 Decision" below; it supersedes the earlier list that also had Fieldings, Peter Francis, Lawrences, Duggleby and Morphets).
 - **Off, terms forbid copying/using text:** Mellors & Kirk (acceptable-use policy), Trevanion and Philip Serrell (sale terms cl. 2.3), Morgan Evans (private use only), Gardiner Houlgate (reproduction prohibited). The reason in houses.json quotes the clause.
 - **Off, terms unreadable:** Ross's (user to read the buyer terms by hand, then update this file).
 - **Off, bot challenge:** Lay's, Gildings, Anderson & Garland, Mallams, McTear's, Halls: the sites serve a bot challenge to automated clients and we do not bypass it. Their stored lots stay until their sales end (`keep_existing_lots`).
+
+### v0.4 Decision (25 Nov 2026, orchestrator, after the checker's review of branch v0.4-adapters)
+Enabled houses are exactly **Hansons, Gorringe's, Rogers Jones** (all "full"). A test (`test_houses_json_follows_the_terms_review`) pins this set.
+- **Fieldings, Peter Francis: off.** Terms not read and low art value. `disabled_reason`: "terms not checked". Turn on only after someone reads `/terms-and-conditions-of-business` and `/terms-and-conditions` and updates the table.
+- **David Duggleby: off.** Its lot data only comes from a search `/api` endpoint (`FilterBidItems`), and its robots.txt blocks search query strings; we do not sidestep that by using POST. The adapter code and tests stay, but it stays off. This also corrects Recommendation 4 above ("never use search, `/api`, `/rss`"): that rule stands. Safeguard in code: `Fetcher.post_json` applies robots.txt to the full URL including any query, and refuses an `/api` or "search" URL unless the house has an explicit `"api_allowed": true` (default false). No house has it.
+- **Lawrences: off.** Its terms say other use of the document needs permission, which matches the clause that excluded Serrell and Trevanion. Code kept.
+- **Morphets: off.** "bot challenge (probe 25 Nov)"; it also has no adapter yet.
+- **easyliveauction.com is hard-blocked** in `collector/fetcher.py` (like the-saleroom.com) until its Site Usage Terms are read.
+- **Mixed sales:** lots of type `Other` with no artist life dates and no sculpture word are dropped by the tagger (SPEC "Lots that are skipped"), and `non_art_words` in `shared/rules.json` now covers furniture, silver, coins, records, programmes, tins, memorabilia, cabinets, clocks and the like.
+- **Fail closed:** a house with no `content_policy` is treated as `text_only` (with a warning).
+- **Data-loss guard:** if a house's new non-empty result has fewer than half the lots it had for sales still to come, run.py keeps the old lots too and logs a warning.

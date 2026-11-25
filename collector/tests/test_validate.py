@@ -72,7 +72,7 @@ class ValidateTests(unittest.TestCase):
             houses = json.load(fh)["houses"]
         keys = {"id", "name", "town", "region", "website", "adapter", "enabled", "crawl_delay", "disabled_reason",
                 "content_policy"}
-        optional = {"calendar_urls", "calendar_months", "sale_include", "sale_include_extra", "sale_exclude", "max_pages", "max_lots_per_sale", "max_new_lot_pages", "keep_existing_lots"}
+        optional = {"calendar_urls", "calendar_months", "sale_include", "sale_include_extra", "sale_exclude", "max_pages", "max_lots_per_sale", "max_new_lot_pages", "keep_existing_lots", "api_allowed"}
         for h in houses:
             self.assertEqual(set(h) - optional, keys, h["id"])
             if h["adapter"] in ("goauction", "whitelabel"):
@@ -94,10 +94,18 @@ class ValidateTests(unittest.TestCase):
         with open(path) as fh:
             by_id = {h["id"]: h for h in json.load(fh)["houses"]}
         enabled = {i for i, h in by_id.items() if h["enabled"]}
-        self.assertEqual(enabled, {"hansons", "fieldings", "peterfrancis", "gorringes", "lawrences", "duggleby",
-                                   "rogersjones", "morphets"})
+        self.assertEqual(enabled, {"hansons", "gorringes", "rogersjones"})  # RULES.md, v0.4 Decision (25 Nov 2026)
         for i in enabled:
             self.assertEqual(by_id[i]["content_policy"], "full", i)
+        for i in ("fieldings", "peterfrancis", "duggleby", "lawrences", "morphets"):  # v0.4 Decision, 25 Nov 2026
+            self.assertFalse(by_id[i]["enabled"], i)
+            self.assertTrue(by_id[i]["disabled_reason"], i)
+        for i in by_id:  # nothing enabled may be a bot-challenge house or reach the-saleroom
+            if by_id[i]["enabled"]:
+                self.assertNotIn("bot challenge", (by_id[i]["disabled_reason"] or "").lower(), i)
+                self.assertNotIn("the-saleroom", by_id[i]["website"], i)
+            self.assertIn(by_id[i].get("content_policy"), CONTENT_POLICIES, i)
+        self.assertFalse(any(h.get("api_allowed") for h in by_id.values()))  # no house may use /api endpoints
         for i in ("mellorskirk", "trevanion", "serrell", "morganevans", "gardinerhoulgate", "rosss"):
             self.assertFalse(by_id[i]["enabled"], i)
             self.assertIn("RULES.md", by_id[i]["disabled_reason"], i)

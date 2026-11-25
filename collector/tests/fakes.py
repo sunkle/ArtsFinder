@@ -17,7 +17,7 @@ class FakeFetcher:
             raise FetchError("HTTP 404 for " + url)
         return self.pages[url]
 
-    def post_json(self, url, payload, crawl_delay=0):
+    def post_json(self, url, payload, crawl_delay=0, api_allowed=False):
         self.posts.append((url, payload))
         answer = self.json_pages.get(url)
         if answer is None:

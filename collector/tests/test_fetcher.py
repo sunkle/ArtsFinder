@@ -1,7 +1,7 @@
 import unittest
 import urllib.error
 
-from collector.fetcher import BlockedHost, Fetcher, FetchError, RobotsDisallowed, user_agent
+from collector.fetcher import ApiNotAllowed, BlockedHost, Fetcher, FetchError, RobotsDisallowed, user_agent
 
 
 class FakeNet:
@@ -75,17 +75,39 @@ class FetcherTests(unittest.TestCase):
         self.assertIn("ArtsFinder-personal", user_agent())
 
     def test_post_json_sends_a_json_body_obeys_robots_and_caches_per_body(self):
-        net, f = make({"https://a.test/robots.txt": b"User-agent: *\nDisallow: /private/", "https://a.test/api": b'{"ok": 1}'})
-        self.assertEqual(f.post_json("https://a.test/api", {"Page": 1}), '{"ok": 1}')
+        net, f = make({"https://a.test/robots.txt": b"User-agent: *\nDisallow: /private/", "https://a.test/feed": b'{"ok": 1}'})
+        self.assertEqual(f.post_json("https://a.test/feed", {"Page": 1}), '{"ok": 1}')
         self.assertEqual(net.bodies[-1], ("POST", b'{"Page": 1}', "application/json"))
-        f.post_json("https://a.test/api", {"Page": 1})                      # same body: from cache
-        self.assertEqual(net.calls, ["https://a.test/robots.txt", "https://a.test/api"])
-        f.post_json("https://a.test/api", {"Page": 2})                      # another body: a new request
+        f.post_json("https://a.test/feed", {"Page": 1})                      # same body: from cache
+        self.assertEqual(net.calls, ["https://a.test/robots.txt", "https://a.test/feed"])
+        f.post_json("https://a.test/feed", {"Page": 2})                      # another body: a new request
         self.assertEqual(len(net.calls), 3)
         with self.assertRaises(RobotsDisallowed):
             f.post_json("https://a.test/private/x", {})
         with self.assertRaises(BlockedHost):
             f.post_json("https://www.the-saleroom.com/api", {})
+
+    def test_post_json_applies_robots_to_the_query_string_too(self):
+        net, f = make({"https://a.test/robots.txt": b"User-agent: *\nDisallow: /*?q=", "https://a.test/feed": b"{}"})
+        with self.assertRaises(RobotsDisallowed):
+            f.post_json("https://a.test/feed?q=x", {})
+        self.assertEqual(f.post_json("https://a.test/feed", {}), "{}")
+
+    def test_post_json_refuses_api_and_search_endpoints_unless_api_allowed(self):
+        net, f = make({"https://a.test/robots.txt": b"", "https://a.test/api/x": b"{}", "https://a.test/search": b"{}",
+                       "https://a.test/feed?search=1": b"{}"})
+        for url in ("https://a.test/api/x", "https://a.test/API", "https://a.test/search", "https://a.test/feed?search=1"):
+            with self.subTest(url=url), self.assertRaises(ApiNotAllowed):
+                f.post_json(url, {})
+        self.assertEqual(net.calls, [])  # refused before any request
+        self.assertEqual(f.post_json("https://a.test/api/x", {}, api_allowed=True), "{}")
+
+    def test_easyliveauction_is_blocked_like_the_saleroom(self):
+        net, f = make({})
+        for url in ("https://easyliveauction.com/x", "https://whitelabel.easyliveauction.com/y"):
+            with self.subTest(url=url), self.assertRaises(BlockedHost):
+                f.get(url)
+        self.assertEqual(net.calls, [])
 
     def test_robots_disallow_blocks(self):
         net, f = make({"https://a.test/robots.txt": b"User-agent: *\nDisallow: /private\n",

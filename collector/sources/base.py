@@ -15,6 +15,8 @@ from datetime import date
 from ..fetcher import FetchError
 
 DEFAULT_NEW_LOT_PAGES = 150
+DIAGNOSE_MAX_SAVED = 6    # --diagnose saves at most this many pages per house ...
+DIAGNOSE_MAX_FETCHES = 10  # ... and fetches at most this many
 log = logging.getLogger("collector.sources")
 
 # Sales whose title does not match are skipped (jewellery, watches, stamps, coins, ...). Shared by all adapters;
@@ -44,6 +46,7 @@ class Adapter:
     def __init__(self, fetcher):
         self.fetcher = fetcher
         self._snapshots = set()
+        self._diag_fetches = 0
         self.stats = {"new": 0, "reused": 0, "deferred": 0}  # lot pages fetched / taken from last run / postponed
 
     @property
@@ -51,23 +54,54 @@ class Adapter:
         return bool(self.diagnose_dir)
 
     def snapshot(self, house, kind, url, text):
-        """In --diagnose mode save the FIRST page of each kind ('calendar', 'sale', 'lot') as diagnose/<house>/<kind>.html."""
-        if not self.diagnose_dir or kind in self._snapshots:
+        """In --diagnose mode save the FIRST page of each kind ('calendar', 'sale', 'catalog', 'lot', or
+        'calendar.json' for raw JSON) as diagnose/<house>/<kind>[.html], at most DIAGNOSE_MAX_SAVED per house."""
+        if not self.diagnose_dir or kind in self._snapshots or len(self._snapshots) >= DIAGNOSE_MAX_SAVED:
             return
         self._snapshots.add(kind)
         folder = os.path.join(self.diagnose_dir, house["id"])
         os.makedirs(folder, exist_ok=True)
-        with open(os.path.join(folder, kind + ".html"), "w", encoding="utf-8") as f:
+        name = kind if "." in kind else kind + ".html"
+        with open(os.path.join(folder, name), "w", encoding="utf-8") as f:
             f.write(f"<!-- fetched from {url} -->\n{text}")
+
+    def diagnose_done(self):
+        """True once a diagnose run holds one sale/catalogue page and one lot page (so it can stop early)."""
+        kinds = {k.split(".")[0] for k in self._snapshots}
+        return "lot" in kinds and bool(kinds & {"sale", "catalog"})
+
+    def _count_diagnose_fetch(self):
+        if self.diagnosing:
+            if self._diag_fetches >= DIAGNOSE_MAX_FETCHES:
+                raise FetchError("diagnose page budget used up")
+            self._diag_fetches += 1
 
     def fetch(self, house, url):
         """Get a page, applying this house's crawl_delay. The only way adapters read the web."""
+        self._count_diagnose_fetch()
         return self.fetcher.get(url, crawl_delay=house.get("crawl_delay", 0))
 
-    def fetch_json(self, house, url, payload):
-        """POST a JSON body to a site's own JSON endpoint and return the decoded answer (None if unreadable)."""
+    def diagnose_fetch(self, house, kind, url):
+        """Diagnose only: fetch one extra page (e.g. a sale's own catalogue page) and save it. Never raises."""
+        if not (self.diagnosing and url) or kind in self._snapshots:
+            return None
         try:
-            return json.loads(self.fetcher.post_json(url, payload, crawl_delay=house.get("crawl_delay", 0)))
+            html = self.fetch(house, url)
+        except FetchError as err:
+            log.info("%s: diagnose page %s failed: %s", house["id"], url, err)
+            return None
+        self.snapshot(house, kind, url, html)
+        return html
+
+    def fetch_json(self, house, url, payload, kind="sale.json"):
+        """POST a JSON body to a site's own JSON endpoint and return the decoded answer (None if unreadable).
+        In diagnose mode the raw answer text is saved BEFORE it is parsed (an error page is the likely failure)."""
+        try:
+            self._count_diagnose_fetch()
+            text = self.fetcher.post_json(url, payload, crawl_delay=house.get("crawl_delay", 0),
+                                          api_allowed=bool(house.get("api_allowed", False)))
+            self.snapshot(house, kind, url, text)
+            return json.loads(text)
         except (ValueError, FetchError) as err:
             log.warning("%s: %s unreadable: %s", house["id"], url, err)
             return None

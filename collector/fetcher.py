@@ -31,9 +31,13 @@ class BlockedHost(FetchError):
     pass
 
 
+class ApiNotAllowed(FetchError):
+    pass
+
+
 # Sites we must never fetch, whatever an adapter or houses.json says (their terms forbid it).
 # A host matches if it equals an entry or is a subdomain of it.
-BLOCKED_HOSTS = ("the-saleroom.com",)
+BLOCKED_HOSTS = ("the-saleroom.com", "easyliveauction.com")  # easyLive: its site terms are unread (docs/RULES.md)
 
 
 def check_not_blocked(url):
@@ -41,6 +45,16 @@ def check_not_blocked(url):
     for blocked in BLOCKED_HOSTS:
         if host == blocked or host.endswith("." + blocked):
             raise BlockedHost(f"{host} is on the never-fetch list (terms forbid automated access): {url}")
+
+
+def check_api_allowed(url, api_allowed=False):
+    """A JSON endpoint under /api, or any URL with 'search' in it, is a site's search/app interface, not a public
+    page: refused unless the house config says "api_allowed": true (a decision recorded in docs/RULES.md)."""
+    parts = urlsplit(url)
+    path = parts.path.lower()
+    looks_api = path == "/api" or path.startswith("/api/") or "search" in (path + "?" + parts.query).lower()
+    if looks_api and not api_allowed:
+        raise ApiNotAllowed(f"{url} is an /api or search endpoint and the house config has no api_allowed: true")
 
 
 def user_agent(repo=None):
@@ -74,9 +88,12 @@ class Fetcher:
         """Return the page text. Raises FetchError / RobotsDisallowed / BlockedHost."""
         return self._fetch(url, crawl_delay, None)
 
-    def post_json(self, url, payload, crawl_delay=0):
+    def post_json(self, url, payload, crawl_delay=0, api_allowed=False):
         """POST a JSON body and return the response text (for sites whose lists load through a JSON endpoint,
-        e.g. David Duggleby). Same rules as get(): robots.txt, throttle, cache, honest User-Agent."""
+        e.g. David Duggleby). Same rules as get(): robots.txt (checked against the full URL, query string
+        included), throttle, cache, honest User-Agent. Refuses /api and 'search' URLs unless api_allowed."""
+        check_not_blocked(url)
+        check_api_allowed(url, api_allowed)
         return self._fetch(url, crawl_delay, json.dumps(payload, sort_keys=True).encode("utf-8"))
 
     def _fetch(self, url, crawl_delay, data):
@@ -85,7 +102,7 @@ class Fetcher:
         if os.path.exists(cached):
             with open(cached, encoding="utf-8") as f:
                 text = f.read()
-            log.info("GET %s -> cached (%d chars)", url, len(text))
+            log.info("%s %s -> cached (%d chars)", "POST" if data else "GET", url, len(text))
             return text
         parts = urlsplit(url)
         if parts.scheme not in ("http", "https") or not parts.netloc:
@@ -152,11 +169,11 @@ class Fetcher:
                 self._last[host] = self.clock()
                 last_err = FetchError(f"HTTP {err.code} for {url}")
                 last_err.status = err.code
-                log.info("GET %s -> HTTP %s (attempt %d)", url, err.code, attempt + 1)
+                log.info("%s %s -> HTTP %s (attempt %d)", request.get_method(), url, err.code, attempt + 1)
                 if err.code not in RETRY_CODES:
                     raise last_err
             except (urllib.error.URLError, OSError) as err:
                 self._last[host] = self.clock()
                 last_err = FetchError(f"network error for {url}: {err}")
-                log.info("GET %s -> network error %s (attempt %d)", url, err, attempt + 1)
+                log.info("%s %s -> network error %s (attempt %d)", request.get_method(), url, err, attempt + 1)
         raise last_err

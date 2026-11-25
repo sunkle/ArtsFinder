@@ -54,11 +54,10 @@ class DugglebyAdapter(Adapter):
         api = house.get("auctions_api") or urljoin(house["website"], AUCTIONS_PATH)
         found, page = {}, 0
         while page < MAX_AUCTION_PAGES:
-            rows = self.fetch_json(house, api, {"pageIndex": page, "pageSize": AUCTIONS_PAGE, "ClientNo": None})
+            rows = self.fetch_json(house, api, {"pageIndex": page, "pageSize": AUCTIONS_PAGE, "ClientNo": None},
+                                   kind="calendar.json")
             if not isinstance(rows, list) or not rows:
                 break
-            if page == 0:
-                self.snapshot(house, "calendar", api, repr(rows[:2]))
             for row in rows:
                 sale = self.parse_auction(row, house["website"])
                 if sale and sale_wanted(house, sale["title"], sale["subtitle"]):
@@ -92,12 +91,10 @@ class DugglebyAdapter(Adapter):
             answer = self.fetch_json(house, api, {
                 "AuctionNo": int(sale["id"]), "SearchText": "", "Sort": "lowLotNo", "Page": page, "ClientNo": 0,
                 "PageSize": LOTS_PAGE, "Preview": False,
-                "Filters": [{"FilterType": f, "Values": []} for f in FILTER_TYPES]})
+                "Filters": [{"FilterType": f, "Values": []} for f in FILTER_TYPES]}, kind="sale.json")
             items = answer.get("FilteredBidItems") if isinstance(answer, dict) else None
             if not items:
                 break
-            if page == 1:
-                self.snapshot(house, "sale", api, repr(items[:2]))
             new = [i for i in items if _text(i.get("ItemNo")) not in seen]
             for item in new:
                 seen.add(_text(item.get("ItemNo")))
@@ -107,6 +104,10 @@ class DugglebyAdapter(Adapter):
             if len(items) < LOTS_PAGE or not new:
                 break
             page += 1
+        if self.diagnosing:  # the HTML sale page and one real lot page, to see what the site really serves
+            self.diagnose_fetch(house, "catalog", sale["url"])
+            link = next((l["lot_url"] for l in lots if l.get("lot_url") != sale["url"]), None)
+            self.diagnose_fetch(house, "lot", link)
         return lots
 
     @staticmethod
