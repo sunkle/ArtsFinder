@@ -21,8 +21,9 @@ Rules: adapters only fetch and parse; all clean-up lives in tagger.py; field nam
 
 ## Polite collecting (non-negotiable)
 - Obey robots.txt. One request at a time, at least 3 seconds apart. Run once a night. Honest User-Agent naming the project.
-- Personal use only. Store a short description (max 300 chars) and link back to the lot page; images are linked, never copied.
-- If a site's terms forbid automated access, its adapter is disabled in houses.json (`"enabled": false`) with the reason.
+- The site is **public but unlisted** (user decision 25 Nov 2026): anyone with the link can open it, but it is never advertised, indexed or linked from elsewhere. Store a short description (max 300 chars) and link back to the lot page; images are linked, never copied.
+- If a site's terms forbid automated access, or forbid copying or using its catalogue text, or cannot be read, the house is not collected at all: `"enabled": false` in houses.json with `disabled_reason` quoting the docs/RULES.md verdict.
+- Each house has a `content_policy` (see "houses.json flags"). The tagger and run.py enforce it; adapters just fetch and parse.
 
 ## Lot record (data/lots.json)
 File shape: `{"generated_at": ISO datetime, "schema_version": 1, "houses": [House], "lots": [Lot]}`
@@ -63,7 +64,7 @@ MEDIUMS: `Oil`, `Acrylic`, `Watercolour`, `Gouache`, `Pastel`, `Pencil/Charcoal/
 Not artwork: if the title or medium contains a word from `non_art_words` in `shared/rules.json` (ring, jewellery, watch, pottery, vase, bowl, ...), the tagger skips the lot. It never skips a Painting, Work on paper, Print or Photograph, nor a Sculpture whose text says sculpture or maquette (so a ceramic sculpture by an artist stays). A lot whose lot page could not be read is left out and retried the next run.
 
 ## houses.json flags
-`enabled`, `crawl_delay`, `disabled_reason`, plus `keep_existing_lots` (true = keep the stored lots of a house switched off only because its adapter is not written yet, until their sales end). `the-saleroom.com` and its subdomains are refused by `collector/fetcher.py` whatever houses.json says.
+`enabled`, `crawl_delay`, `disabled_reason`, `content_policy` (required on every house: `"full"` = description + link to the image; `"text_only"` = description only, `image_url` is always null; any other value is an error and the house's lots are rejected), plus `keep_existing_lots` (true = keep the stored lots of a house switched off only because its adapter is not written yet, until their sales end). `the-saleroom.com` and its subdomains are refused by `collector/fetcher.py` whatever houses.json says.
 
 ## App behaviour
 - Filters: type, medium, search box (artist or title), house, region, auction date range, year made range, estimate range, "original works only" (hides Print and anything marked reproduction/after/print/poster), "hide past auctions" (on by default).
@@ -71,4 +72,4 @@ Not artwork: if the title or medium contains a word from `non_art_words` in `sha
 - Filter chips show how many lots each has and are hidden when it is 0. Card: image (lazy, if any, shown whole, never cropped), title, artist + dates, type/medium, year, estimate, house, auction date (a range such as "26–27 Nov 2026" for multi-day sales), link "View lot" (opens house page).
 - Mobile first (iPhone width 375px), works offline after first load, dark mode follows the phone, "Add to Home Screen" works.
 - Favourites (star) kept on the device (localStorage, wrapped in try/catch).
-- The built site is public on free hosting: it has `<meta name="robots" content="noindex,nofollow">` and a `robots.txt` with `Disallow: /`. All inputs are at least 16px so iOS Safari does not zoom. The service worker cache name carries a build hash (network-first for the page and data).
+- The built site is public but unlisted on free hosting: it has `<meta name="robots" content="noindex,nofollow">` and a `robots.txt` with `Disallow: /`. All inputs are at least 16px so iOS Safari does not zoom. The service worker cache name carries a build hash (network-first for the page and data).

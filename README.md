@@ -4,14 +4,17 @@ A personal web page that lists upcoming original art at small UK auction houses.
 robot on GitHub visits the houses' public catalogue pages (politely: it obeys robots.txt, goes slowly
 and says who it is), tidies the lots into one list, and publishes the page. You open it on your iPhone.
 
-It is for your personal use only. It stores a short description and a link back to each lot, and links
-to images instead of copying them.
+The site is public but unlisted: anyone with the link can open it, but it is not advertised or indexed.
+It stores a short description and a link back to each lot, and links to images instead of copying them.
+Houses whose terms forbid copying or using their catalogue text are not collected at all.
 
 ## What to expect at first
 
-Coverage is thin until more adapters land. Today three houses are collected (Lay's, Anderson & Garland and Gildings,
-all via the GoAuction reader, which is untested on real pages). Gorringe's, David Duggleby and Morphets
-need their own readers, which are not written yet. Some houses have no art sale online for weeks (Lay's
+Coverage is thin until more adapters land. Hansons, Fieldings and Peter Francis are collected through the
+white-label catalogue reader (written from real pages, see "Which house needs which adapter"). Lay's, Gildings,
+Anderson & Garland and the other GoAuction houses are switched off (their sites challenge automated clients);
+their stored lots stay until the sales end. Gorringe's, Lawrences, David Duggleby, Rogers Jones and Morphets
+need their own readers, which are not all written yet. Some houses have no art sale online for weeks (Lay's
 current sale ends 27 Nov; Anderson & Garland's art auction is about 17 Dec). So the page will often show
 only a few dozen lots, and some days almost none. That is the tool working, not broken. Each new reader
 adds a house.
@@ -77,7 +80,8 @@ Open `collector/houses.json` on github.com, tap the pencil to edit, copy an exis
 | `adapter` | which reader to use (see below) |
 | `enabled` | `true` to collect, `false` to skip |
 | `crawl_delay` | seconds between page requests: 3 normally, 10 if the house's robots.txt says `Crawl-delay: 10` |
-| `disabled_reason` | why it is off, or `null` when it is on |
+| `disabled_reason` | why it is off (quote the `docs/RULES.md` verdict), or `null` when it is on |
+| `content_policy` | `full` = description and a link to the image; `text_only` = description only, no image link. Required |
 | `keep_existing_lots` | optional. `true` keeps the house's already-stored lots (until their sale ends) while it is off only because its adapter is not written yet. Without it, switching a house off removes its lots |
 
 Before switching a house on, read its website terms and robots.txt (see `docs/RULES.md`). Never add
@@ -94,16 +98,18 @@ reason in `disabled_reason`, in quotes. Commit. At the next run its lots disappe
 
 | House | adapter | now |
 |---|---|---|
-| David Lay (`lays`) | `goauction` | on, written but untested on real pages (see "First real run") |
-| Anderson & Garland | `goauction` | on, written but untested on real pages |
-| Gildings (`gildings`) | `goauction` | on, written but untested on real pages |
-| Gorringe's (`gorringes`) | `gorringes` | off: adapter not written yet; robots.txt on auction.gorringes.co.uk unverified. Its stored lots are kept until their sale ends (`keep_existing_lots`) |
-| McTear's, Mallams | `goauction` | off: terms unclear |
-| Halls | `goauction` | off: calendar page not found yet, adapter untested |
-| David Duggleby | `duggleby` | on, adapter not written yet |
+| Hansons, Fieldings, Peter Francis | `whitelabel` | on |
+| Gorringe's, Lawrences, David Duggleby, Rogers Jones | `gorringes`, `lawrences`, `duggleby`, `rogersjones` | on, adapter not written yet (skipped until it is) |
 | Morphets | `easylive` | on, adapter not written yet |
-| Rogers Jones | `rogersjones` | off: terms unclear |
+| Gardiner Houlgate, Mellors & Kirk, Trevanion, Philip Serrell, Morgan Evans | `whitelabel` / none / `easylive` | off: terms forbid copying or using the text (reason in `houses.json`) |
+| Ross's | none | off: terms unreadable, read them by hand |
+| Lay's, Gildings, Anderson & Garland, Mallams, McTear's, Halls | `goauction` | off: bot challenge, we do not bypass it; stored lots kept until their sales end |
 | Roseberys | `roseberys` | off: robots.txt blocks AI agents |
+
+The `whitelabel` adapter reads the catalogue platform shared by Hansons, Fieldings, Peter Francis, Gardiner Houlgate,
+Mellors & Kirk and Trevanion (`/catalogue/<id>/<id>/<slug>/` sale pages, 60 lots a page, and
+`/catalogue/lot/...-lot-<n>/` lot pages). A house using it needs `calendar_urls`; optional per-house settings
+(`sale_include`, `sale_exclude`, ...) are listed at the top of `collector/sources/whitelabel.py`.
 
 The `goauction` adapter reads the GoAuction platform (`/auction/details/...?au=` sale pages and
 `/auction/lot/...?lot=` lot pages) shared by five houses. A house using it also needs `calendar_urls`

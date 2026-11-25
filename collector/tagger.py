@@ -4,7 +4,7 @@ import html
 import re
 from datetime import datetime, timezone
 
-from .schema import MAX_DESC, load_shared
+from .schema import CONTENT_POLICIES, MAX_DESC, load_shared
 
 # ---- the "not an original work" and "not art" rules live in shared/rules.json (the app embeds the same file) ----
 RULES = load_shared("rules.json")
@@ -287,6 +287,15 @@ def resolve_end(sale_date, *candidates):
     return end if end and end > sale_date else None
 
 
+def apply_content_policy(lot, house):
+    """Enforce the house's content_policy on a finished Lot (a copy is returned). A house with no policy is
+    treated as "full"; an unknown value is an error (fails closed rather than leaking images)."""
+    policy = house.get("content_policy", "full")
+    if policy not in CONTENT_POLICIES:
+        raise ValueError(f"unknown content_policy {policy!r} for {house.get('id')}")
+    return dict(lot, image_url=None) if policy == "text_only" else lot
+
+
 def tag(raw_lot, house, sale, collected_at=None):
     """Raw catalogue lot -> SPEC Lot dict. Raises ValueError if lot_number/title/lot_url/sale date are unusable."""
     lot_number = clean_text(raw_lot.get("lot_number"))
@@ -320,7 +329,7 @@ def tag(raw_lot, house, sale, collected_at=None):
     if low is None and high is None:
         low, high = parse_estimate(raw_lot.get("estimate_text"))
 
-    return {
+    lot = {
         "id": "-".join(_slug(p) for p in (house["id"], sale.get("id"), lot_number)),
         "house_id": house["id"],
         "sale_title": clean_text(sale.get("title")),
@@ -345,3 +354,4 @@ def tag(raw_lot, house, sale, collected_at=None):
         "lot_url": lot_url,
         "collected_at": collected_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
+    return apply_content_policy(lot, house)

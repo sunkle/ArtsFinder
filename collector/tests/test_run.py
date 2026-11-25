@@ -35,6 +35,13 @@ class ReuseTests(unittest.TestCase):
         out = run.reuse_stored(stored, {}, {"title": stored["sale_title"], "date": stored["sale_date"]})
         self.assertEqual(out, stored)
 
+    def test_reuse_enforces_content_policy_on_stored_lots(self):
+        stored = dict(lot(n="1"), image_url="https://img.test/1.jpg")
+        sale = {"title": stored["sale_title"], "date": stored["sale_date"]}
+        self.assertEqual(run.reuse_stored(stored, {}, sale, {"content_policy": "full"})["image_url"], "https://img.test/1.jpg")
+        self.assertIsNone(run.reuse_stored(stored, {}, sale, {"content_policy": "text_only"})["image_url"])
+        self.assertEqual(stored["image_url"], "https://img.test/1.jpg")
+
     def test_collect_house_reuses_without_tagging(self):
         class Fake:
             def __init__(self, fetcher): self.stats = {"new": 0, "reused": 0, "deferred": 0}

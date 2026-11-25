@@ -23,22 +23,17 @@ import json
 import logging
 import re
 from datetime import date
-from urllib.parse import parse_qs, urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qs, urlsplit
 
 from ..fetcher import FetchError
-from .base import Adapter
-from .htmlutil import parse, parse_date, parse_date_range
+from .base import Adapter, sale_wanted
+from .htmlutil import (ancestors, card_of, clean_url, is_generic, meta_tags, parse, parse_date, parse_date_range,
+                       slug_title)
 
 log = logging.getLogger("collector.goauction")
-DEFAULT_NEW_LOT_PAGES = 150
 _EST_IN_LISTING = re.compile(r"(?:estimate|est\.?)\s*:?\s*(£\s*[\d,]+(?:\s*[-–]\s*£?\s*[\d,]+)?)", re.I)
 
-# Sales whose title does not match are skipped (jewellery, watches, stamps, coins, ...).
-ART_SALE = (r"\b(art|arts|artists?|paintings?|pictures?|prints?|drawings?|watercolou?rs?|sculptures?|"
-            r"pottery|contemporary|modern|british|scottish|cornish|impressionist|illustrations?)\b")
-# Link texts that are buttons, not titles ("View catalogue", "Remind me", ...): every word is in this set.
-GENERIC_WORDS = set("view more detail details catalogue catalog browse bid now register remind me read see click "
-                    "here online live enter info information lots lot auction sale to the all full this go".split())
+
 
 _AU = re.compile(r"(?:^|[?&])au=(\d+)")
 _LOT_ID = re.compile(r"(?:^|[?&])lot=(\d+)")
@@ -62,30 +57,9 @@ _ANY_LABEL = re.compile(r"^(?:" + "|".join(LABELS.values()) + r")\s*(?::|$)", re
 
 
 # ---- small helpers ------------------------------------------------------------------------
-def _clean_url(base, href):
-    parts = urlsplit(urljoin(base, href.strip()))
-    return urlunsplit((parts.scheme, parts.netloc, parts.path, parts.query, ""))
-
-
 def _query_id(url, rx):
     m = rx.search(urlsplit(url).query)
     return m.group(1) if m else None
-
-
-def _slug_title(url):
-    slug = urlsplit(url).path.rstrip("/").rsplit("/", 1)[-1]
-    return re.sub(r"[-_]+", " ", slug).strip().title()
-
-
-def _is_generic(text):
-    words = re.findall(r"[a-z0-9']+", (text or "").lower())
-    return not re.search(r"[a-z]{3}", (text or "").lower()) or all(w in GENERIC_WORDS for w in words)
-
-
-def _ancestors(node):
-    while node.parent is not None:
-        node = node.parent
-        yield node
 
 
 def _as_int(v):
@@ -130,9 +104,9 @@ class GoAuctionAdapter(Adapter):
                 if old is not sale:  # same sale seen again (another link or page): fill gaps
                     if not old["date"]:
                         old["date"], old["end_date"] = sale["date"], sale["end_date"]
-                    if _is_generic(old["title"]) and not _is_generic(sale["title"]):
+                    if is_generic(old["title"]) and not is_generic(sale["title"]):
                         old["title"] = sale["title"]
-        sales = [self._with_date(house, s) for s in found.values() if self._wanted(house, s)]
+        sales = [self._with_date(house, s) for s in found.values() if sale_wanted(house, s["title"])]
         if self.diagnosing:
             sales = sales[:1]
         return sales
@@ -144,21 +118,21 @@ class GoAuctionAdapter(Adapter):
                  and _query_id(a.get("href"), _AU)]
         sales = {}
         for a in links:
-            href = _clean_url(base_url, a.get("href"))
+            href = clean_url(base_url, a.get("href"))
             au = _query_id(href, _AU)
             container = self._container(a, au)
             start, end = parse_date_range(a.text())
             if not start:
                 start, end = parse_date_range(container.text())
             title = a.text()
-            if _is_generic(title):
-                title = self._heading(container) or _slug_title(href)
+            if is_generic(title):
+                title = self._heading(container) or slug_title(href)
             sale = {"id": au, "title": re.sub(r"\s+", " ", title).strip(), "date": start, "end_date": end, "url": href}
             old = sales.setdefault(au, sale)
             if old is not sale:
                 if not old["date"]:
                     old["date"], old["end_date"] = sale["date"], sale["end_date"]
-                if _is_generic(old["title"]) or old["title"] == _slug_title(old["url"]):
+                if is_generic(old["title"]) or old["title"] == slug_title(old["url"]):
                     old["title"] = sale["title"]
         return list(sales.values())
 
@@ -166,7 +140,7 @@ class GoAuctionAdapter(Adapter):
     def _container(link, au):
         """Smallest ancestor that holds a date and no other sale: the 'card' this link belongs to."""
         best = link
-        for node in _ancestors(link):
+        for node in ancestors(link):
             others = {_query_id(a.get("href"), _AU) for a in node.find_all("a")
                       if "/auction/details/" in a.get("href").lower()} - {au, None}
             if others:
@@ -181,19 +155,9 @@ class GoAuctionAdapter(Adapter):
         for n in container.iter():
             if n.tag in ("h1", "h2", "h3", "h4", "h5") or n.has_class("title"):
                 t = n.text()
-                if t and not _is_generic(t):
+                if t and not is_generic(t):
                     return t
         return None
-
-    @staticmethod
-    def _wanted(house, sale):
-        include = re.compile(house.get("sale_include") or ART_SALE, re.I)
-        exclude = house.get("sale_exclude")
-        title = sale["title"]
-        ok = bool(include.search(title)) and not (exclude and re.search(exclude, title, re.I))
-        if not ok:
-            log.info("%s: skipping sale %r (title does not look like art)", house["id"], title)
-        return ok
 
     def _with_date(self, house, sale):
         """No date on the calendar? Look on the sale page itself (it is fetched later anyway)."""
@@ -207,45 +171,8 @@ class GoAuctionAdapter(Adapter):
     # ---------- lots ----------
     def list_lots(self, house, sale):
         refs = self.lot_refs(house, sale)
-        cap = 2 if self.diagnosing else house.get("max_lots_per_sale")
-        budget = house.get("max_new_lot_pages", DEFAULT_NEW_LOT_PAGES)
-        known = self._known_lots()
-        lots = []
-        for ref in refs[:cap] if cap else refs:
-            stored = known.get(ref["id"])
-            if stored and not self.diagnosing:
-                self.stats["reused"] += 1
-                lots.append({"lot_number": stored["lot_number"], "title": stored["title"], "lot_url": ref["url"],
-                             "estimate_text": ref.get("estimate_text"), "_stored": stored,
-                             "_listing_title": ref["title"]})
-                continue
-            if self.stats["new"] >= budget:
-                self.stats["deferred"] += 1
-                continue
-            self.stats["new"] += 1
-            try:
-                html = self.fetch(house, ref["url"])
-            except FetchError as err:
-                # Not stored: a listing-only lot has no medium or artist and would be "known" (never re-fetched).
-                log.warning("%s: lot page failed (%s): lot left out, tried again next run", house["id"], err)
-                continue
-            self.snapshot(house, "lot", ref["url"], html)
-            raw = self.parse_lot(html, ref["url"], house)
-            raw["lot_number"] = raw["lot_number"] or ref["lot_number"]
-            raw["title"] = raw.get("title") or ref["title"]
-            if raw["lot_number"] and raw["title"]:
-                lots.append(raw)
-        return lots
-
-    def _known_lots(self):
-        """Previous lots by GoAuction lot id (taken from the ?lot=<id> in their stored lot_url)."""
-        if not hasattr(self, "_known"):
-            self._known = {}
-            for lot in self.previous_lots or ():
-                lot_id = _query_id(lot.get("lot_url") or "", _LOT_ID)
-                if lot_id:
-                    self._known[lot_id] = lot
-        return self._known
+        return self.fetch_lots(house, refs, lambda lot: _query_id(lot.get("lot_url") or "", _LOT_ID),
+                               self.parse_lot, cap=house.get("max_lots_per_sale"))
 
     def lot_refs(self, house, sale):
         """Every lot link across the sale's pages: [{id, url, lot_number, title}] in page order."""
@@ -275,15 +202,8 @@ class GoAuctionAdapter(Adapter):
 
     @staticmethod
     def _card_text(link):
-        """Text of the smallest ancestor holding only this lot's link (a listing 'card')."""
-        lot_id = _query_id(link.get("href"), _LOT_ID)
-        best = link
-        for node in _ancestors(link):
-            ids = {_query_id(a.get("href"), _LOT_ID) for a in node.find_all("a")} - {None}
-            if ids - {lot_id}:
-                break
-            best = node
-        return best.text()
+        """Text of the 'card' holding only this lot's link."""
+        return card_of(link, lambda href: _query_id(href, _LOT_ID)).text()
 
     @staticmethod
     def _page_key(url):
@@ -299,7 +219,7 @@ class GoAuctionAdapter(Adapter):
             href = a.get("href")
             if not href or href.startswith(("#", "javascript:", "mailto:")):
                 continue
-            url = _clean_url(base_url, href)
+            url = clean_url(base_url, href)
             parts = urlsplit(url)
             lot_id = _query_id(url, _LOT_ID)
             if lot_id and "/auction/lot/" in parts.path.lower():
@@ -311,7 +231,7 @@ class GoAuctionAdapter(Adapter):
                 m = _SLUG_LOT_NO.search(parts.path)
                 ref["lot_number"] = ref["lot_number"] or (m.group(1) if m else "")
                 text = a.text()
-                if text and not _is_generic(text) and len(text) > len(ref["title"]):
+                if text and not is_generic(text) and len(text) > len(ref["title"]):
                     ref["title"] = text
                     ref["lot_number"] = ref["lot_number"] or (_LOT_NO_TEXT.search(text) or [None, ""])[1]
             elif (parts.netloc == host and "pn=" in parts.query and _query_id(url, _AU) in (sale_id, None)
@@ -323,7 +243,7 @@ class GoAuctionAdapter(Adapter):
     def parse_lot(self, html, url, house=None):
         """Lot page -> raw_lot. Order of trust: JSON-LD, labelled fields, og:/meta tags, visible text."""
         root = parse(html)
-        meta = self._meta(root)
+        meta = meta_tags(root)
         ld = self._json_ld(root)
         lines = self._main_lines(root)
         labelled = self._labelled(lines)
@@ -360,19 +280,10 @@ class GoAuctionAdapter(Adapter):
         image = image.get("url") if isinstance(image, dict) else image
         raw["image_url"] = image or meta.get("og:image") or self._stock_image(root)
         if raw["image_url"]:
-            raw["image_url"] = _clean_url(url, raw["image_url"])
+            raw["image_url"] = clean_url(url, raw["image_url"])
         return {k: v for k, v in raw.items() if v not in (None, "")}
 
     # -- extraction pieces --
-    @staticmethod
-    def _meta(root):
-        out = {}
-        for m in root.find_all("meta"):
-            key = (m.get("property") or m.get("name")).lower()
-            if key and m.get("content"):
-                out.setdefault(key, m.get("content").strip())
-        return out
-
     @staticmethod
     def _json_ld(root):
         """First schema.org Product/artwork object found in any ld+json block ({} if none)."""

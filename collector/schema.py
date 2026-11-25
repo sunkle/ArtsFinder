@@ -20,6 +20,11 @@ TYPES = _SCHEMA["types"]
 MEDIUMS = _SCHEMA["mediums"]
 ATTRIBUTION_NOTES = _SCHEMA["attribution_notes"]
 
+# houses.json `content_policy`: what we may keep from a house's catalogue (user decision 25 Nov 2026, SPEC.md).
+#   full      description (max 300 chars) + link to the image
+#   text_only description only; image_url is always null
+CONTENT_POLICIES = ("full", "text_only")
+
 HOUSE_FIELDS = ["id", "name", "town", "region", "website"]
 
 LOT_FIELDS = [

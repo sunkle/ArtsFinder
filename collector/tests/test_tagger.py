@@ -1,6 +1,6 @@
 import unittest
 
-from collector.tagger import (AFTER_NOTE, RULES, classify, is_reproduction, clean_text, parse_artist, parse_dimensions, parse_estimate, parse_year, tag, NotArt)
+from collector.tagger import (AFTER_NOTE, apply_content_policy, RULES, classify, is_reproduction, clean_text, parse_artist, parse_dimensions, parse_estimate, parse_year, tag, NotArt)
 from collector.validate import validate_lot
 
 HOUSE = {"id": "lays"}
@@ -274,6 +274,34 @@ class TagTests(unittest.TestCase):
 
     def test_clean_text(self):
         self.assertEqual(clean_text(" a&nbsp;<br/>b \n c "), "a b c")
+
+
+class ContentPolicyTests(unittest.TestCase):
+    """houses.json content_policy: "full" = description + image link, "text_only" = description, no image link."""
+    IMG = "https://img.test/1.jpg"
+
+    def lot(self, **house):
+        return tag(raw(image_url=self.IMG, description="Oil on canvas, a harbour at dusk"), dict(HOUSE, **house), SALE)
+
+    def test_full_keeps_the_image_link(self):
+        self.assertEqual(self.lot(content_policy="full")["image_url"], self.IMG)
+
+    def test_no_policy_means_full(self):
+        self.assertEqual(self.lot()["image_url"], self.IMG)
+
+    def test_text_only_has_no_image_link_but_keeps_the_description(self):
+        lot = self.lot(content_policy="text_only")
+        self.assertIsNone(lot["image_url"])
+        self.assertEqual(lot["description"], "Oil on canvas, a harbour at dusk")
+
+    def test_unknown_policy_fails_closed(self):
+        with self.assertRaises(ValueError):
+            self.lot(content_policy="text-only")
+
+    def test_apply_does_not_change_its_input(self):
+        original = {"image_url": self.IMG}
+        self.assertEqual(apply_content_policy(original, {"content_policy": "text_only"}), {"image_url": None})
+        self.assertEqual(original["image_url"], self.IMG)
 
 
 if __name__ == "__main__":
