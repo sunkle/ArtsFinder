@@ -6,7 +6,37 @@ raw_lot   : {"lot_number", "title", "lot_url"            (required)
              "artist_text", "description", "medium_detail", "estimate_text",
              "dimensions", "date_made_text", "image_url"  (optional, as found on the page)}
 """
+import json
+import logging
 import os
+import re
+from datetime import date
+
+from ..fetcher import FetchError
+
+DEFAULT_NEW_LOT_PAGES = 150
+DIAGNOSE_MAX_SAVED = 6    # --diagnose saves at most this many pages per house ...
+DIAGNOSE_MAX_FETCHES = 10  # ... and fetches at most this many
+log = logging.getLogger("collector.sources")
+
+# Sales whose title does not match are skipped (jewellery, watches, stamps, coins, ...). Shared by all adapters;
+# a house can override it with `sale_include` / `sale_exclude` (regexes), or add words with `sale_include_extra`.
+ART_SALE = (r"\b(art|arts|artists?|paintings?|pictures?|prints?|drawings?|watercolou?rs?|sculptures?|"
+            r"pottery|contemporary|modern|british|scottish|cornish|impressionist|illustrations?)\b")
+
+
+def sale_wanted(house, *texts):
+    """True if the sale (title and any summary text) passes the house's sale_include / sale_exclude."""
+    text = " ".join(t for t in texts if t)
+    include = house.get("sale_include") or ART_SALE
+    if house.get("sale_include_extra"):  # keep the shared art words and add house-specific ones (e.g. "monthly")
+        include += "|" + house["sale_include_extra"]
+    include = re.compile(include, re.I)
+    exclude = house.get("sale_exclude")
+    ok = bool(include.search(text)) and not (exclude and re.search(exclude, text, re.I))
+    if not ok:
+        log.info("%s: skipping sale %r (does not look like art)", house["id"], text[:80])
+    return ok
 
 
 class Adapter:
@@ -16,6 +46,7 @@ class Adapter:
     def __init__(self, fetcher):
         self.fetcher = fetcher
         self._snapshots = set()
+        self._diag_fetches = 0
         self.stats = {"new": 0, "reused": 0, "deferred": 0}  # lot pages fetched / taken from last run / postponed
 
     @property
@@ -23,18 +54,90 @@ class Adapter:
         return bool(self.diagnose_dir)
 
     def snapshot(self, house, kind, url, text):
-        """In --diagnose mode save the FIRST page of each kind ('calendar', 'sale', 'lot') as diagnose/<house>/<kind>.html."""
-        if not self.diagnose_dir or kind in self._snapshots:
+        """In --diagnose mode save the FIRST page of each kind ('calendar', 'sale', 'catalog', 'lot', or
+        'calendar.json' for raw JSON) as diagnose/<house>/<kind>[.html], at most DIAGNOSE_MAX_SAVED per house."""
+        if not self.diagnose_dir or kind in self._snapshots or len(self._snapshots) >= DIAGNOSE_MAX_SAVED:
             return
         self._snapshots.add(kind)
         folder = os.path.join(self.diagnose_dir, house["id"])
         os.makedirs(folder, exist_ok=True)
-        with open(os.path.join(folder, kind + ".html"), "w", encoding="utf-8") as f:
+        name = kind if "." in kind else kind + ".html"
+        with open(os.path.join(folder, name), "w", encoding="utf-8") as f:
             f.write(f"<!-- fetched from {url} -->\n{text}")
+
+    def diagnose_done(self):
+        """True once a diagnose run holds one sale/catalogue page and one lot page (so it can stop early)."""
+        kinds = {k.split(".")[0] for k in self._snapshots}
+        return "lot" in kinds and bool(kinds & {"sale", "catalog"})
+
+    def _count_diagnose_fetch(self):
+        if self.diagnosing:
+            if self._diag_fetches >= DIAGNOSE_MAX_FETCHES:
+                raise FetchError("diagnose page budget used up")
+            self._diag_fetches += 1
 
     def fetch(self, house, url):
         """Get a page, applying this house's crawl_delay. The only way adapters read the web."""
+        self._count_diagnose_fetch()
         return self.fetcher.get(url, crawl_delay=house.get("crawl_delay", 0))
+
+    def diagnose_fetch(self, house, kind, url):
+        """Diagnose only: fetch one extra page (e.g. a sale's own catalogue page) and save it. Never raises."""
+        if not (self.diagnosing and url) or kind in self._snapshots:
+            return None
+        try:
+            html = self.fetch(house, url)
+        except FetchError as err:
+            log.info("%s: diagnose page %s failed: %s", house["id"], url, err)
+            return None
+        self.snapshot(house, kind, url, html)
+        return html
+
+    def fetch_json(self, house, url, payload, kind="sale.json"):
+        """POST a JSON body to a site's own JSON endpoint and return the decoded answer (None if unreadable).
+        In diagnose mode the raw answer text is saved BEFORE it is parsed (an error page is the likely failure)."""
+        try:
+            self._count_diagnose_fetch()
+            text = self.fetcher.post_json(url, payload, crawl_delay=house.get("crawl_delay", 0),
+                                          api_allowed=bool(house.get("api_allowed", False)))
+            self.snapshot(house, kind, url, text)
+            return json.loads(text)
+        except (ValueError, FetchError) as err:
+            log.warning("%s: %s unreadable: %s", house["id"], url, err)
+            return None
+
+    def today(self):
+        """Today's date; adapters that must guess a year use it. Tests set `adapter.today_override`."""
+        return getattr(self, "today_override", None) or date.today()
+
+    def crawl_pages(self, house, first_url, parse_page, kind="sale", max_pages=None):
+        """Read a paged listing: fetch first_url, then every page parse_page names, until a page adds nothing new.
+
+        parse_page(html, url) -> (refs, more_page_urls); each ref is a dict with a unique "id".
+        Returns the refs in page order. Stops after max_pages (default house["max_pages"], 40)."""
+        max_pages = max_pages or house.get("max_pages", 40)
+        queue, seen, refs = [first_url], set(), {}
+        while queue and len(seen) < max_pages:
+            url = queue.pop(0)
+            if url in seen:
+                continue
+            seen.add(url)
+            try:
+                html = self.fetch(house, url)
+            except FetchError as err:
+                log.warning("%s: %s page failed: %s", house["id"], kind, err)
+                break
+            self.snapshot(house, kind, url, html)
+            found, more = parse_page(html, url)
+            new = [r for r in found if r["id"] not in refs]
+            for r in new:
+                refs[r["id"]] = r
+            if not new:
+                break  # nothing new: past the end (or a page that ignores the page number)
+            queue += [u for u in more if u not in seen and u not in queue]
+            if self.diagnosing:
+                break
+        return list(refs.values())
 
     def list_sales(self, house):
         """Return the upcoming sales: a list of sale dicts."""
@@ -43,3 +146,54 @@ class Adapter:
     def list_lots(self, house, sale):
         """Return the lots of one sale: a list of raw_lot dicts."""
         raise NotImplementedError
+
+    # ---- incremental lot fetching, shared by every adapter that reads one page per lot ----
+    def known_lots(self, key_of):
+        """Previous lots of this house by platform lot key: {key: stored lot}. key_of(stored lot) -> key or None."""
+        if not hasattr(self, "_known"):
+            self._known = {}
+            for lot in self.previous_lots or ():
+                key = key_of(lot)
+                if key:
+                    self._known[key] = lot
+        return self._known
+
+    def fetch_lots(self, house, refs, key_of, parse_lot, cap=None):
+        """Turn listing refs into raw lots, politely and incrementally.
+
+        refs: [{"id": platform lot key, "url", "lot_number", "title", optional "estimate_text"}] in page order.
+        key_of(stored lot) -> the platform key of a lot already in last night's data/lots.json.
+        parse_lot(html, url, house) -> raw_lot dict.
+        A known lot is reused without a request. A new one costs one request, up to house["max_new_lot_pages"]
+        (default 150) per run across all sales; the rest wait for the next night."""
+        cap = 2 if self.diagnosing else cap
+        budget = house.get("max_new_lot_pages", DEFAULT_NEW_LOT_PAGES)
+        known = self.known_lots(key_of)
+        lots = []
+        for ref in refs[:cap] if cap else refs:
+            stored = known.get(ref["id"])
+            if stored and not self.diagnosing:
+                self.stats["reused"] += 1
+                lots.append({"lot_number": stored["lot_number"], "title": stored["title"], "lot_url": ref["url"],
+                             "estimate_text": ref.get("estimate_text"), "_stored": stored,
+                             "_listing_title": ref["title"]})
+                continue
+            if self.stats["new"] >= budget:
+                self.stats["deferred"] += 1
+                continue
+            self.stats["new"] += 1
+            try:
+                html = self.fetch(house, ref["url"])
+            except FetchError as err:
+                # Not stored: a listing-only lot has no medium or artist and would be "known" (never re-fetched).
+                log.warning("%s: lot page failed (%s): lot left out, tried again next run", house["id"], err)
+                continue
+            self.snapshot(house, "lot", ref["url"], html)
+            raw = parse_lot(html, ref["url"], house)
+            raw["lot_number"] = raw.get("lot_number") or ref["lot_number"]
+            raw["title"] = raw.get("title") or ref["title"]
+            if not raw.get("estimate_text") and not raw.get("estimate_low") and ref.get("estimate_text"):
+                raw["estimate_text"] = ref["estimate_text"]  # the lot page shows no estimate (e.g. sale over)
+            if raw["lot_number"] and raw["title"]:
+                lots.append(raw)
+        return lots

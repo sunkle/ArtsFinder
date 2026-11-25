@@ -35,6 +35,13 @@ class ReuseTests(unittest.TestCase):
         out = run.reuse_stored(stored, {}, {"title": stored["sale_title"], "date": stored["sale_date"]})
         self.assertEqual(out, stored)
 
+    def test_reuse_enforces_content_policy_on_stored_lots(self):
+        stored = dict(lot(n="1"), image_url="https://img.test/1.jpg")
+        sale = {"title": stored["sale_title"], "date": stored["sale_date"]}
+        self.assertEqual(run.reuse_stored(stored, {}, sale, {"content_policy": "full"})["image_url"], "https://img.test/1.jpg")
+        self.assertIsNone(run.reuse_stored(stored, {}, sale, {"content_policy": "text_only"})["image_url"])
+        self.assertEqual(stored["image_url"], "https://img.test/1.jpg")
+
     def test_collect_house_reuses_without_tagging(self):
         class Fake:
             def __init__(self, fetcher): self.stats = {"new": 0, "reused": 0, "deferred": 0}
@@ -97,9 +104,30 @@ class MergeTests(unittest.TestCase):
         self.assertEqual(validate_data(out), [])
 
 
+class MergeGuardTests(unittest.TestCase):
+    def test_a_much_smaller_answer_keeps_the_old_lots_and_warns(self):
+        old = [lot("lays", n=str(i)) for i in range(1, 7)]
+        fresh = [dict(lot("lays", n="1"), title="Fresh"), lot("lays", n="99")]
+        with self.assertLogs("collector", "WARNING") as logs:
+            out = run.merge_lots(old, {"lays": fresh}, {"lays"}, TODAY)
+        self.assertEqual(len(out), 7)  # 6 old + the one new; lot 1 is the fresh copy
+        self.assertEqual(next(l for l in out if l["lot_number"] == "1")["title"], "Fresh")
+        self.assertIn("lays", logs.output[0])
+
+    def test_half_or_more_replaces_the_old_lots(self):
+        old = [lot("lays", n=str(i)) for i in range(1, 5)]
+        out = run.merge_lots(old, {"lays": [lot("lays", n="1"), lot("lays", n="2")]}, {"lays"}, TODAY)
+        self.assertEqual(sorted(l["lot_number"] for l in out), ["1", "2"])
+
+    def test_old_lots_of_sales_that_have_ended_do_not_count(self):
+        old = [lot("lays", n=str(i), date="2026-01-01") for i in range(1, 9)] + [lot("lays", n="50")]
+        out = run.merge_lots(old, {"lays": [lot("lays", n="60")]}, {"lays"}, TODAY)
+        self.assertEqual([l["lot_number"] for l in out], ["60"])
+
+
 class CollectHouseTests(unittest.TestCase):
     def test_example_adapter_end_to_end_with_mock_network(self):
-        page = ('<div class="lot" data-lot="7"><a href="/lot/7">Harbour</a><span class="est">£1k-1.5k</span>'
+        page = ('<div class="lot" data-lot="7"><a href="/lot/7">Harbour, oil on canvas</a><span class="est">£1k-1.5k</span>'
                 '<img src="https://x.test/7.jpg"></div><div class="lot" data-lot="8"><a href="/lot/8"></a></div>')
         net = {"https://x.test/sale": page.encode(), "https://x.test/robots.txt": b""}
 
@@ -116,7 +144,7 @@ class CollectHouseTests(unittest.TestCase):
         self.assertEqual(lots[0]["lot_url"], "https://x.test/lot/7")
 
     def test_sale_still_running_is_fetched_but_ended_one_is_not(self):
-        page = '<div class="lot" data-lot="7"><a href="/lot/7">Harbour</a></div>'
+        page = '<div class="lot" data-lot="7"><a href="/lot/7">Harbour, oil on canvas</a></div>'
         net = {"https://x.test/sale": page.encode(), "https://x.test/robots.txt": b""}
         f = Fetcher(opener=lambda r, t: (net[r.full_url], None), sleep=lambda s: None)
         self.addCleanup(f.close)

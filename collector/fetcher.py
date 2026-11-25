@@ -4,6 +4,7 @@ Polite by design: robots.txt, crawl-delay (never under min_delay), one request a
 2 retries with backoff, a per-run disk cache, and an honest User-Agent (never a browser).
 """
 import hashlib
+import json
 import logging
 import os
 import tempfile
@@ -30,9 +31,13 @@ class BlockedHost(FetchError):
     pass
 
 
+class ApiNotAllowed(FetchError):
+    pass
+
+
 # Sites we must never fetch, whatever an adapter or houses.json says (their terms forbid it).
 # A host matches if it equals an entry or is a subdomain of it.
-BLOCKED_HOSTS = ("the-saleroom.com",)
+BLOCKED_HOSTS = ("the-saleroom.com", "easyliveauction.com")  # easyLive: its site terms are unread (docs/RULES.md)
 
 
 def check_not_blocked(url):
@@ -40,6 +45,16 @@ def check_not_blocked(url):
     for blocked in BLOCKED_HOSTS:
         if host == blocked or host.endswith("." + blocked):
             raise BlockedHost(f"{host} is on the never-fetch list (terms forbid automated access): {url}")
+
+
+def check_api_allowed(url, api_allowed=False):
+    """A JSON endpoint under /api, or any URL with 'search' in it, is a site's search/app interface, not a public
+    page: refused unless the house config says "api_allowed": true (a decision recorded in docs/RULES.md)."""
+    parts = urlsplit(url)
+    path = parts.path.lower()
+    looks_api = path == "/api" or path.startswith("/api/") or "search" in (path + "?" + parts.query).lower()
+    if looks_api and not api_allowed:
+        raise ApiNotAllowed(f"{url} is an /api or search endpoint and the house config has no api_allowed: true")
 
 
 def user_agent(repo=None):
@@ -71,12 +86,23 @@ class Fetcher:
     # ---- public -------------------------------------------------------
     def get(self, url, crawl_delay=0):
         """Return the page text. Raises FetchError / RobotsDisallowed / BlockedHost."""
+        return self._fetch(url, crawl_delay, None)
+
+    def post_json(self, url, payload, crawl_delay=0, api_allowed=False):
+        """POST a JSON body and return the response text (for sites whose lists load through a JSON endpoint,
+        e.g. David Duggleby). Same rules as get(): robots.txt (checked against the full URL, query string
+        included), throttle, cache, honest User-Agent. Refuses /api and 'search' URLs unless api_allowed."""
         check_not_blocked(url)
-        cached = self._cache_path(url)
+        check_api_allowed(url, api_allowed)
+        return self._fetch(url, crawl_delay, json.dumps(payload, sort_keys=True).encode("utf-8"))
+
+    def _fetch(self, url, crawl_delay, data):
+        check_not_blocked(url)
+        cached = self._cache_path(url, data)
         if os.path.exists(cached):
             with open(cached, encoding="utf-8") as f:
                 text = f.read()
-            log.info("GET %s -> cached (%d chars)", url, len(text))
+            log.info("%s %s -> cached (%d chars)", "POST" if data else "GET", url, len(text))
             return text
         parts = urlsplit(url)
         if parts.scheme not in ("http", "https") or not parts.netloc:
@@ -86,7 +112,7 @@ class Fetcher:
         log.info("robots.txt %s %s", "allows" if allowed else "DISALLOWS", url)
         if not allowed:
             raise RobotsDisallowed(f"robots.txt disallows {url}")
-        text = self._request(url, max(self.min_delay, float(crawl_delay or 0), robots_delay))
+        text = self._request(url, max(self.min_delay, float(crawl_delay or 0), robots_delay), data)
         with open(cached, "w", encoding="utf-8") as f:
             f.write(text)
         return text
@@ -97,8 +123,8 @@ class Fetcher:
             self._tmp = None
 
     # ---- internals ----------------------------------------------------
-    def _cache_path(self, url):
-        return os.path.join(self.cache_dir, hashlib.sha256(url.encode()).hexdigest())
+    def _cache_path(self, url, data=None):
+        return os.path.join(self.cache_dir, hashlib.sha256(url.encode() + (b"\0" + data if data else b"")).hexdigest())
 
     def _robots_for(self, parts, crawl_delay):
         origin = f"{parts.scheme}://{parts.netloc}"
@@ -122,10 +148,13 @@ class Fetcher:
         if wait > 0:
             self.sleep(wait)
 
-    def _request(self, url, delay):
+    def _request(self, url, delay, data=None):
         check_not_blocked(url)
         host = urlsplit(url).netloc
-        request = urllib.request.Request(url, headers={"User-Agent": self.ua})
+        headers = {"User-Agent": self.ua}
+        if data is not None:
+            headers.update({"Content-Type": "application/json", "Accept": "application/json"})
+        request = urllib.request.Request(url, data=data, headers=headers)
         last_err = None
         for attempt in range(self.retries + 1):
             if attempt:
@@ -134,17 +163,17 @@ class Fetcher:
             try:
                 body, charset = self.opener(request, self.timeout)
                 self._last[host] = self.clock()
-                log.info("GET %s -> 200 (%d bytes)", url, len(body))
+                log.info("%s %s -> 200 (%d bytes)", request.get_method(), url, len(body))
                 return body.decode(charset or "utf-8", errors="replace")
             except urllib.error.HTTPError as err:
                 self._last[host] = self.clock()
                 last_err = FetchError(f"HTTP {err.code} for {url}")
                 last_err.status = err.code
-                log.info("GET %s -> HTTP %s (attempt %d)", url, err.code, attempt + 1)
+                log.info("%s %s -> HTTP %s (attempt %d)", request.get_method(), url, err.code, attempt + 1)
                 if err.code not in RETRY_CODES:
                     raise last_err
             except (urllib.error.URLError, OSError) as err:
                 self._last[host] = self.clock()
                 last_err = FetchError(f"network error for {url}: {err}")
-                log.info("GET %s -> network error %s (attempt %d)", url, err, attempt + 1)
+                log.info("%s %s -> network error %s (attempt %d)", request.get_method(), url, err, attempt + 1)
         raise last_err

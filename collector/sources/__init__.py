@@ -10,7 +10,12 @@ ADAPTERS = {
     "example_html": "example_html:ExampleHtmlAdapter",
     # GoAuction platform: Lay's, McTear's, Anderson & Garland, Mallams, Halls (docs/SOURCES.md).
     "goauction": "goauction:GoAuctionAdapter",
+    # White-label catalogue platform (auctions.<house>/catalogue/<hash>/<hash>/<slug>/): Gardiner Houlgate, Fieldings,
+    # Mellors & Kirk, Trevanion, Peter Francis, Hansons.
+    "whitelabel": "whitelabel:WhiteLabelAdapter",
     # Planned (see docs/SOURCES.md). Not written yet.
+    "gorringes": "gorringes:GorringesAdapter",
+    "lawrences": "lawrences:LawrencesAdapter",
     "easylive": "easylive:EasyLiveAdapter",
     "duggleby": "duggleby:DugglebyAdapter",
     "roseberys": "roseberys:RoseberysAdapter",

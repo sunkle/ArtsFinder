@@ -3,6 +3,8 @@ import json
 import os
 import unittest
 
+from collector.schema import CONTENT_POLICIES
+from collector.sources import ADAPTERS
 from collector.validate import validate_data, validate_lot
 
 GOOD = {
@@ -68,23 +70,52 @@ class ValidateTests(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__), "..", "houses.json")
         with open(path) as fh:
             houses = json.load(fh)["houses"]
-        keys = {"id", "name", "town", "region", "website", "adapter", "enabled", "crawl_delay", "disabled_reason"}
-        optional = {"calendar_urls", "calendar_months", "sale_include", "sale_exclude", "max_pages", "max_lots_per_sale", "max_new_lot_pages", "keep_existing_lots"}
+        keys = {"id", "name", "town", "region", "website", "adapter", "enabled", "crawl_delay", "disabled_reason",
+                "content_policy"}
+        optional = {"calendar_urls", "calendar_months", "sale_include", "sale_include_extra", "sale_exclude", "max_pages", "max_lots_per_sale", "max_new_lot_pages", "keep_existing_lots", "api_allowed"}
         for h in houses:
             self.assertEqual(set(h) - optional, keys, h["id"])
-            if h["adapter"] == "goauction":
+            if h["adapter"] in ("goauction", "whitelabel"):
                 self.assertTrue(h["calendar_urls"], h["id"])
+            if h["adapter"] is None:
+                self.assertFalse(h["enabled"], h["id"])  # no adapter planned: must be switched off
+            else:
+                self.assertIn(h["adapter"], ADAPTERS, h["id"])
+            self.assertIn(h["content_policy"], CONTENT_POLICIES, h["id"])
             self.assertGreaterEqual(h["crawl_delay"], 3)
             self.assertEqual(bool(h["enabled"]), h["disabled_reason"] is None, h["id"])
-        by_id = {h["id"]: h for h in houses}
-        for unclear in ("mallams", "mctears", "rogersjones", "roseberys", "halls"):
-            self.assertFalse(by_id[unclear]["enabled"], unclear)
-        self.assertIn("lays", by_id)
-        self.assertTrue(by_id["gildings"]["enabled"] and by_id["gildings"]["crawl_delay"] == 10)
-        self.assertFalse(by_id["gorringes"]["enabled"])
-        self.assertTrue(by_id["gorringes"]["keep_existing_lots"])
+        self.assertEqual(len({h["id"] for h in houses}), len(houses))
         for h in houses:  # keep_existing_lots only makes sense on a house that is switched off
             self.assertFalse(h.get("keep_existing_lots") and h["enabled"], h["id"])
+
+    def test_houses_json_follows_the_terms_review(self):
+        """User decision 25 Nov 2026 (SPEC.md, docs/RULES.md): terms forbid -> not collected, reason quoted."""
+        path = os.path.join(os.path.dirname(__file__), "..", "houses.json")
+        with open(path) as fh:
+            by_id = {h["id"]: h for h in json.load(fh)["houses"]}
+        enabled = {i for i, h in by_id.items() if h["enabled"]}
+        self.assertEqual(enabled, {"hansons", "gorringes", "rogersjones"})  # RULES.md, v0.4 Decision (25 Nov 2026)
+        for i in enabled:
+            self.assertEqual(by_id[i]["content_policy"], "full", i)
+        for i in ("fieldings", "peterfrancis", "duggleby", "lawrences", "morphets"):  # v0.4 Decision, 25 Nov 2026
+            self.assertFalse(by_id[i]["enabled"], i)
+            self.assertTrue(by_id[i]["disabled_reason"], i)
+        for i in by_id:  # nothing enabled may be a bot-challenge house or reach the-saleroom
+            if by_id[i]["enabled"]:
+                self.assertNotIn("bot challenge", (by_id[i]["disabled_reason"] or "").lower(), i)
+                self.assertNotIn("the-saleroom", by_id[i]["website"], i)
+            self.assertIn(by_id[i].get("content_policy"), CONTENT_POLICIES, i)
+        self.assertFalse(any(h.get("api_allowed") for h in by_id.values()))  # no house may use /api endpoints
+        for i in ("mellorskirk", "trevanion", "serrell", "morganevans", "gardinerhoulgate", "rosss"):
+            self.assertFalse(by_id[i]["enabled"], i)
+            self.assertIn("RULES.md", by_id[i]["disabled_reason"], i)
+            self.assertFalse(by_id[i].get("keep_existing_lots"), i)
+        for i in ("lays", "gildings", "andersonandgarland", "mallams", "mctears", "halls"):
+            self.assertFalse(by_id[i]["enabled"], i)
+            self.assertIn("bot challenge", by_id[i]["disabled_reason"], i)
+            self.assertTrue(by_id[i]["keep_existing_lots"], i)
+        self.assertEqual({by_id[i]["adapter"] for i in ("gorringes", "lawrences", "duggleby", "rogersjones")},
+                         {"gorringes", "lawrences", "duggleby", "rogersjones"})
 
 
 if __name__ == "__main__":

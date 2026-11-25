@@ -6,6 +6,7 @@ are tolerated. Also parse_date(): finds the first UK-style date in free text.
 import re
 from datetime import date
 from html.parser import HTMLParser
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 SKIP = {"script", "style", "noscript", "template", "svg"}
@@ -147,3 +148,84 @@ def parse_date_range(text):
 def parse_date(text):
     """First date in the text as 'YYYY-MM-DD' (first day of a range), or None."""
     return parse_date_range(text)[0]
+
+
+# ---- helpers shared by the platform adapters ------------------------------------------------
+# Link texts that are buttons, not titles ("View catalogue", "Remind me", ...): every word is in this set.
+GENERIC_WORDS = set("view more detail details catalogue catalog browse bid now register remind me read see click "
+                    "here online live enter info information lots lot auction sale to the all full this go".split())
+
+
+def is_generic(text):
+    """True for button text ('View lots') and anything without a real word in it."""
+    words = re.findall(r"[a-z0-9']+", (text or "").lower())
+    return not re.search(r"[a-z]{3}", (text or "").lower()) or all(w in GENERIC_WORDS for w in words)
+
+
+def slug_title(url):
+    """'.../fine-art-sale/' -> 'Fine Art Sale' (last resort when a page gives no title)."""
+    slug = urlsplit(url).path.rstrip("/").rsplit("/", 1)[-1]
+    return re.sub(r"[-_]+", " ", slug).strip().title()
+
+
+def clean_url(base, href):
+    """Absolute URL without a #fragment."""
+    parts = urlsplit(urljoin(base, href.strip()))
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, parts.query, ""))
+
+
+def ancestors(node):
+    while node.parent is not None:
+        node = node.parent
+        yield node
+
+
+def card_of(link, key_of):
+    """The 'card' a link sits in: the biggest ancestor whose links (<a href>) all have the same key.
+    key_of(href) -> a key, or None for links to ignore (menus, buttons)."""
+    own = key_of(link.get("href"))
+    best = link
+    for node in ancestors(link):
+        keys = {key_of(a.get("href")) for a in node.find_all("a")} - {None}
+        if keys - {own}:
+            break
+        best = node
+    return best
+
+
+_ESTIMATE = re.compile(r"£\s*[\d,]+(?:\.\d+)?(?:\s*[-–—]\s*£?\s*[\d,]+(?:\.\d+)?)?")
+
+
+def first_estimate(lines):
+    """First money figure or range ('£300 - £500') in some text lines, or None."""
+    for line in lines:
+        m = _ESTIMATE.search(line)
+        if m:
+            return m.group(0)
+    return None
+
+
+def page_links(root, base_url, params=("page", "pg", "pn", "p")):
+    """Absolute URLs of the same page with another page number (links like ?page=2): the 'next page' links."""
+    base = urlsplit(base_url)
+    out = []
+    for a in root.find_all("a"):
+        href = a.get("href")
+        if not href or href.startswith(("#", "javascript:", "mailto:")):
+            continue
+        url = clean_url(base_url, href)
+        parts = urlsplit(url)
+        names = {q.split("=")[0].lower() for q in parts.query.split("&") if q}
+        if parts.netloc == base.netloc and parts.path == base.path and names & set(params) and url not in out:
+            out.append(url)
+    return out
+
+
+def meta_tags(root):
+    """{'og:title': ..., 'description': ...} from <meta> tags (first one wins)."""
+    out = {}
+    for m in root.find_all("meta"):
+        key = (m.get("property") or m.get("name")).lower()
+        if key and m.get("content"):
+            out.setdefault(key, m.get("content").strip())
+    return out

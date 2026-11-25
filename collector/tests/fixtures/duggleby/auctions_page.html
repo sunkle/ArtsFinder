@@ -1,0 +1,47 @@
+<!-- excerpt of the real page https://davidduggleby.com/auctions/ (saved 25 Nov 2026): the title and the JavaScript that loads the auction list; the list itself is not in the page -->
+<html><head><title>Upcoming Auctions | Auction Calendar | Bid Now with Dugglebys</title></head><body>
+<h1>Upcoming Auctions</h1><p>Loading Auction Please wait while we load the auctions.</p>
+<script>
+        // ---- Data: fetch every upcoming auction once by paging to exhaustion ----
+        async function fetchAllAuctions() {
+            const results = [];
+            const maxPages = 50; // safety cap (~1000 auctions)
+            let page = 0;
+
+            while (page < maxPages) {
+                const response = await fetch('/api/Auctions/GetMoreAuctions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageIndex: page, pageSize: pageSize, ClientNo: clientNo })
+                });
+
+                if (!response.ok) throw new Error('Status: ' + response.status);
+
+                const data = await response.json();
+                results.push(...data);
+
+                if (data.length < pageSize) break; // last page
+                page++;
+            }
+
+            hasCompanyField = results.some(a => getCompanyId(a) !== null);
+            return results;
+        }
+        function renderNextPage() {
+            const slice = filteredAuctions.slice(renderIndex, renderIndex + pageSize);
+            appendAuctions(slice);
+            renderIndex += slice.length;
+
+            document.getElementById('btnMoreAuctions').style.display =
+                (renderIndex < filteredAuctions.length) ? '' : 'none';
+        }
+
+        function applyFiltersAndRender() {
+            filteredAuctions = applyAuctionFilters();
+            renderIndex = 0;
+            document.getElementById('auctionsContainer').innerHTML = '';
+        const pageSize = 20;
+        const clientNo = null;
+// (rendering code that uses auction.AuctionName, SubTitle, AuctionDate, auctionLink, FDTimed, FDstarttime, FDvenue, description, image follows in the real page)
+</script>
+</body></html>
