@@ -15,6 +15,10 @@ on:
         description: "Probe run: politely test which auction houses allow automated access (saves probe/ to the 'probe' branch). Collects nothing and deploys nothing."
         type: boolean
         default: false
+      probe_deep:
+        description: "Deep probe run: save real sale and lot pages from the houses the probe found collectable (saves probe-deep/ to the 'probe-deep' branch). Overrides probe and diagnose. Collects nothing and deploys nothing."
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -55,16 +59,16 @@ jobs:
       - name: Run tests
         run: python3 -m unittest discover collector/tests
       - name: Collect lots
-        if: github.event_name != 'workflow_dispatch' || (!inputs.diagnose && !inputs.probe)
+        if: github.event_name != 'workflow_dispatch' || (!inputs.diagnose && !inputs.probe && !inputs.probe_deep)
         run: python3 -m collector.run
       - name: Diagnose (manual runs only)
-        if: github.event_name == 'workflow_dispatch' && inputs.diagnose && !inputs.probe
+        if: github.event_name == 'workflow_dispatch' && inputs.diagnose && !inputs.probe && !inputs.probe_deep
         run: |
           set -o pipefail
           mkdir -p diagnose
           python3 -m collector.run --diagnose 2>&1 | tee diagnose/run.log
       - name: Upload diagnose pages (manual runs only)
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnose && !inputs.probe
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnose && !inputs.probe && !inputs.probe_deep
         uses: actions/upload-artifact@v4
         with:
           name: diagnose
@@ -72,7 +76,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
       - name: Save diagnose folder to the 'diagnose' branch (manual runs only)
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnose && !inputs.probe
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.diagnose && !inputs.probe && !inputs.probe_deep
         run: |
           mkdir -p diagnose
           tmp="$(mktemp -d)"
@@ -86,13 +90,13 @@ jobs:
           git commit -q -m "Diagnose run ${{ github.run_id }}"
           git push --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" diagnose:diagnose
       - name: Probe houses (manual runs only)
-        if: github.event_name == 'workflow_dispatch' && inputs.probe
+        if: github.event_name == 'workflow_dispatch' && inputs.probe && !inputs.probe_deep
         run: |
           set -o pipefail
           mkdir -p probe
           python3 -m collector.probe 2>&1 | tee probe.log
       - name: Save probe folder to the 'probe' branch (manual runs only)
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.probe
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.probe && !inputs.probe_deep
         run: |
           mkdir -p probe
           cp probe.log probe/run.log 2>/dev/null || true
@@ -106,11 +110,34 @@ jobs:
           git add -A
           git commit -q -m "Probe run ${{ github.run_id }}"
           git push --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" probe:probe
+      - name: Deep probe (manual runs only)
+        if: github.event_name == 'workflow_dispatch' && inputs.probe_deep
+        run: |
+          set -o pipefail
+          mkdir -p probe probe-deep
+          git fetch --depth=1 origin probe
+          git show FETCH_HEAD:probe/report.json > probe/report.json
+          python3 -m collector.probe --deep --only-verdict ok --report probe/report.json 2>&1 | tee probe-deep.log
+      - name: Save probe-deep folder to the 'probe-deep' branch (manual runs only)
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.probe_deep
+        run: |
+          mkdir -p probe-deep
+          cp probe-deep.log probe-deep/run.log 2>/dev/null || true
+          tmp="$(mktemp -d)"
+          cp -r probe-deep "$tmp/probe-deep"
+          cd "$tmp"
+          git init -q
+          git checkout -q --orphan probe-deep
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deep probe run ${{ github.run_id }}"
+          git push --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" probe-deep:probe-deep
       - name: Build the app
-        if: github.event_name != 'workflow_dispatch' || !inputs.probe
+        if: github.event_name != 'workflow_dispatch' || (!inputs.probe && !inputs.probe_deep)
         run: python3 app/build.py
       - name: Save data/lots.json if it changed
-        if: github.event_name != 'workflow_dispatch' || !inputs.probe
+        if: github.event_name != 'workflow_dispatch' || (!inputs.probe && !inputs.probe_deep)
         run: |
           git config user.name "arts-finder-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -123,15 +150,15 @@ jobs:
             git push
           fi
       - uses: actions/configure-pages@v5
-        if: github.event_name != 'workflow_dispatch' || !inputs.probe
+        if: github.event_name != 'workflow_dispatch' || (!inputs.probe && !inputs.probe_deep)
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'workflow_dispatch' || !inputs.probe
+        if: github.event_name != 'workflow_dispatch' || (!inputs.probe && !inputs.probe_deep)
         with:
           path: app/dist
 
   deploy:
     needs: collect
-    if: github.event_name != 'workflow_dispatch' || !inputs.probe
+    if: github.event_name != 'workflow_dispatch' || (!inputs.probe && !inputs.probe_deep)
     runs-on: ubuntu-latest
     environment:
       name: github-pages
