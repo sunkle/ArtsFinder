@@ -1,0 +1,333 @@
+GET https://lotsroad.com/robots.txt -> 200 (346 bytes)
+robots.txt allows https://lotsroad.com/
+GET https://lotsroad.com/ -> 200 (111569 bytes)
+GET https://auctions.lotsroad.com/robots.txt -> 200 (459 bytes)
+robots.txt allows https://auctions.lotsroad.com/upcoming-auctions/
+GET https://auctions.lotsroad.com/upcoming-auctions/ -> HTTP 403 (attempt 1)
+  skip https://auctions.lotsroad.com/upcoming-auctions/ (HTTP 403 for https://auctions.lotsroad.com/upcoming-auctions/)
+GET https://www.lotsroad.com/robots.txt -> 200 (346 bytes)
+robots.txt allows https://www.lotsroad.com/upcoming-events/
+GET https://www.lotsroad.com/upcoming-events/ -> 200 (65069 bytes)
+robots.txt allows https://auctions.lotsroad.com/auction-results/
+GET https://auctions.lotsroad.com/auction-results/ -> HTTP 403 (attempt 1)
+  skip https://auctions.lotsroad.com/auction-results/ (HTTP 403 for https://auctions.lotsroad.com/auction-results/)
+robots.txt allows https://auctions.lotsroad.com/auction/details/-the-music-sale---weds-25th-november/?au=125
+GET https://auctions.lotsroad.com/auction/details/-the-music-sale---weds-25th-november/?au=125 -> HTTP 403 (attempt 1)
+  skip https://auctions.lotsroad.com/auction/details/-the-music-sale---weds-25th-november/?au=125 (HTTP 403 for https://auctions.lotsroad.com/auction/details/-the-music-sale---wed)
+robots.txt allows https://auctions.lotsroad.com/auction/details/-the-interiors-sale---monday-30th-november/?au=130
+GET https://auctions.lotsroad.com/auction/details/-the-interiors-sale---monday-30th-november/?au=130 -> HTTP 403 (attempt 1)
+  skip https://auctions.lotsroad.com/auction/details/-the-interiors-sale---monday-30th-november/?au=130 (HTTP 403 for https://auctions.lotsroad.com/auction/details/-the-interiors-sale--)
+robots.txt allows https://auctions.lotsroad.com/auction/details/-luxe-sale---tuesday-1st-december/?au=122
+GET https://auctions.lotsroad.com/auction/details/-luxe-sale---tuesday-1st-december/?au=122 -> HTTP 403 (attempt 1)
+  skip https://auctions.lotsroad.com/auction/details/-luxe-sale---tuesday-1st-december/?au=122 (HTTP 403 for https://auctions.lotsroad.com/auction/details/-luxe-sale---tuesday-)
+GET https://www.easyliveauction.com/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://www.easyliveauction.com/auctioneers/lotsroad/
+  skip https://www.easyliveauction.com/auctioneers/lotsroad/ (robots.txt disallows https://www.easyliveauction.com/auctioneers/lotsroad/)
+lots-road-auctions -> 2 pages saved (ok)
+GET https://gorringes.co.uk/robots.txt -> 200 (2259 bytes)
+robots.txt allows https://gorringes.co.uk/
+GET https://gorringes.co.uk/ -> 200 (135990 bytes)
+robots.txt allows https://gorringes.co.uk/calendar
+GET https://gorringes.co.uk/calendar -> 200 (148897 bytes)
+robots.txt DISALLOWS https://gorringes.co.uk/search/upcominglots
+  skip https://gorringes.co.uk/search/upcominglots (robots.txt disallows https://gorringes.co.uk/search/upcominglots)
+GET https://bid.gorringes.co.uk/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://bid.gorringes.co.uk/auctions
+  skip https://bid.gorringes.co.uk/auctions (robots.txt disallows https://bid.gorringes.co.uk/auctions)
+robots.txt DISALLOWS https://gorringes.co.uk/search/upcominglots/
+  skip https://gorringes.co.uk/search/upcominglots/ (robots.txt disallows https://gorringes.co.uk/search/upcominglots/)
+robots.txt allows https://gorringes.co.uk/calendar?page=1
+GET https://gorringes.co.uk/calendar?page=1 -> 200 (143917 bytes)
+GET https://auction.gorringes.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://auction.gorringes.co.uk/asp/cataloguesearch.asp
+GET https://auction.gorringes.co.uk/asp/cataloguesearch.asp -> 200 (31802 bytes)
+robots.txt allows https://gorringes.co.uk/auction-glossary
+GET https://gorringes.co.uk/auction-glossary -> 200 (121119 bytes)
+gorringe-s -> 5 pages saved (ok)
+GET https://lockdales.com/robots.txt -> 200 (491 bytes)
+robots.txt allows https://lockdales.com/
+GET https://lockdales.com/ -> 200 (1780853 bytes)
+GET https://www.lockdales.com/robots.txt -> 200 (491 bytes)
+robots.txt allows https://www.lockdales.com/about-our-auctions
+GET https://www.lockdales.com/about-our-auctions -> 200 (1294705 bytes)
+GET https://auctions.lockdales.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://auctions.lockdales.com/
+GET https://auctions.lockdales.com/ -> 200 (127396 bytes)
+robots.txt allows https://www.lockdales.com/what-we-buy-auction
+GET https://www.lockdales.com/what-we-buy-auction -> 200 (1226548 bytes)
+robots.txt allows https://www.lockdales.com
+GET https://www.lockdales.com -> 200 (1780853 bytes)
+lockdales -> 5 pages saved (ok)
+GET https://gardinerhoulgate.co.uk/robots.txt -> 200 (104 bytes)
+robots.txt allows https://gardinerhoulgate.co.uk/
+GET https://gardinerhoulgate.co.uk/ -> 200 (42231 bytes)
+GET https://auctions.gardinerhoulgate.co.uk/robots.txt -> 200 (291 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/
+GET https://auctions.gardinerhoulgate.co.uk/ -> 200 (137585 bytes)
+robots.txt allows https://gardinerhoulgate.co.uk/calendar-of-sales
+GET https://gardinerhoulgate.co.uk/calendar-of-sales -> 200 (32711 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/catalogue/a4d31ec5cbfc79aa9ce2cbed987c6b56/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art/
+GET https://auctions.gardinerhoulgate.co.uk/catalogue/a4d31ec5cbfc79aa9ce2cbed987c6b56/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art/ -> 200 (399777 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/auction-results/
+GET https://auctions.gardinerhoulgate.co.uk/auction-results/ -> 200 (261223 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/catalogue/lot/d9e49785466bce22190e0ba315d87f3f/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art-lot-601/
+GET https://auctions.gardinerhoulgate.co.uk/catalogue/lot/d9e49785466bce22190e0ba315d87f3f/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art-lot-601/ -> 200 (90110 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/catalogue/lot/c5fa13028a7fd148ce6f18994192dbd9/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art-lot-602/
+GET https://auctions.gardinerhoulgate.co.uk/catalogue/lot/c5fa13028a7fd148ce6f18994192dbd9/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art-lot-602/ -> 200 (90102 bytes)
+robots.txt allows https://auctions.gardinerhoulgate.co.uk/catalogue/lot/926128a232cd83f59431e7b0463bf426/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art-lot-603/
+GET https://auctions.gardinerhoulgate.co.uk/catalogue/lot/926128a232cd83f59431e7b0463bf426/63b778f7668dabe928d3800924a99077/antiques-silver-paintings-works-of-art-lot-603/ -> 200 (89890 bytes)
+gardiner-houlgate -> 8 pages saved (ok)
+GET https://lawrences.co.uk/robots.txt -> 200 (76 bytes)
+robots.txt allows https://lawrences.co.uk/
+GET https://lawrences.co.uk/ -> 200 (40622 bytes)
+robots.txt allows https://lawrences.co.uk/auction-calendar/
+GET https://lawrences.co.uk/auction-calendar/ -> 200 (43288 bytes)
+robots.txt allows https://lawrences.co.uk/auctions/
+GET https://lawrences.co.uk/auctions/ -> 200 (143070 bytes)
+robots.txt allows https://lawrences.co.uk/sales/fine-art-sales/fs170119/view-lot/1194/
+GET https://lawrences.co.uk/sales/fine-art-sales/fs170119/view-lot/1194/ -> 200 (37515 bytes)
+robots.txt allows https://lawrences.co.uk/sales/fine-art-sales/fs190721/view-lot/27/
+GET https://lawrences.co.uk/sales/fine-art-sales/fs190721/view-lot/27/ -> 200 (47125 bytes)
+lawrences -> 5 pages saved (ok)
+GET https://plymouthauctions.co.uk/robots.txt -> 200 (465 bytes)
+robots.txt allows https://plymouthauctions.co.uk/
+GET https://plymouthauctions.co.uk/ -> 200 (113390 bytes)
+GET https://bid.plymouthauctions.co.uk/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://bid.plymouthauctions.co.uk/
+  skip https://bid.plymouthauctions.co.uk/ (robots.txt disallows https://bid.plymouthauctions.co.uk/)
+robots.txt allows https://plymouthauctions.co.uk/auctions/
+GET https://plymouthauctions.co.uk/auctions/ -> 200 (93953 bytes)
+robots.txt allows https://plymouthauctions.co.uk/buy-sell-faqs/buying-with-plymouth-auction-rooms/
+GET https://plymouthauctions.co.uk/buy-sell-faqs/buying-with-plymouth-auction-rooms/ -> 200 (73324 bytes)
+robots.txt allows https://plymouthauctions.co.uk/buy-sell-faqs/selling-with-plymouth-auction-rooms/
+GET https://plymouthauctions.co.uk/buy-sell-faqs/selling-with-plymouth-auction-rooms/ -> 200 (68709 bytes)
+robots.txt allows https://plymouthauctions.co.uk/lot-alerts/
+GET https://plymouthauctions.co.uk/lot-alerts/ -> 200 (91977 bytes)
+plymouth-auction-rooms -> 5 pages saved (ok)
+GET https://fieldingsauctioneers.co.uk/robots.txt -> 200 (0 bytes)
+robots.txt allows https://fieldingsauctioneers.co.uk/
+GET https://fieldingsauctioneers.co.uk/ -> 200 (77398 bytes)
+robots.txt allows https://fieldingsauctioneers.co.uk/auctions
+GET https://fieldingsauctioneers.co.uk/auctions -> 200 (110776 bytes)
+GET https://auctions.fieldingsauctioneers.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://auctions.fieldingsauctioneers.co.uk/auction-results/
+GET https://auctions.fieldingsauctioneers.co.uk/auction-results/ -> 200 (230309 bytes)
+robots.txt allows https://fieldingsauctioneers.co.uk/buying-at-auction
+GET https://fieldingsauctioneers.co.uk/buying-at-auction -> 200 (51621 bytes)
+robots.txt allows https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/43e266b62c36234cf1d3eae18387ad9c/9b615028af0ce7db085bb45d23efc09c/vinyl-records-music-entertainment-memorabilia-vinta-lot-179/
+GET https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/43e266b62c36234cf1d3eae18387ad9c/9b615028af0ce7db085bb45d23efc09c/vinyl-records-music-entertainment-memorabilia-vinta-lot-179/ -> 200 (62615 bytes)
+robots.txt allows https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/63bb27bd8d789d0e40da8dd45581ce3f/9b615028af0ce7db085bb45d23efc09c/vinyl-records-music-entertainment-memorabilia-vinta-lot-74/
+GET https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/63bb27bd8d789d0e40da8dd45581ce3f/9b615028af0ce7db085bb45d23efc09c/vinyl-records-music-entertainment-memorabilia-vinta-lot-74/ -> 200 (68160 bytes)
+robots.txt allows https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/00137987cc821bb7bb1b08f311fa3791/2962609b087211c86f30dd0772610b3a/the-collectors-auction-a-two-day-sale-lot-684/
+GET https://auctions.fieldingsauctioneers.co.uk/catalogue/lot/00137987cc821bb7bb1b08f311fa3791/2962609b087211c86f30dd0772610b3a/the-collectors-auction-a-two-day-sale-lot-684/ -> 200 (70105 bytes)
+fieldings -> 7 pages saved (ok)
+GET https://hansonsauctioneers.co.uk/robots.txt -> 200 (182 bytes)
+robots.txt allows https://hansonsauctioneers.co.uk/
+GET https://hansonsauctioneers.co.uk/ -> 200 (164967 bytes)
+GET https://auctions.hansonsauctioneers.co.uk/robots.txt -> 200 (379 bytes)
+robots.txt allows https://auctions.hansonsauctioneers.co.uk/auctions/
+GET https://auctions.hansonsauctioneers.co.uk/auctions/ -> 200 (179789 bytes)
+robots.txt allows https://hansonsauctioneers.co.uk/auctions/
+GET https://hansonsauctioneers.co.uk/auctions/ -> 200 (173947 bytes)
+robots.txt allows https://hansonsauctioneers.co.uk/auctions/past
+GET https://hansonsauctioneers.co.uk/auctions/past -> 200 (174370 bytes)
+robots.txt allows https://hansonsauctioneers.co.uk/buying-selling-at-auction/how-to-buy/
+GET https://hansonsauctioneers.co.uk/buying-selling-at-auction/how-to-buy/ -> 200 (161800 bytes)
+hansons -> 5 pages saved (ok)
+GET https://mellorsandkirk.com/robots.txt -> 200 (79 bytes)
+robots.txt allows https://mellorsandkirk.com/
+GET https://mellorsandkirk.com/ -> 200 (34267 bytes)
+robots.txt allows https://mellorsandkirk.com/auction-calendar/
+GET https://mellorsandkirk.com/auction-calendar/ -> 200 (29341 bytes)
+GET https://auctions.mellorsandkirk.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://auctions.mellorsandkirk.com/catalogue/2b61520a6ee59c76ed4a44b187267890/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale/
+GET https://auctions.mellorsandkirk.com/catalogue/2b61520a6ee59c76ed4a44b187267890/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale/ -> 200 (365032 bytes)
+robots.txt allows https://auctions.mellorsandkirk.com/catalogue/2b61520a6ee59c76ed4a44b187267890/6d0808242845d9a724247bb4d43cabe3/fine-art-antiques-collectors-sale/
+GET https://auctions.mellorsandkirk.com/catalogue/2b61520a6ee59c76ed4a44b187267890/6d0808242845d9a724247bb4d43cabe3/fine-art-antiques-collectors-sale/ -> 200 (366956 bytes)
+robots.txt allows https://auctions.mellorsandkirk.com/catalogue/lot/627166e3c73d86902323bab4f232450b/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-101/
+GET https://auctions.mellorsandkirk.com/catalogue/lot/627166e3c73d86902323bab4f232450b/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-101/ -> 200 (52435 bytes)
+robots.txt allows https://auctions.mellorsandkirk.com/catalogue/lot/55864b52de08efc7ec0b794d87b19400/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-222/
+GET https://auctions.mellorsandkirk.com/catalogue/lot/55864b52de08efc7ec0b794d87b19400/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-222/ -> 200 (53541 bytes)
+robots.txt allows https://auctions.mellorsandkirk.com/catalogue/lot/c9537ad0bb12fd630b55e01edd214e45/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-5/
+GET https://auctions.mellorsandkirk.com/catalogue/lot/c9537ad0bb12fd630b55e01edd214e45/4f177e56044f68c0321c00430764407b/fine-art-antiques-collectors-sale-lot-5/ -> 200 (50148 bytes)
+mellors-kirk -> 7 pages saved (ok)
+GET https://serrell.com/robots.txt -> 200 (173 bytes)
+robots.txt allows https://serrell.com/
+GET https://serrell.com/ -> 200 (83143 bytes)
+GET https://www.serrell.com/robots.txt -> 200 (173 bytes)
+robots.txt allows https://www.serrell.com/auctions/
+GET https://www.serrell.com/auctions/ -> 200 (83771 bytes)
+robots.txt allows https://www.serrell.com/auctions/buying-at-auction/
+GET https://www.serrell.com/auctions/buying-at-auction/ -> 200 (84349 bytes)
+robots.txt allows https://www.serrell.com/auctions/selling-at-auction/
+GET https://www.serrell.com/auctions/selling-at-auction/ -> 200 (78930 bytes)
+philip-serrell -> 4 pages saved (ok)
+GET https://trevanion.com/robots.txt -> 200 (171 bytes)
+robots.txt allows https://trevanion.com/
+GET https://trevanion.com/ -> 200 (296910 bytes)
+robots.txt allows https://trevanion.com/auctions/
+GET https://trevanion.com/auctions/ -> 200 (167806 bytes)
+GET https://auctions.trevanion.com/robots.txt -> 200 (245 bytes)
+robots.txt allows https://auctions.trevanion.com/auctions/
+GET https://auctions.trevanion.com/auctions/ -> 200 (31901 bytes)
+robots.txt allows https://auctions.trevanion.com/catalogue/aa1d49f3e98ab72009b311f51324be22/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction/
+GET https://auctions.trevanion.com/catalogue/aa1d49f3e98ab72009b311f51324be22/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction/ -> 200 (349159 bytes)
+robots.txt allows https://trevanion.com/buying/
+GET https://trevanion.com/buying/ -> 200 (126166 bytes)
+robots.txt allows https://auctions.trevanion.com/catalogue/lot/3b2503aa99604c54474f8fbc0cc042f6/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction-lot-1/
+GET https://auctions.trevanion.com/catalogue/lot/3b2503aa99604c54474f8fbc0cc042f6/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction-lot-1/ -> 200 (39418 bytes)
+robots.txt allows https://auctions.trevanion.com/catalogue/lot/dedb8e37a4de4e698f69a0f417c28c2c/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction-lot-2/
+GET https://auctions.trevanion.com/catalogue/lot/dedb8e37a4de4e698f69a0f417c28c2c/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction-lot-2/ -> 200 (39995 bytes)
+robots.txt allows https://auctions.trevanion.com/catalogue/lot/5d2d38f410ab83af986318e437f49b31/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction-lot-3/
+GET https://auctions.trevanion.com/catalogue/lot/5d2d38f410ab83af986318e437f49b31/a7180bf4bbbb20d27ed1aac9c041a473/the-february-fine-art-antique-auction-lot-3/ -> 200 (39388 bytes)
+trevanion-was-trevanion-dean -> 8 pages saved (ok)
+GET https://1818auctioneers.co.uk/robots.txt -> 200 (183 bytes)
+robots.txt allows https://1818auctioneers.co.uk/
+GET https://1818auctioneers.co.uk/ -> 200 (90542 bytes)
+GET https://auctions.1818auctioneers.co.uk/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://auctions.1818auctioneers.co.uk/auctions
+  skip https://auctions.1818auctioneers.co.uk/auctions (robots.txt disallows https://auctions.1818auctioneers.co.uk/auctions)
+GET https://www.1818auctioneers.co.uk/robots.txt -> 200 (183 bytes)
+robots.txt allows https://www.1818auctioneers.co.uk/auction-dates/
+GET https://www.1818auctioneers.co.uk/auction-dates/ -> 200 (66063 bytes)
+robots.txt allows https://www.1818auctioneers.co.uk/2026/08/picture-this-junes-art-auction-highlights/
+GET https://www.1818auctioneers.co.uk/2026/08/picture-this-junes-art-auction-highlights/ -> 200 (66147 bytes)
+1818-auctioneers -> 3 pages saved (ok)
+GET https://davidduggleby.com/robots.txt -> 200 (1317 bytes)
+robots.txt allows https://davidduggleby.com/
+GET https://davidduggleby.com/ -> 200 (526055 bytes)
+robots.txt allows https://davidduggleby.com/auctions/
+GET https://davidduggleby.com/auctions/ -> 200 (307179 bytes)
+GET https://www.davidduggleby.com/robots.txt -> 200 (1317 bytes)
+robots.txt allows https://www.davidduggleby.com/auctions/2787/Modern-Art/
+GET https://www.davidduggleby.com/auctions/2787/Modern-Art/ -> 200 (642512 bytes)
+robots.txt allows https://davidduggleby.com/services/buying.aspx
+GET https://davidduggleby.com/services/buying.aspx -> 200 (284111 bytes)
+david-duggleby -> 4 pages saved (ok)
+GET https://mitchellsauction.co.uk/robots.txt -> 200 (175 bytes)
+robots.txt allows https://mitchellsauction.co.uk/
+GET https://mitchellsauction.co.uk/ -> 200 (8095 bytes)
+mitchells -> 1 pages saved (ok)
+GET https://anthemionauction.com/robots.txt -> 200 (213 bytes)
+robots.txt allows https://anthemionauction.com/
+GET https://anthemionauction.com/ -> 200 (123198 bytes)
+robots.txt allows https://anthemionauction.com/about-us/auction_dates-asp/
+GET https://anthemionauction.com/about-us/auction_dates-asp/ -> 200 (136029 bytes)
+robots.txt allows https://anthemionauction.com/about-us/auction-catalogue/
+GET https://anthemionauction.com/about-us/auction-catalogue/ -> HTTP 403 (attempt 1)
+  skip https://anthemionauction.com/about-us/auction-catalogue/ (HTTP 403 for https://anthemionauction.com/about-us/auction-catalogue/)
+robots.txt allows https://anthemionauction.com/past-auction-results/
+GET https://anthemionauction.com/past-auction-results/ -> 200 (142743 bytes)
+robots.txt allows https://anthemionauction.com/?page_id=4247
+GET https://anthemionauction.com/?page_id=4247 -> HTTP 404 (attempt 1)
+  skip https://anthemionauction.com/?page_id=4247 (HTTP 404 for https://anthemionauction.com/?page_id=4247)
+robots.txt allows https://anthemionauction.com/buying-at-auction/
+GET https://anthemionauction.com/buying-at-auction/ -> 200 (182487 bytes)
+anthemion-auctions -> 4 pages saved (ok)
+GET https://morganevans.com/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://morganevans.com/
+GET https://morganevans.com/ -> 200 (16663 bytes)
+GET https://www.morganevans.com/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://www.morganevans.com/en/machinery-tools-vehicles/tools-machinery-auction
+GET https://www.morganevans.com/en/machinery-tools-vehicles/tools-machinery-auction -> 200 (15382 bytes)
+robots.txt allows https://www.morganevans.com/en/machinery-tools-vehicles/vehicle-auction
+GET https://www.morganevans.com/en/machinery-tools-vehicles/vehicle-auction -> 200 (13022 bytes)
+morgan-evans -> 3 pages saved (ok)
+GET https://peterfrancis.co.uk/robots.txt -> 200 (245 bytes)
+robots.txt allows https://peterfrancis.co.uk/
+GET https://peterfrancis.co.uk/ -> 200 (90458 bytes)
+robots.txt allows https://peterfrancis.co.uk/auctions
+GET https://peterfrancis.co.uk/auctions -> 200 (61853 bytes)
+robots.txt allows https://peterfrancis.co.uk/calendar
+GET https://peterfrancis.co.uk/calendar -> 200 (54759 bytes)
+robots.txt allows https://peterfrancis.co.uk/auction-results
+GET https://peterfrancis.co.uk/auction-results -> 200 (217934 bytes)
+robots.txt allows https://peterfrancis.co.uk/catalogue/5A2566EC18FDBD1C3C25F4834B418E2D/634EE3A1A303F30DD2F30DB1954EA530/antiques-furniture-collectors-toys-gold-silver-jewelle/
+GET https://peterfrancis.co.uk/catalogue/5A2566EC18FDBD1C3C25F4834B418E2D/634EE3A1A303F30DD2F30DB1954EA530/antiques-furniture-collectors-toys-gold-silver-jewelle/ -> 200 (98225 bytes)
+robots.txt allows https://peterfrancis.co.uk/catalogue/lot/68BEEA32F863F53D557ED39F5988DEE5/634EE3A1A303F30DD2F30DB1954EA530/antiques-furniture-collectors-gold-silver-jeweller-lot-609/
+GET https://peterfrancis.co.uk/catalogue/lot/68BEEA32F863F53D557ED39F5988DEE5/634EE3A1A303F30DD2F30DB1954EA530/antiques-furniture-collectors-gold-silver-jeweller-lot-609/ -> 200 (67675 bytes)
+robots.txt allows https://peterfrancis.co.uk/catalogue/lot/70C7F71A1EB39B7DE2FFC176D6B374F8/634EE3A1A303F30DD2F30DB1954EA530/autumn-fine-sale-lot-421/
+GET https://peterfrancis.co.uk/catalogue/lot/70C7F71A1EB39B7DE2FFC176D6B374F8/634EE3A1A303F30DD2F30DB1954EA530/autumn-fine-sale-lot-421/ -> 200 (71123 bytes)
+robots.txt allows https://peterfrancis.co.uk/catalogue/lot/5342B84639E38BD14BA218B3BE6BD958/634EE3A1A303F30DD2F30DB1954EA530/antiques-furnishings-collectors-lot-294/
+GET https://peterfrancis.co.uk/catalogue/lot/5342B84639E38BD14BA218B3BE6BD958/634EE3A1A303F30DD2F30DB1954EA530/antiques-furnishings-collectors-lot-294/ -> 200 (66981 bytes)
+peter-francis -> 8 pages saved (ok)
+GET https://rogersjones.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://rogersjones.co.uk/
+GET https://rogersjones.co.uk/ -> 200 (129340 bytes)
+GET https://www.rogersjones.co.uk/robots.txt -> HTTP 404 (attempt 1)
+robots.txt allows https://www.rogersjones.co.uk/en/forthcoming-sales
+GET https://www.rogersjones.co.uk/en/forthcoming-sales -> 200 (73657 bytes)
+robots.txt allows https://www.rogersjones.co.uk/en/welsh-antiques-welsh-ceramics-welsh-fine-art
+GET https://www.rogersjones.co.uk/en/welsh-antiques-welsh-ceramics-welsh-fine-art -> 200 (138204 bytes)
+robots.txt allows https://www.rogersjones.co.uk/en/selling
+GET https://www.rogersjones.co.uk/en/selling -> 200 (82578 bytes)
+GET https://auctions.rogersjones.co.uk/robots.txt -> HTTP 403 (attempt 1)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/8d1709bd-b26b-4398-a0d2-b50c01148df7
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/8d1709bd-b26b-4398-a0d2-b50c01148df7 (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/e860748c-f3e4-470f-8e20-b50c01146ce8
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/e860748c-f3e4-470f-8e20-b50c01146ce8 (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/c5a3df09-788b-4382-bf07-b50c01148cde
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/c5a3df09-788b-4382-bf07-b50c01148cde (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/c57d0c9b-4972-43d7-9edd-b50c01150c89
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/c57d0c9b-4972-43d7-9edd-b50c01150c89 (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/75667835-242a-4b27-b287-b50c0114e5aa
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/75667835-242a-4b27-b287-b50c0114e5aa (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/3e1d1ff6-9871-4138-a65f-b50c0114fcce
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/3e1d1ff6-9871-4138-a65f-b50c0114fcce (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/7d158be1-a7db-431b-a8b7-b50c0114a605
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/7d158be1-a7db-431b-a8b7-b50c0114a605 (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/ccf16580-56d5-4885-b831-b50c01149371
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/ccf16580-56d5-4885-b831-b50c01149371 (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/6d96b06f-b87a-4d6c-8820-b50c01146f06
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/6d96b06f-b87a-4d6c-8820-b50c01146f06 (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/0dc6f1b4-4366-4fd2-9919-b50c0114883a
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/0dc6f1b4-4366-4fd2-9919-b50c0114883a (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/090aa954-dd74-41c3-8e7d-b50c0114aedd
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/090aa954-dd74-41c3-8e7d-b50c0114aedd (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/b13fe301-52bd-47d5-a715-b50c0114f7de
+  skip https://auctions.rogersjones.co.uk/auctions/9834/rogers10663/lot-details/b13fe301-52bd-47d5-a715-b50c0114f7de (robots.txt disallows https://auctions.rogersjones.co.uk/auctions/9834/rogers1066)
+robots.txt DISALLOWS https://auctions.rogersjones.co.uk/past-auctions/rogers10344/lot-details/5b14b1c8-c71f-4a55-a620-ad5000ef157a
+  skip https://auctions.rogersjones.co.uk/past-auctions/rogers10344/lot-details/5b14b1c8-c71f-4a55-a620-ad5000ef157a (robots.txt disallows https://auctions.rogersjones.co.uk/past-auctions/rogers1034)
+rogers-jones -> 4 pages saved (ok)
+GET https://bloomfieldauctions.co.uk/robots.txt -> 200 (132 bytes)
+robots.txt allows https://bloomfieldauctions.co.uk/
+GET https://bloomfieldauctions.co.uk/ -> 200 (431779 bytes)
+GET https://auctions.bloomfieldauctions.co.uk/robots.txt -> network error <urlopen error [Errno -2] Name or service not known> (attempt 1)
+GET https://auctions.bloomfieldauctions.co.uk/robots.txt -> network error <urlopen error [Errno -2] Name or service not known> (attempt 2)
+GET https://auctions.bloomfieldauctions.co.uk/robots.txt -> network error <urlopen error [Errno -2] Name or service not known> (attempt 3)
+robots.txt DISALLOWS https://auctions.bloomfieldauctions.co.uk/auctions/
+  skip https://auctions.bloomfieldauctions.co.uk/auctions/ (robots.txt disallows https://auctions.bloomfieldauctions.co.uk/auctions/)
+GET https://bid.bloomfieldauctions.co.uk/robots.txt -> network error <urlopen error [Errno -2] Name or service not known> (attempt 1)
+GET https://bid.bloomfieldauctions.co.uk/robots.txt -> network error <urlopen error [Errno -2] Name or service not known> (attempt 2)
+GET https://bid.bloomfieldauctions.co.uk/robots.txt -> network error <urlopen error [Errno -2] Name or service not known> (attempt 3)
+robots.txt DISALLOWS https://bid.bloomfieldauctions.co.uk/auctions
+  skip https://bid.bloomfieldauctions.co.uk/auctions (robots.txt disallows https://bid.bloomfieldauctions.co.uk/auctions)
+robots.txt allows https://bloomfieldauctions.co.uk/auctions
+GET https://bloomfieldauctions.co.uk/auctions -> HTTP 404 (attempt 1)
+  skip https://bloomfieldauctions.co.uk/auctions (HTTP 404 for https://bloomfieldauctions.co.uk/auctions)
+robots.txt DISALLOWS https://auctions.bloomfieldauctions.co.uk/auction-results/
+  skip https://auctions.bloomfieldauctions.co.uk/auction-results/ (robots.txt disallows https://auctions.bloomfieldauctions.co.uk/auction-results/)
+robots.txt allows https://bloomfieldauctions.co.uk/request-an-auction-estimate/
+GET https://bloomfieldauctions.co.uk/request-an-auction-estimate/ -> 200 (373798 bytes)
+robots.txt allows https://bloomfieldauctions.co.uk/auction-items
+GET https://bloomfieldauctions.co.uk/auction-items -> HTTP 404 (attempt 1)
+  skip https://bloomfieldauctions.co.uk/auction-items (HTTP 404 for https://bloomfieldauctions.co.uk/auction-items)
+bloomfield-auctions -> 2 pages saved (ok)
+GET https://rosss.com/robots.txt -> 200 (1080 bytes)
+robots.txt allows https://rosss.com/
+GET https://rosss.com/ -> 200 (58964 bytes)
+robots.txt allows https://rosss.com/upcoming-auctions/
+GET https://rosss.com/upcoming-auctions/ -> 200 (41774 bytes)
+robots.txt allows https://rosss.com/auction/the-basement-auction/1094/
+GET https://rosss.com/auction/the-basement-auction/1094/ -> 200 (146791 bytes)
+robots.txt allows https://rosss.com/irish-art/notifications/
+GET https://rosss.com/irish-art/notifications/ -> 200 (32192 bytes)
+robots.txt allows https://rosss.com/auction/irish-paintings/1114/
+GET https://rosss.com/auction/irish-paintings/1114/ -> 200 (209302 bytes)
+robots.txt allows https://rosss.com/irish-art-news/lot-95-cattle-grazing-by-joseph-hynes/1251/
+GET https://rosss.com/irish-art-news/lot-95-cattle-grazing-by-joseph-hynes/1251/ -> 200 (41564 bytes)
+robots.txt allows https://rosss.com/lot-details/light-ash-framed-mirror/414867/
+GET https://rosss.com/lot-details/light-ash-framed-mirror/414867/ -> 200 (70880 bytes)
+robots.txt allows https://rosss.com/lot-details/modern-floor-lamp/414978/
+GET https://rosss.com/lot-details/modern-floor-lamp/414978/ -> 200 (71250 bytes)
+ross-s-auctioneers -> 8 pages saved (ok)

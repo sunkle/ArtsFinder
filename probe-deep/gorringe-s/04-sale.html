@@ -1,0 +1,511 @@
+<!-- source: https://auction.gorringes.co.uk/asp/cataloguesearch.asp -->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+	 <!-- Google Tag Manager -->
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-5JNBJD4');</script>
+	
+
+	<title>Catalogue Search - Gorringe's</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+	<link rel='stylesheet' href='https://auction.gorringes.co.uk/css/rfc.css' type='text/css' media='screen' />
+
+
+
+	 <link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+     <!-- to be replaced - alternative font -->
+     <link rel='stylesheet' href='/css/fonts.min.css' type='text/css' media='screen' />
+    <link rel='stylesheet' href='/css/slick.css' type='text/css' media='screen' />
+
+	 <link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+	 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;family=Poppins:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,100;1,300;1,400;1,500;1,600;1,700&amp;display=swap">
+
+
+	</head>
+
+
+	 <script type="text/javascript" language="javascript">
+      var verifyCallback = function(response) {
+        alert(response);
+      };
+
+      var token;
+      var onloadCallback = function() {
+        // Renders the HTML element with id 'example1' as a reCAPTCHA widget.
+        // The id of the reCAPTCHA widget is assigned to 'widgetId1'.
+        token = grecaptcha.render('captcha_elem', {
+          'sitekey' : '6LeelXcUAAAAAA7Xu6QnBQx6DZhkJ6Mml2tIxXMx',
+          'theme' : 'light',
+
+        });
+      };
+
+	  function validate() {
+
+		var tokenResponse = grecaptcha.getResponse(token);
+		if (tokenResponse.length <= 1) {
+		   document.getElementById("ErrCatcha").innerHTML = "Please check off the reCaptcha box";
+
+			//alert("Please check off the reCaptcha box");
+			return false;
+		}
+		else{
+		   document.getElementById("ErrCatcha").innerHTML = "";
+		   document.getElementById("g_recaptcha_token").value = tokenResponse;
+		   return true;
+		}
+	  }
+    </script>
+	</head>
+	
+	<body>
+	
+    <!-- Header section -->
+    <!---------------------NEW HEADER IMPLEMENTATION------------------------->
+    <div class="contain-to-grid ">
+  	<section class="top-bar-section__navigation">
+      	<div class="top-bar-section__logo">
+        	<a href="https://www.gorringes.co.uk">
+          		<img src="https://www.gorringes.co.uk/sites/all/themes/gorringes/img/header-logo.svg" alt="Logo">
+        	</a>
+      	</div>
+      	<ul id="main-menu" class="main-nav row">
+
+   	
+
+   <li class="leaf has-dropdown " id="" style="">
+      <a href="# ">Auctions</a>
+     <!--  <ul class="dropdown">
+         <li class="title back">
+            <h5><a>Back</a></h5>
+         </li>
+         <li class="first leaf " id="" style=""><a href="/asp/schedule.asp">Calendar</a></li>
+         <li class="leaf " id="" style=""><a href="<=mainsite_url%>/search/past">Results</a></li>
+         <li class="last leaf " id="" style=""><a href="<=mainsite_url%>/search/lots">Catalogue Search</a></li>
+      </ul> -->
+      <ul class="dropdown">
+                    <li class="title back">
+                        <h5><a>Back</a></h5>
+                    </li>
+                    <li class="first leaf " id="" style=""><a href="https://www.gorringes.co.uk/calendar">Calendar</a></li>
+                    <!-- <li class="leaf " id="" style=""><a href="<=s_main_site_url%>/winter-fine-sale">Winter Fine Sale</a></li> -->
+                    <li class="leaf " id="" style=""><a href="https://www.gorringes.co.uk/results">Results</a></li>
+                    <li class="last leaf " id="" style=""><a href="https://www.gorringes.co.uk/search/upcominglots">Catalogue Search</a></li>
+                     <!-- <li class="last leaf " id="" style=""><a href="<=s_main_site_url%>/collections">Collections</a></li> -->
+                     <li class="last leaf " id="" style=""><a href="https://www.gorringes.co.uk/payments">Payments</a></li>
+        </ul>
+   </li>
+   <li class="leaf has-dropdown " id="" style="">
+      <a href="# ">Buy</a>
+      <!-- <ul class="dropdown">
+         <li class="title back">
+            <h5><a>Back</a></h5>
+         </li>
+         <li class="first leaf " id="" style=""><a href="https://test-gorringes2.pantheonsite.io/buying-gorringes">How to Buy</a></li>
+         <li class="leaf " id="" style=""><a href="http://staging.gorringes.rfcsystems.com/register">Place a Pre-Sale Bid</a></li>
+         <li class="leaf " id="" style=""><a href="https://test-gorringes2.pantheonsite.io/watch-or-bid-live">Watch or Bid Live</a></li>
+         <li class="leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/KpwICv2Yz8h7NDMTP9NiG?domain=test-gorringes2.pantheonsite.io">Shipping</a></li>
+         <li class="last leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/aoRbCwpEAKuG8DYTzIqdZ?domain=test-gorringes2.pantheonsite.io">Auction Glossary</a></li>
+      </ul> -->
+      <ul class="dropdown">
+                    <li class="title back">
+                        <h5><a>Back</a></h5>
+                    </li>
+                    <li class="first leaf " id="" style=""><a href="https://www.gorringes.co.uk/buy">Buy</a></li>
+                    <li class="leaf " id="" style=""><a href="/register">Pre-Sale Bid</a></li>
+                    <li class="last leaf " id="" style=""><a href="https://bid.gorringes.co.uk/auctions">Bid Live</a></li>
+       </ul>
+   </li>
+   <li class="leaf has-dropdown " id="" style="">
+      <a href="# ">Sell</a>
+      <ul class="dropdown">
+          <li class="title back">
+             <h5><a>Back</a></h5>
+          </li>
+          <li class="first leaf " id="" style=""><a href="https://www.gorringes.co.uk/sell">How to Sell</a></li>
+          <li class="last leaf " id="" style=""><a href="https://www.gorringes.co.uk/request-an-estimate">Estimate Request</a></li>
+      </ul>
+   </li>
+   <li class="leaf"><a href="https://www.gorringes.co.uk/departments">Departments</a></li>
+   <li class="leaf has-dropdown " id="" style="">
+      <a href="# ">Valuations</a>
+      <!-- <ul class="dropdown">
+         <li class="title back">
+            <h5><a>Back</a></h5>
+         </li>
+         <li class="first leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/t6jdCBB82Pu76gETAI3rX?domain=test-gorringes2.pantheonsite.io">Valuations for Sale</a></li>
+         <li class="leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/gNlkCDkY2QS5vRgTmQzEL?domain=test-gorringes2.pantheonsite.io">Valuations For Insurance</a></li>
+         <li class="last leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/7SJuCERZ20I39QRuYxqLs?domain=test-gorringes2.pantheonsite.io">Valuations for Probate</a></li>
+      </ul> -->
+      <ul class="dropdown">
+                    <li class="title back">
+                        <h5><a>Back</a></h5>
+                    </li>
+                    <li class="first leaf " id="" style=""><a href="https://www.gorringes.co.uk/valuations">Valuations for Sale</a></li>
+                    <li class="leaf " id="" style=""><a href="https://www.gorringes.co.uk/insurance">Valuations For Insurance</a></li>
+                    <li class="leaf " id="" style=""><a href="https://www.gorringes.co.uk/probate">Valuations for Probate</a></li>
+                    <!-- <li class="last leaf " id="" style=""><a href="<=s_main_site_url%>/fine-art-valuation-days">Fine Art Valuation Days</a></li> -->
+        </ul>
+   </li>
+   <li class="last leaf has-dropdown " id="" style="">
+      <a href="# ">About</a>
+      <!-- <ul class="dropdown">
+         <li class="title back">
+            <h5><a>Back</a></h5>
+         </li>
+         <li class="first leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/fOJICG6Y2Mh1YVjFRLgtO?domain=test-gorringes2.pantheonsite.io">Our Team</a></li>
+         <li class="leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/qzopCJ6Y2Nhqr70s09pA4?domain=test-gorringes2.pantheonsite.io">Our Story</a></li>
+         <li class="leaf"><a href="https://protect-us.mimecast.com/s/JaguCKrY2LT2Ej3c5hTsC?domain=test-gorringes2.pantheonsite.io">News</a></li>
+         <li class="leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/wITmCL9Y2vSRjJEUvOcu2?domain=gorringes.co.uk">FAQs</a></li>
+         <li class="leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/3eoeCM8E2JuqOQEsxl1ON?domain=gorringes.co.uk">Artist Guides</a></li>
+         <li class="last leaf " id="" style=""><a href="https://protect-us.mimecast.com/s/3a_JCNkE2YS0l2vTGaIK5?domain=test-gorringes2.pantheonsite.io">Contact</a></li>
+      </ul> -->
+      <ul class="dropdown">
+                    <li class="title back">
+                        <h5><a>Back</a></h5>
+                    </li>
+                    <li class="first leaf " id="" style=""><a href="https://www.gorringes.co.uk/about/our-team">Our Team</a></li>
+                    <li class="leaf " id="" style=""><a href="https://www.gorringes.co.uk/about/our-story">Our Story</a></li>
+                    <li class="leaf"><a href="https://www.gorringes.co.uk/news">News</a></li>
+                    <li class="leaf " id="" style=""><a href="https://www.gorringes.co.uk/auction-glossary">Auction Glossary</a></li>
+                    <li class="last leaf " id="" style=""><a href="https://www.gorringes.co.uk/contact">Contact</a></li>
+                </ul>
+   </li>
+   	
+    <li class="leaf mobile-only"><a href="/sign-in">Log In</a></li>
+    
+    <li class="leaf mobile-only"><a href="https://bid.gorringes.co.uk/auctions">Bid Live</a></li>
+	<li class="leaf mobile-only"><a href="https://www.gorringes.co.uk/payments">Payments</a></li>
+	<!-- <li class="last leaf mobile-only"><a href="https://www.gorringes.co.uk/">Collections</a></li> -->
+</ul>
+      	
+
+    <div class="top-bar-section__right-links">
+    	
+	        <a class="button-underline rfc-out" href="/sign-in">Log In</a>
+	    
+        
+        <a class="button-underline tablet-up" href="https://bid.gorringes.co.uk/auctions">Bid Live</a>
+        <a class="button-underline desktop-up" href="https://www.gorringes.co.uk/payments">Payments</a>
+        <!-- <a class="button-underline desktop-up links-end" href="https://www.gorringes.co.uk/collections">Collections</a> -->
+        <a href="https://www.gorringes.co.uk/watch-or-bid-live" class="open-search search-icon"><span class="sr-only">Search</span></a>
+        <div class="mobile-menu-icon" id="mobile-menu-toggle"><span></span></div>
+	</div>
+
+    </section>
+    <nav class="top-bar-custom" data-topbar  data-options="">
+      	<!-- <section class="secondary-header">
+	        <ul class="secondary-nav row">
+	          	<li class="left-col large-1 medium-3 small-3 columns social-icons">
+	            	<a href="https://twitter.com/Gorringes" title="Follow Gorringes on Twitter" target="_blank"><i class="fa fa-twitter"></i></a>
+	            	<a href="https://www.facebook.com/pages/Gorringes/138994809506064" title="Find Gorringes on Facebook" target="_blank"><i class="fa fa-facebook"></i></a>
+	            	<a href="<=s_http_root%>/register" title="Sign up for email updates"><i class="fa fa-envelope"></i></a>
+	            	<a href="<=s_main_site_url%>/contact" title="Phone Gorringes" class="phone-link"><i class="fa fa-phone"></i></a>
+	          	</li>
+	          	<li class="right-col large-11 medium-9 small-9 columns">
+		            <ul class="quick-access-nav">
+						<li class="first leaf nav-heading desktop-only"><span class="nolink">Welcome to Gorringe&#039;s</span></li>
+						<li class="leaf nav-divider desktop-only"><a href="https://protect-us.mimecast.com/s/N4dPCR6M0PhvmA7TxuRMu?domain=gorringes.co.uk">Watch or Bid Live</a></li>
+						<li class="leaf rfc-in nav-heading desktop-only"><span class="nolink">My Gorringe&#039;s</span></li>
+						<li class="leaf login rfc-out"><a href="https://protect-us.mimecast.com/s/xhqSCVO5k7sxwDOHBtJdR?domain=auction.gorringes.co.uk">My Gorringe&#039;s Login</a></li>
+						<li class="leaf online-payment rfc-in desktop-only nav-divider"><a href="https://protect-us.mimecast.com/s/trwCCW6wlQh59AlTYYaki?domain=auction.gorringes.co.uk">Payments</a></li>
+						<li class="leaf update-account rfc-in desktop-only nav-divider"><a href="https://protect-us.mimecast.com/s/ozrJCXD70rIX5xpCPBT6T?domain=auction.gorringes.co.uk">Your details</a></li>
+						<li class="leaf online-payment rfc-in desktop-only nav-divider"><a href="https://protect-us.mimecast.com/s/hgLwCYEQnyCL1zGtLBiqO?domain=auction.gorringes.co.uk">Pre-Sale Bids</a></li>
+						<li class="last leaf logout rfc-in"><a href="https://protect-us.mimecast.com/s/G-PXCZ6wozh543OTqqqxA?domain=auction.gorringes.co.uk">Log out</a></li>
+		              	<li class="mobile-menu-btn mobile-only">
+		                	<span>
+		                  		<i class="fa fa-bars"></i>
+		                	</span>
+		              	</li>
+		            </ul>
+		            <ul class="quick-access-nav">
+                        <li class="first leaf nav-heading desktop-only"><span class="nolink">Welcome to Gorringe&#039;s</span></li>
+                        <li class="leaf nav-divider desktop-only"><a href="https://www.gorringes.co.uk/watch-or-bid-live">Watch or Bid Live</a></li>
+                        <li class="leaf rfc-in nav-heading desktop-only"><span class="nolink">My Gorringe&#039;s</span></li>
+                        <li class="leaf login rfc-out"><a href="/sign-in">My Gorringe&#039;s Login</a></li>
+                        <li class="leaf online-payment rfc-in desktop-only nav-divider"><a href="/online-payments">Payments</a></li>
+                        <li class="leaf update-account rfc-in desktop-only nav-divider"><a href="/asp/registration_update.asp">Your details</a></li>
+                        <li class="leaf online-payment rfc-in desktop-only nav-divider"><a href="/asp/cataloguesearch.asp">Pre-Sale Bids</a></li>
+                        <li class="last leaf logout rfc-in"><a href="/sign-out">Log out</a></li>
+                        <li class="mobile-menu-btn mobile-only">
+                            <span>
+                  <i class="fa fa-bars"></i>
+                </span>
+                        </li>
+                    </ul>
+	          	</li>
+	        </ul>
+      	</section> -->
+    </nav>
+</div>
+
+
+<!---------------------NEW HEADER IMPLEMENTATION------------------------->
+
+    <!-- End header section -->
+    <div class="search-popup">
+    <form class="search desktop-only header-lots-search-form" action="https://www.gorringes.co.uk/departments/carpets-rugs-textiles" method="post" id="search-block-form" accept-charset="UTF-8">
+        <div>
+            <div class="container-inline">
+                <h2 class="element-invisible">Search form</h2>
+                <div class="search-popup-title">Search through Upcoming and Past Lots</div>
+                <div class="search-popup-wrapper">
+                    <div class="form-item form-type-textfield form-item-search-block-form">
+                        <label class="element-invisible" for="edit-search-block-form--2">Search </label>
+                        <input title="Enter the terms you wish to search for." class="apachesolr-autocomplete small-8 columns form-text" data-apachesolr-autocomplete-id="search-block-form" placeholder="Search" type="text" id="edit-search-block-form--2" name="search_block_form" value="" size="15" maxlength="128" />
+                    </div>
+                    <div class="form-item form-type-item">
+                        <button type="submit" class="search-btn"><i class="search-popup-icon"></i><span class="sr-only">Submit Search</span></button>
+                    </div>
+                </div>
+                <input type="hidden" name="form_build_id" value="form-44zbdgtTCZywGR1DPVXOe8DmwakCwbl_hwVd-QeUjCs" />
+                <input type="hidden" name="form_token" value="_DJ6O484rd2otHxtMu2s3P4dceqmNqz5yw13W4_6hls" />
+                <input type="hidden" name="form_id" value="search_block_form" />
+            </div>
+        </div>
+    </form>
+    <span class="search-popup-close"></span>
+</div>
+			
+		<!-- main -->
+		<div class="wrapper main" role="main"><div class="row">					
+					<form method="post" action="https://auction.gorringes.co.uk/asp/searchresults.asp?st=U" id="form1" accept-charset="utf-8">
+							
+					<!--//-->
+					<form method="post" action="https://auction.gorringes.co.uk/asp/searchresults.asp?st=U" id="form1" accept-charset="utf-8">
+					<fieldset id="catalogue_view">
+
+					<legend>Browse Entire Catalogue</legend>
+					To browse a current catalogue, select a sale and then press View. 
+					<br /><br />To place multiple bids, select a sale and press Bidsheet.
+					<br /><br />			
+					<select name="sale_value" id="sale_value">
+
+															<option value="301126 ">Nov 17 2026 to 30 November 2026 Sale 011226, Art & Design Post 1880</option>
+															<option value="011226 ">Nov 30 2026 Sale 301126, Pop Culture & Sporting History | House & Garden Sales</option>
+															<option value="301126 ">Nov 30 2026&nbsp;Sale 301126,&nbsp;Pop Culture & Sporting History | House & Garden Sales</option>
+														<option value="011226 ">Dec 1 2026&nbsp;Sale 011226,&nbsp;Art & Design Post 1880</option>
+											</select>
+											</fieldset>
+											<p class="right"><input type="submit" name="view1" id="view1" value="View" class="button" />&nbsp;<input type="submit" name="bulkbid" value="Bid Sheet" class="button" /></p>
+
+</form>
+
+					<form method="post" action="https://auction.gorringes.co.uk/asp/searchresults.asp?st=U" id="form1" accept-charset="utf-8">
+								<fieldset id="cat_search">
+								<legend>Browse catalogues by department or keyword</legend>
+								You can search using category, or keyword, or estimate, or using a combination of all three. Once you have made your selections, click the Search button.
+								<br /><br />
+								Please note that this section only searches forthcoming sales. Use the <a href="https://auction.gorringes.co.uk/asp/archivesearch.asp">Catalogue Archives</a> to search past sales.
+								<br /><br />
+								<table id="options">
+									<tr>
+										<td><label for="subs_value">Category</label></td>
+								    <td>
+												<select name="subs_value" id="subs_value">
+															<option value="1" selected="selected">All Categories                                              </option>
+															<option value="11">Asian Works of Art                                          </option>
+															<option value="10">Books                                                       </option>
+															<option value="3">Boxes & Treen                                               </option>
+															<option value="9">Bronzes and Metalware                                       </option>
+															<option value="4">Carpets & Rugs                                              </option>
+															<option value="5">Ceramics                                                    </option>
+															<option value="6">Clocks                                                      </option>
+															<option value="19">Coins                                                       </option>
+															<option value="23">Collectables                                                </option>
+															<option value="24">Ephemera                                                    </option>
+															<option value="7">Furniture                                                   </option>
+															<option value="25">Garden Statuary and Furniture                               </option>
+															<option value="26">Glass                                                       </option>
+															<option value="8">Jewellery                                                   </option>
+															<option value="21">Lux                                                         </option>
+															<option value="27">Mechanical Music                                            </option>
+															<option value="28">Metalware                                                   </option>
+															<option value="20">Militaria, Medals & Weapons                                 </option>
+															<option value="13">Misc                                                        </option>
+															<option value="29">Musical Instruments                                         </option>
+															<option value="2">Objets de Virtu                                             </option>
+															<option value="12">Pictures                                                    </option>
+															<option value="30">Scientific Instruments                                      </option>
+															<option value="31">Sculpture                                                   </option>
+															<option value="14">Silver                                                      </option>
+															<option value="22">Stamps                                                      </option>
+															<option value="32">Taxidermy                                                   </option>
+															<option value="15">Textiles                                                    </option>
+															<option value="18">Toys. Dolls & Teddy Bears                                   </option>
+															<option value="33">Tribal                                                      </option>
+															<option value="34">Vinyl                                                       </option>
+															<option value="16">Watches                                                     </option>
+															<option value="17">Wines & Spirits                                             </option>
+												      </select>
+														</td>
+													</tr>
+													<tr>
+														<td><label for="keywords_value">Description Key Words</label></td>
+														<td><input type="text" name="keywords_value" class="keywords_value" size="35"  /></td>
+													</tr>
+													<tr>
+														<td><label for="keywords_logic">Search Logic</label></td>
+														<td>
+														
+														<input id="keywords_logic" type="radio" name="keywords_logic" value="and" checked="checked" />
+														Must have all words
+														<input type="radio" name="keywords_logic" value="or" />
+														Can have any word
+													</td>
+												</tr>
+												
+													<tr>
+														<td><label for="estimated_from">Estimated Value Range</label></td>
+												    <td><input type="text" name="estimated_from" id="estimated_from"  /> to  <input type="text" name="estimated_to" id="estimated_to" /></td>
+												  </tr>
+												</table>
+												</fieldset>
+												<p class="right"><input type="submit" name="view2" value="Search" class="button" /></p>                        
+										    <fieldset id="lot_tracking">
+													<legend>View lots that you have tracked or bid on</legend>
+										      To view lots you have tracked or bid on, select an option and press Find.
+										      <br /><br />													
+													<label for="viewing_option">Viewing Options</label>
+													<select name="viewing_option" id="viewing_option" style="width:200px;">
+													<option value="1">All Bids/Tracked Lots</option>
+													<option value="2">Active Bids Only</option>
+													<option value="3">Tracked Lots Only</option>
+													</select>
+													
+													<br /><br />Note: Searches are limited to the previous 30 days.
+												</fieldset>
+												<p class="right"><input type="submit" name="view3" value="Find" class="button" /></p>
+												</form>
+												<!-- end of main content -->
+	
+		</div>
+	</div>
+<!-- Footer -->
+	<div class="wrapper footer grey">
+    <div class="flex footer-wrapper">
+<div class="widget widget-block xlarge-12 large-12 medium-12 small-12 columns block block-menu block-menu-menu-auctions">
+<div class="widget-container">
+        <h3 class="block-title">Auctions</h3>
+
+     <!--  <ul class="menu"><li class="first leaf"><a href="https://protect-us.mimecast.com/s/3WHsCmZ2nYcjJmEuwpfXS?domain=test-gorringes2.pantheonsite.io">Calendar</a></li>
+<li class="leaf"><a href="https://protect-us.mimecast.com/s/5CbUC2kgo7SplNnuzpl_N?domain=test-gorringes2.pantheonsite.io">Record Sales</a></li>
+<li class="leaf"><a href="https://protect-us.mimecast.com/s/qI5YCADQ2MIN6v7HyGRrw?domain=test-gorringes2.pantheonsite.io">Departments</a></li>
+<li class="leaf"><a href="https://protect-us.mimecast.com/s/-gR6CrkEvmS8V5Ls5ha_F?domain=test-gorringes2.pantheonsite.io">Bid Live</a></li>
+<li class="last leaf active-trail"><a href="/" class="active-trail active">Log In</a></li>
+</ul> -->
+<ul class="menu">
+                    <li class="first leaf"><a href="https://www.gorringes.co.uk/calendar">Calendar</a></li>
+                    <li class="leaf"><a href="https://www.gorringes.co.uk/results">Results</a></li>
+                    <li class="leaf"><a href="https://auction.gorringes.co.uk/sign-in">Log In</a></li>
+                    <li class="leaf"><a href="https://bid.gorringes.co.uk/auctions">Bid Live</a></li>
+                    <li class="last leaf active-trail"><a href="https://www.gorringes.co.uk/payments" class="active-trail">Payments</a></li>
+                    <!-- <li class="last leaf active-trail"><a href="<=s_main_site_url%>/collections" class="active-trail">Collections</a></li> -->
+                    
+</ul>
+</div></div>
+<div class="widget widget-block xlarge-12 large-12 medium-12 small-12 columns block block-menu block-menu-menu-information">
+<div class="widget-container">
+        <h3 class="block-title">Information</h3>
+
+     <!--  <ul class="menu"><li class="first leaf"><a href="https://protect-us.mimecast.com/s/GO2_CxkVB2S1M2rFm0FB0?domain=test-gorringes2.pantheonsite.io">How to sell</a></li>
+<li class="leaf"><a href="https://protect-us.mimecast.com/s/92iQCpYRqkunMjXH9Q4OM?domain=test-gorringes2.pantheonsite.io">How to Buy</a></li>
+<li class="leaf"><a href="https://protect-us.mimecast.com/s/t6jdCBB82Pu76gETAI3rX?domain=test-gorringes2.pantheonsite.io">Valuations</a></li>
+<li class="leaf"><a href="https://protect-us.mimecast.com/s/GO2_CxkVB2S1M2rFm0FB0?domain=test-gorringes2.pantheonsite.io">Estimate Request</a></li>
+<li class="last leaf"><a href="https://protect-us.mimecast.com/s/3a_JCNkE2YS0l2vTGaIK5?domain=test-gorringes2.pantheonsite.io">Contact</a></li>
+</ul> -->
+ <ul class="menu">
+                    <li class="first leaf"><a href="https://www.gorringes.co.uk/buy">Buy</a></li>
+                    <li class="leaf"><a href="https://www.gorringes.co.uk/sell">Sell</a></li>
+                    <li class="leaf"><a href="https://www.gorringes.co.uk/departments">Departments</a></li>
+                    <li class="leaf"><a href="https://www.gorringes.co.uk/valuations">Valuations</a></li>
+                    <li class="leaf"><a href="https://www.gorringes.co.uk/news">News</a></li>
+                    <li class="last leaf"><a href="https://www.gorringes.co.uk/contact">Contact</a></li>
+ </ul>
+</div></div>
+<div class="widget widget-block xlarge-12 large-12 medium-12 small-12 columns block block-block block-block-10">
+<div class="widget-container">
+
+      <div class="social-icons">
+<span class="social-icons-item instagram"><a href="https://www.instagram.com/gorringesauctioneers/?hl=en" target="_blank">&nbsp;</a></span><br />
+<span class="social-icons-item facebook"><a href="https://www.facebook.com/pages/Gorringes/138994809506064" target="_blank">&nbsp;</a></span><br />
+<span class="social-icons-item twitter"><a href="https://twitter.com/Gorringes" target="_blank">&nbsp;</a></span>
+<span class="social-icons-item youtube" title="Watch Gorringe's videos on YouTube"><a href="https://www.youtube.com/c/GorringesTV" target="_blank">&nbsp;</a></span>
+</div>
+
+</div></div>
+<div class="widget widget-block xlarge-12 large-12 medium-12 small-12 columns block block-block block-block-8">
+<div class="widget-container">
+<p><span class="footer-title">Gorringe's</span><br>15 North Street, Lewes, East Sussex BN7 2PE<br>01273 472503<br><br>16 Mount Ephraim<br>Tunbridge Wells, Kent TN4 8AS<br>01892 556860</p>
+<p>&nbsp;</p>
+<p>General:&nbsp;<a href="mailto:clientservices@gorringes.co.uk" target="_blank">clientservices@gorringes.co.uk</a></p>
+<p>Buying:&nbsp;<a href="mailto:salesenquiries@gorringes.co.uk" target="_blank">salesenquiries@gorringes.co.uk</a></p>
+<p>Valuations:&nbsp;<a href="mailto:valuations@gorringes.co.uk" target="_blank">valuations@gorringes.co.uk</a></p>
+</div>
+</div>
+<div class="widget widget-block xlarge-12 large-12 medium-12 small-12 columns block block-block block-block-9">
+<div class="widget-container">
+
+     <!--  <p>&copy; 2021 Gorringes LLP. All Rights Reserved.&nbsp; <a href="<=s_main_site_url%>/terms-conditions">Terms &amp; Conditions of Sale</a>&nbsp; &nbsp;<a href="<=s_main_site_url%>/privacy-security">Privacy &amp; Security </a></p> -->
+
+      <div class="block-copyright">
+                    <p>&copy; 2026 Gorringe's LLP. All Rights Reserved. &nbsp; &nbsp; <a href="https://www.gorringes.co.uk/terms-conditions">Terms &amp; Conditions of Sale</a> &nbsp; &nbsp; <a href="https://www.gorringes.co.uk/privacy-security">Privacy &amp; Security</a> &nbsp; &nbsp; <a href="https://www.gorringes.co.uk/accessibility">Accessibility</a></p>
+                </div>
+
+</div></div>
+
+    </div>
+</div>
+<!-- End footer -->
+
+	<script type="text/javascript" src="/js/lib/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="/js/lib/jquery-migrate-1.2.1.min.js"></script>
+	<script type='text/javascript' src='/js/lib/foundation.min.js'></script>
+	<script type='text/javascript' src='/js/lib/foundation.tab.js'></script>
+	<script type='text/javascript' src='/js/lib/slick.min.js'></script>
+	<script type='text/javascript' src='/js/lib/jquery.matchHeight.js'></script>
+	<script type='text/javascript' src='/js/app.js?v=1.1'></script>
+
+	<script>
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+
+
+  ga('create', 'UA-56397123-1', 'auto');
+
+  ga('send', 'pageview');
+
+
+
+</script>
+
+
+</body>
+</html>
+
+
+<script>
+	$(document).ready(function(){
+  $('html, body').animate({
+        scrollTop: $("#lot_tracking").offset().top
+    }, 1000);
+});
+</script>
