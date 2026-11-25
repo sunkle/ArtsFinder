@@ -10,11 +10,12 @@ Houses whose terms forbid copying or using their catalogue text are not collecte
 
 ## What to expect at first
 
-Coverage is thin until more adapters land. Hansons, Fieldings and Peter Francis are collected through the
-white-label catalogue reader (written from real pages, see "Which house needs which adapter"). Lay's, Gildings,
+Coverage is thin until more adapters land. Hansons uses the white-label catalogue reader (written from real pages,
+see "Which house needs which adapter"); its sale pages load the lots by script, so it adds no lots yet. Gorringe's is
+read from its own catalogue pages. Rogers Jones is off (its catalogue host refuses robots.txt). Lay's, Gildings,
 Anderson & Garland and the other GoAuction houses are switched off (their sites challenge automated clients);
-their stored lots stay until the sales end. Gorringe's, Lawrences, David Duggleby, Rogers Jones and Morphets
-need their own readers, which are not all written yet. Some houses have no art sale online for weeks (Lay's
+their stored lots stay until the sales end. Lawrences, David Duggleby and Morphets
+are switched off too. Some houses have no art sale online for weeks (Lay's
 current sale ends 27 Nov; Anderson & Garland's art auction is about 17 Dec). So the page will often show
 only a few dozen lots, and some days almost none. That is the tool working, not broken. Each new reader
 adds a house.

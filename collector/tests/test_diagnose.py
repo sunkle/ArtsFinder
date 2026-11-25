@@ -8,7 +8,7 @@ from collector import run
 from collector.sources.base import DIAGNOSE_MAX_SAVED, Adapter
 from collector.sources.duggleby import DugglebyAdapter
 from collector.tests.fakes import FakeFetcher
-from collector.tests.test_gorringes import CAL, GRANT, HOUSE, LIST_URL, fixture, listing, lot_page
+from collector.tests.test_gorringes import CAL, HOUSE, LIST_URL, LOT1, fixture
 
 
 class StubJsonFetcher:
@@ -29,14 +29,14 @@ class DiagnoseTests(unittest.TestCase):
     def test_gorringes_tries_the_next_sale_and_saves_calendar_catalogue_sale_and_lot(self):
         cat1, cat2 = "https://auction.gorringes.co.uk/auction-catalog/301126", "https://auction.gorringes.co.uk/auction-catalog/011226"
         pages = {CAL: fixture("calendar_p1.html"), cat1: "<p>cat1</p>", cat2: "<p>cat2</p>",
-                 LIST_URL.format(1): listing((GRANT, 20, "Duncan Grant (1885-1978)", "Wrestlers", "1,000 - £1,500")),
-                 GRANT: lot_page("Wrestlers", "Pencil on paper", "£1,000 - £1,500")}
+                 LIST_URL.format(1): fixture("catalog_011226_p1.html"), LOT1: fixture("lot_011226_1.html")}
         house = dict(HOUSE, adapter="gorringes", calendar_urls=[CAL], sale_include=".")
         fetcher = FakeFetcher(pages)
         # the sale 301126 listing is not saved (404), so the run has to carry on to sale 011226
         run.collect_house(house, fetcher, "2026-11-25", "now", diagnose_dir=self.tmp.name)
         self.assertEqual(self.saved("gorringes"), ["calendar.html", "catalog.html", "lot.html", "sale.html"])
         self.assertIn(LIST_URL.format(1), fetcher.calls)
+        self.assertIn(LOT1, fetcher.calls)
         with open(os.path.join(self.tmp.name, "gorringes", "catalog.html"), encoding="utf-8") as f:
             self.assertIn(cat1, f.read().splitlines()[0])  # the verified "View Lots" page is saved
 

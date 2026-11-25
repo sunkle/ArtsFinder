@@ -189,6 +189,8 @@ class WhiteLabelAdapter(Adapter):
                 break
             self.snapshot(house, "sale", url, html)
             found, pages_seen = self.parse_sale_page(html, url)
+            if not found and page == 1:
+                log.warning("%s: no lots in %s: %s", house["id"], url, self.no_lots_reason(html))
             new = [r for r in found if r["id"] not in refs]
             for r in new:
                 refs[r["id"]] = r
@@ -199,6 +201,17 @@ class WhiteLabelAdapter(Adapter):
             if self.diagnosing:
                 break
         return list(refs.values())
+
+    @staticmethod
+    def no_lots_reason(html):
+        """Why a sale page without a single lot link has none (for the log; the run then keeps previous lots)."""
+        visible = re.sub(r"<template\b.*?</template>|<script\b.*?</script>|<!--.*?-->", "", html or "", flags=re.S | re.I)
+        if re.search(r"catalogue\s+(?:is\s+)?(?:coming\s+soon|not\s+(?:yet\s+)?(?:online|available|published))", visible, re.I):
+            return "catalogue not yet online"
+        if re.search(r"""x-data\s*=\s*["']auctions["']|auction_catalogue\.js""", html or "", re.I):
+            return ("lots loaded by script (the page's lot list is filled in by auction_catalogue.js from the site's own "
+                    "search endpoint, which we do not use: RULES.md); nothing to read in the HTML")
+        return "no lot links found: page layout not recognised"
 
     @staticmethod
     def page_url(day_url, page):

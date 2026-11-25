@@ -84,13 +84,13 @@ Low value, skip for now: Lockdales, Fieldings, Peter Francis, Anthemion, Bloomfi
 
 ### Decision (25 Nov 2026, user): public but unlisted, and what that means per house
 The site stays public (free hosting) but unlisted. A house whose terms forbid copying or using catalogue text is **not collected at all**; a house whose terms could not be read is off until someone reads them. Each collected house has `content_policy` in `collector/houses.json` ("full" = description + image link, "text_only" = description only).
-- **On, "full":** Hansons, Gorringe's, Rogers Jones only (see "v0.4 Decision" below; it supersedes the earlier list that also had Fieldings, Peter Francis, Lawrences, Duggleby and Morphets).
+- **On, "full":** Hansons and Gorringe's only (see "v0.4 Decision" and "v0.4.1 Decision" below; they supersede the earlier list that also had Rogers Jones, Fieldings, Peter Francis, Lawrences, Duggleby and Morphets).
 - **Off, terms forbid copying/using text:** Mellors & Kirk (acceptable-use policy), Trevanion and Philip Serrell (sale terms cl. 2.3), Morgan Evans (private use only), Gardiner Houlgate (reproduction prohibited). The reason in houses.json quotes the clause.
 - **Off, terms unreadable:** Ross's (user to read the buyer terms by hand, then update this file).
 - **Off, bot challenge:** Lay's, Gildings, Anderson & Garland, Mallams, McTear's, Halls: the sites serve a bot challenge to automated clients and we do not bypass it. Their stored lots stay until their sales end (`keep_existing_lots`).
 
 ### v0.4 Decision (25 Nov 2026, orchestrator, after the checker's review of branch v0.4-adapters)
-Enabled houses are exactly **Hansons, Gorringe's, Rogers Jones** (all "full"). A test (`test_houses_json_follows_the_terms_review`) pins this set.
+Enabled houses were **Hansons, Gorringe's, Rogers Jones** (all "full"); Rogers Jones went off again in v0.4.1, see below. A test (`test_houses_json_follows_the_terms_review`) pins this set.
 - **Fieldings, Peter Francis: off.** Terms not read and low art value. `disabled_reason`: "terms not checked". Turn on only after someone reads `/terms-and-conditions-of-business` and `/terms-and-conditions` and updates the table.
 - **David Duggleby: off.** Its lot data only comes from a search `/api` endpoint (`FilterBidItems`), and its robots.txt blocks search query strings; we do not sidestep that by using POST. The adapter code and tests stay, but it stays off. This also corrects Recommendation 4 above ("never use search, `/api`, `/rss`"): that rule stands. Safeguard in code: `Fetcher.post_json` applies robots.txt to the full URL including any query, and refuses an `/api` or "search" URL unless the house has an explicit `"api_allowed": true` (default false). No house has it.
 - **Lawrences: off.** Its terms say other use of the document needs permission, which matches the clause that excluded Serrell and Trevanion. Code kept.
@@ -99,3 +99,9 @@ Enabled houses are exactly **Hansons, Gorringe's, Rogers Jones** (all "full"). A
 - **Mixed sales:** lots of type `Other` with no artist life dates and no sculpture word are dropped by the tagger (SPEC "Lots that are skipped"), and `non_art_words` in `shared/rules.json` now covers furniture, silver, coins, records, programmes, tins, memorabilia, cabinets, clocks and the like.
 - **Fail closed:** a house with no `content_policy` is treated as `text_only` (with a warning).
 - **Data-loss guard:** if a house's new non-empty result has fewer than half the lots it had for sales still to come, run.py keeps the old lots too and logs a warning.
+
+### v0.4.1 Decision (25 Nov 2026, orchestrator, after the diagnose run on the real pages)
+Enabled houses are exactly **Hansons and Gorringe's** (both "full"). The test `test_houses_json_follows_the_terms_review` pins this set.
+- **Rogers Jones: off.** `auctions.rogersjones.co.uk` (the catalogue host) answers HTTP 403 for `/robots.txt`. A robots.txt we cannot read is treated as "keep out" (the Fetcher disallows), and that stays. `disabled_reason`: "catalogue host refuses robots.txt (403), treated as disallow (diagnose 25 Nov)". No `keep_existing_lots`: its lots leave data at the next run. The adapter code and tests stay. Turn it on only if that host starts serving a readable robots.txt that allows the catalogue pages.
+- **Hansons: sales found, lots not readable.** The sale pages on `auctions.hansonsauctioneers.co.uk` hold no lots in the HTML: a script (`auction_catalogue.js`) fills the list from the site's own endpoint, which we do not use (same rule as Duggleby: no search or `/api` endpoint). The collector now logs "lots loaded by script" (or "catalogue not yet online" when the page says so) instead of a bare "0 lot links", and keeps the previous lots. Hansons stays on so that it starts working if the platform serves lots in the HTML; until then it adds no lots.
+- **Gorringe's: lot reader written from the real pages.** The catalogue listing (20 lots a page, "Page 1 of N") and the lot page layout are now verified, not guessed.

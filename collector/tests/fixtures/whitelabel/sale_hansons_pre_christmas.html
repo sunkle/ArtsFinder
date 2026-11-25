@@ -1,0 +1,115 @@
+<!-- fetched from https://auctions.hansonsauctioneers.co.uk/catalogue/b15bae525138a9ecef8028f98e99b26e/a4ea5662dfdd714dd24e999c0ecc040d/pre-christmas-sale/ -->
+<!DOCTYPE html>
+<html lang="en-GB" style="" class=" js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths">
+	<head>
+		
+        
+        <meta charset="utf-8">
+	<meta name="rights" content="Hansons Auctioneers">
+	<meta name="description" content="Discover upcoming specialist auctions across the UK with Hansons Auctioneers. Explore unique antiques, collectables, fine art and more â€“ bid online or attend in person.">
+	<title>Auctions - Hansons Auctioneers</title>
+
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+<script src="https://whitelabel.easyliveauction.com/scripts/touchswipe/js/jquery.mousewheel.min.js"></script>
+<script src="https://whitelabel.easyliveauction.com/scripts/touchswipe/js/jquery.hammer.min.js"></script>
+<script src="https://whitelabel.easyliveauction.com/scripts/touchswipe/js/modernizr.min.js"></script>
+<script src="https://whitelabel.easyliveauction.com/scripts/touchswipe/js/TweenMax.min.js"></script>
+<script src="https://whitelabel.easyliveauction.com/scripts/touchswipe/js/NewTouchNSwipe.min.js"></script>
+<script type="text/javascript" src="https://whitelabel.easyliveauction.com/scripts/jcarousellite_1.0.1.min.js"></script>
+<script type="text/javascript" src="https://whitelabel.easyliveauction.com/scripts/carousel/js/jquery.carousel.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+<script type="module" src="https://whitelabel.easyliveauction.com/scripts/ckieconsent/cookieconsent-config.js"></script>
+
+    
+    <script defer src="https://whitelabel.easyliveauction.com/scripts/alpine/alpine.3.14.1.min.js"></script>
+    <script src="https://whitelabel.easyliveauction.com/scripts/bootstrap5/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        
+    
+    
+    <script type="text/javascript" src="https://whitelabel.easyliveauction.com/scripts/helper.js?v=2"></script>
+<!--[if lt IE 9]>
+    <script src="/scripts/html5shiv/html5shiv.min.js"></script>
+    <script src="/scripts/respond.min.js"></script>
+<![endif]-->
+            
+                <script type="text/plain" data-category="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-L98Y9VX2SC"></script>
+<title>Pre Christmas Sale (28 Nov 26)</title>
+<META NAME="description" CONTENT="LIVE AUCTION - Pre Christmas Sale &#x28;Sale Date&#x3a; 28 Nov 26 9&#x3a;30AM&#x29; BID NOW at Hansons Auctioneers &amp; Valuers.">
+<META NAME="keywords" CONTENT="Hansons Auctioneers,Hansons,auctions,valuations,Silver,Jewellery,Watches,Collectables">
+
+<meta property="og:image" content="https://auctions.hansonsauctioneers.co.uk/images/logo.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+    </head>
+    <body class = "page catalogue">
+<div x-data="auctions" class="auction-catalogue catalogue-wrapper bg-light px-1 px-sm-3">
+    <div x-show.important="api_error" class="container d-flex align-items-center justify-content-center">
+        <span class="alert alert-danger">
+            Something failed when loading the page. Please refresh and try again
+        </span>
+    </div>
+    <div class="container-xxxl d-flex flex-column flex-lg-row gap-2">
+        <template x-if='(my_account_page && enable_new_subdomain_header)'>
+             <div x-html='templates.account_nav'></div>
+        </template>
+        <div class="d-flex flex-column w-100">
+            <div x-html='templates.auction_information'></div>
+            <div>
+                <div x-show="show_mobile_back_to_top">
+                    <button id="backToTopIcon"
+                            x-on:click="scrollToTop()"
+                            class="auction-catalogue__button auction-catalogue__button_back-to-top d-flex btn text-decoration-none text-black fw-bold z-3 d-lg-none position-fixed bottom-0 ms-4 start-0 mb-4 p-0">
+                        <i class="auction-catalogue__icon fa-solid fa-circle-arrow-up rounded-5 bg-white"></i>
+                    </button>
+                </div>
+            </div>
+            <button id="filterCataIcon" x-on:click="showFilters()" aria-label="Show Filters"
+            x-show.important="!preview.enabled || (preview.enabled && preview.show_filters)"
+            class="btn text-decoration-none d-lg-none text-white fw-bold z-3 bg-black rounded-5 position-fixed bottom-0 end-0 mb-4 me-4 d-flex align-items-center justify-content-center"
+            style="height: 50px; font-size: 24px;">
+                <span class="d-none d-md-block d-lg-none pe-2">Filters</span><i class="fa-solid fa-filter"></i>
+                <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" x-text="search_count" x-show="search_count > 0"></span>
+            </button>
+            <div class="py-3" x-html='templates.view_options'></div>
+            <div class="row">
+                <!-- Filters -->
+                <div class="d-lg-block" :class="my_account_page ? 'col-xxl-2' : 'col-xl-2 col-lg-3'" x-show.important="!preview.enabled || (preview.enabled && preview.show_filters)">
+                    <div x-html='templates.filters'></div>
+                </div>
+                <!-- END Filters -->
+                <!-- Lots -->
+                <div class="col">
+                    <!-- load grid if selected or screen is small enough -->
+                    <div x-html='templates.lot_grid' x-show='grid || current_size_width_scale <= 2'></div>
+                    <!-- show list view if selected -->
+                    <div x-html='templates.lot_list' x-show="!grid && current_size_width_scale > 2"></div>
+                    <template x-if='empty_search_results_message == "Y"'>
+                        <p class="fs-4 fw-bold p-3 mt-3 bg-white border">Catalogue coming soon...</p>
+                    </template>
+                    <template x-if='empty_search_results_message == "N"'>
+                        <p class="fs-4 fw-bold p-3 mt-3 bg-white border">No results found</p>
+                    </template>
+                </div>
+            </div>
+            <div class="py-3" :class="my_account_page ? 'd-flex justify-content-center justify-content-lg-between' : 'row'">
+                <!-- Pagination buttons -->
+                <div :class="my_account_page ? '' : 'text-center col-md-6 col-12 offset-md-3 offset-sm-0'" x-html='templates.pagination'></div>
+                <!-- END Pagination buttons -->
+                <div class="col-3 d-none d-lg-block">
+                    <button class="text-decoration-none text-black fw-bold p-2 float-end btn focusAdditionalIndicator" x-transition x-on:click="scrollToTop();"><i class="fa-solid fa-arrow-up"></i> Back to Top</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                    </div>
+            </div>
+        
+<script type='text/javascript' src='https://whitelabel.easyliveauction.com/layouts/auction_catalogue.js?v=8'></script>
+</body></html>

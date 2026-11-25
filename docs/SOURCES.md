@@ -31,7 +31,8 @@ Lay's, McTear's, Anderson & Garland, Mallams and Halls Fine Art all use the same
 ## David Duggleby (davidduggleby.com) - FAILED, 0 lots
 - Custom ASP.NET site. The auction list is loaded by JavaScript ("Loading Auction..."). Catalogue URLs found: `/auctions/<id>/<Name>/` (Modern Art 2787, Fine Paintings 2789) and category pages `/auctions/0/Art/?category=2`, but fetching them returned client_error or no lots. Needs a JS-aware approach or finding the JSON endpoint the page calls (check browser network tab).
 
-## Rogers Jones (rogersjones.co.uk) - 0 lots
+## Rogers Jones (rogersjones.co.uk) - 0 lots, OFF (v0.4.1)
+- Diagnose 25 Nov 2026: `auctions.rogersjones.co.uk/robots.txt` returns HTTP 403, treated as disallow, so the catalogue cannot be collected. Switched off (RULES.md, v0.4.1 Decision).
 - Home page lists sales (works as plain HTML): sale pages `/en/sales/YYYY/M/D/<slug>`; bidding on `auctions.rogersjones.co.uk/auctions/<id>/<code>`. The Welsh Sale (22-23 Nov) is before the cut-off date. Chester Monthly (1 Dec 2026) is "Online Soon" and has no lots yet. Retry later.
 
 ## Morphets (morphets.co.uk) - 0 lots recorded
