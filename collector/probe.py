@@ -226,9 +226,18 @@ def main(argv=None):
     ap.add_argument("--out", default=os.path.join(ROOT, "probe"))
     ap.add_argument("--only")
     ap.add_argument("--budget-min", type=float, default=25)
+    ap.add_argument("--deep", action="store_true", help="save sale and lot pages from houses in --report")
+    ap.add_argument("--only-verdict", default="ok")
+    ap.add_argument("--report", default=os.path.join(ROOT, "probe", "report.json"))
     ap.add_argument("--houses", default=os.path.join(ROOT, "collector", "probe_houses.json"))
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    if args.deep:
+        from .probe_deep import run_deep
+        out = args.out if args.out != os.path.join(ROOT, "probe") else os.path.join(ROOT, "probe-deep")
+        budget = args.budget_min if args.budget_min != 25 else 30
+        run_deep(args.report, out, args.only_verdict, budget, only=args.only)
+        return
     with open(args.houses, encoding="utf-8") as f:
         houses = json.load(f)
     if args.only:
